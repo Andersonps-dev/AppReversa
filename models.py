@@ -1,1 +1,30 @@
+
 from database import db
+
+class Estoque(db.Model):
+    __tablename__ = 'estoque'
+    id = db.Column(db.Integer, primary_key=True)
+    local = db.Column(db.String(255))
+    f_idlocal = db.Column(db.String(50))
+    tipo_local = db.Column(db.String(100))
+    estado = db.Column(db.String(50))
+    buffer = db.Column(db.String(10))
+    local_ativo = db.Column(db.String(10))
+    setor = db.Column(db.String(100))
+    regiao = db.Column(db.String(100))
+    estoque = db.Column(db.String(100))
+    pendencia = db.Column(db.String(100))
+    adicionar = db.Column(db.String(100))
+    disponivel = db.Column(db.String(100))
+    barra = db.Column(db.String(100))
+    descricao_reduzida = db.Column(db.String(255))
+    id_produto = db.Column(db.String(100))
+    codigo_produto = db.Column(db.String(100))
+    codigo_produto_depositante = db.Column(db.String(100))
+    produto = db.Column(db.String(255))
+    depositante = db.Column(db.String(255))
+    tipo = db.Column(db.String(100))
+    h_idarmazem = db.Column(db.String(100))
+    h_iddepositante = db.Column(db.String(100))
+    h_ordem = db.Column(db.String(100))
+    h_rn = db.Column(db.String(100))
