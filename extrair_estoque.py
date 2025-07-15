@@ -16,7 +16,6 @@ def extrair_dados_estoques_wms(link_wms, user_wms, senha_wms, id_depositante=236
         
         session = requests.Session()
         
-        # Login
         login_url = link_wms + r'webresources/SessionService/login'
         login_data = {
             "nomeUsuario": user_wms,
@@ -167,7 +166,9 @@ def extrair_dados_estoques_wms(link_wms, user_wms, senha_wms, id_depositante=236
             )
         ''')
 
-        df = pd.read_csv(full_path) 
+        df = pd.read_csv(full_path)
+        df = df[(df['Tipo_do_Local'] == 'PICKING') & (df['Setor'] == 'INSIDER - BOM')]
+        
         for _, row in df.iterrows():
             cursor.execute('''
                 INSERT INTO estoque (

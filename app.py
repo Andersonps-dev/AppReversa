@@ -189,7 +189,10 @@ def extrair_dados_estoques_wms(link_wms, user_wms, senha_wms, id_depositante=236
             )
         ''')
 
-        df = pd.read_csv(full_path) 
+        df = pd.read_csv(full_path)
+        
+        df = df[(df['Tipo do Local'] == 'PICKING') & (df['Setor'] == 'INSIDER - BOM')]
+        
         for _, row in df.iterrows():
             cursor.execute('''
                 INSERT INTO estoque (

@@ -19,7 +19,6 @@
 <body>
     <h1>Estoque Local Por Produto</h1>
 
-    <!-- Display Flash Messages -->
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             {% for category, message in messages %}
@@ -28,12 +27,11 @@
         {% endif %}
     {% endwith %}
 
-    <!-- Button to Trigger Stock Update -->
     <form method="POST" action="{{ url_for('atualizar_estoque') }}">
         <button type="submit">Atualizar Estoque</button>
+        <br>
+        <br>
     </form>
-
-    <!-- Display Stock Data -->
     {% if estoques %}
         <table>
             <thead>
