@@ -1,4 +1,39 @@
-<h1>Funcionou</h1>
-{% for s in estoques %}
-    <p>{{ s }}</p>
-{% endfor %}
+<h1>Estoque</h1>
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <ul>
+    {% for category, message in messages %}
+      <li style="color: {% if category == 'success' %}green{% else %}red{% endif %};">{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+
+<table border="1" cellpadding="5" cellspacing="0">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Produto</th>
+            <th>Código Produto</th>
+            <th>Descrição</th>
+            <th>Local</th>
+            <th>Quantidade</th>
+            <th>Armazém</th>
+            <th>Depositante</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for s in estoques %}
+        <tr>
+            <td>{{ s.id }}</td>
+            <td>{{ s.produto }}</td>
+            <td>{{ s.codigo_produto }}</td>
+            <td>{{ s.descricao_reduzida }}</td>
+            <td>{{ s.local }}</td>
+            <td>{{ s.disponivel or s.estoque }}</td>
+            <td>{{ s.h_idarmazem }}</td>
+            <td>{{ s.depositante }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
