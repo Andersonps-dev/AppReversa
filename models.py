@@ -3,6 +3,7 @@ from database import db
 class Estoque(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     Local = db.Column(db.String(255))
+    Rua = db.Column(db.String(10))
     F_IDLOCAL = db.Column(db.String(255))
     Tipo_do_Local = db.Column(db.String(255))
     Estado = db.Column(db.String(255))

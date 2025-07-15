@@ -162,6 +162,7 @@ def extrair_dados_estoques_wms(link_wms, user_wms, senha_wms, id_depositante=236
             CREATE TABLE IF NOT EXISTS estoque (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 Local TEXT,
+                Rua TEXT,
                 F_IDLOCAL TEXT,
                 Tipo_do_Local TEXT,
                 Estado TEXT,
@@ -192,11 +193,14 @@ def extrair_dados_estoques_wms(link_wms, user_wms, senha_wms, id_depositante=236
         df = pd.read_csv(full_path)
         
         df = df[(df['Tipo do Local'] == 'PICKING') & (df['Setor'] == 'INSIDER - BOM')]
+        print(df['Local'][1][1:5])
         
         for _, row in df.iterrows():
+            local = row.get('Local', '')
+            
             cursor.execute('''
                 INSERT INTO estoque (
-                    Local, F_IDLOCAL, Tipo_do_Local, Estado, Buffer, Local_Ativo, Setor, Regiao,
+                    Local, Rua, F_IDLOCAL, Tipo_do_Local, Estado, Buffer, Local_Ativo, Setor, Regiao,
                     Estoque, Pendencia, Adicionar, Disponivel, Barra, Descricao_Reduzida,
                     idProduto, Codigo_do_Produto, Codigo_Produto_Depositante, Produto,
                     Depositante, Tipo, H_IDARMAZEM, H_IDDEPOSITANTE, H_ORDEM, H_RN, data_atualizacao
@@ -204,6 +208,7 @@ def extrair_dados_estoques_wms(link_wms, user_wms, senha_wms, id_depositante=236
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ''', (
                 row.get('Local', ''),
+                local[1:5],
                 row.get('F$IDLOCAL', ''),
                 row.get('Tipo do Local', ''),
                 row.get('Estado', ''),
