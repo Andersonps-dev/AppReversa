@@ -37,6 +37,7 @@
             <thead>
                 <tr>
                     <th>Local</th>
+                    <th>Rua</th>
                     <th>Tipo do Local</th>
                     <th>Estado</th>
                     <th>Estoque</th>
@@ -49,6 +50,7 @@
                 {% for estoque in estoques %}
                     <tr>
                         <td>{{ estoque.Local }}</td>
+                        <td>{{ estoque.Rua }}</td>
                         <td>{{ estoque.Tipo_do_Local }}</td>
                         <td>{{ estoque.Estado }}</td>
                         <td>{{ estoque.Estoque }}</td>

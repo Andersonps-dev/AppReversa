@@ -193,7 +193,6 @@ def extrair_dados_estoques_wms(link_wms, user_wms, senha_wms, id_depositante=236
         df = pd.read_csv(full_path)
         
         df = df[(df['Tipo do Local'] == 'PICKING') & (df['Setor'] == 'INSIDER - BOM')]
-        print(df['Local'][1][1:5])
         
         for _, row in df.iterrows():
             local = row.get('Local', '')
@@ -205,10 +204,10 @@ def extrair_dados_estoques_wms(link_wms, user_wms, senha_wms, id_depositante=236
                     idProduto, Codigo_do_Produto, Codigo_Produto_Depositante, Produto,
                     Depositante, Tipo, H_IDARMAZEM, H_IDDEPOSITANTE, H_ORDEM, H_RN, data_atualizacao
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ''', (
                 row.get('Local', ''),
-                local[1:5],
+                local[2:5],
                 row.get('F$IDLOCAL', ''),
                 row.get('Tipo do Local', ''),
                 row.get('Estado', ''),
