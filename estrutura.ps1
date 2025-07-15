@@ -1,7 +1,7 @@
 param (
     [string]$Path = ".",
     [int]$Level = 0,
-    [string[]]$IgnorarPastas = @("node_modules", ".git", "dist", "build")
+    [string[]]$IgnorarPastas = @("__pycache__", ".git", ".venv")
 )
 
 function Mostrar-Arvore {
