@@ -1,39 +1,68 @@
-<h1>Estoque</h1>
-{% with messages = get_flashed_messages(with_categories=true) %}
-  {% if messages %}
-    <ul>
-    {% for category, message in messages %}
-      <li style="color: {% if category == 'success' %}green{% else %}red{% endif %};">{{ message }}</li>
-    {% endfor %}
-    </ul>
-  {% endif %}
-{% endwith %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estoque WMS</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .message { padding: 10px; margin-bottom: 10px; }
+        .success { background-color: #d4edda; color: #155724; }
+        .error { background-color: #f8d7da; color: #721c24; }
+        button { padding: 10px 20px; background-color: #007bff; color: white; border: none; cursor: pointer; }
+        button:hover { background-color: #0056b3; }
+    </style>
+</head>
+<body>
+    <h1>Estoque Local Por Produto</h1>
 
-<table border="1" cellpadding="5" cellspacing="0">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Produto</th>
-            <th>Código Produto</th>
-            <th>Descrição</th>
-            <th>Local</th>
-            <th>Quantidade</th>
-            <th>Armazém</th>
-            <th>Depositante</th>
-        </tr>
-    </thead>
-    <tbody>
-    {% for s in estoques %}
-        <tr>
-            <td>{{ s.id }}</td>
-            <td>{{ s.produto }}</td>
-            <td>{{ s.codigo_produto }}</td>
-            <td>{{ s.descricao_reduzida }}</td>
-            <td>{{ s.local }}</td>
-            <td>{{ s.disponivel or s.estoque }}</td>
-            <td>{{ s.h_idarmazem }}</td>
-            <td>{{ s.depositante }}</td>
-        </tr>
-    {% endfor %}
-    </tbody>
-</table>
+    <!-- Display Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="message {{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <!-- Button to Trigger Stock Update -->
+    <form method="POST" action="{{ url_for('atualizar_estoque') }}">
+        <button type="submit">Atualizar Estoque</button>
+    </form>
+
+    <!-- Display Stock Data -->
+    {% if estoques %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Local</th>
+                    <th>Tipo do Local</th>
+                    <th>Estado</th>
+                    <th>Estoque</th>
+                    <th>Disponível</th>
+                    <th>Produto</th>
+                    <th>Data Atualização</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for estoque in estoques %}
+                    <tr>
+                        <td>{{ estoque.Local }}</td>
+                        <td>{{ estoque.Tipo_do_Local }}</td>
+                        <td>{{ estoque.Estado }}</td>
+                        <td>{{ estoque.Estoque }}</td>
+                        <td>{{ estoque.Disponivel }}</td>
+                        <td>{{ estoque.Produto }}</td>
+                        <td>{{ estoque.data_atualizacao }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Nenhum dado de estoque disponível.</p>
+    {% endif %}
+</body>
+</html>

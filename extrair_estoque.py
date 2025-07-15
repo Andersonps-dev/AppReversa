@@ -8,7 +8,6 @@ import pandas as pd
 
 def extrair_dados_estoques_wms(link_wms, user_wms, senha_wms, id_depositante=2361178, armazem="insider%", save_path=r"AppReversa\instance"):
     try:
-        # Configuração inicial
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36',
             'Content-Type': 'application/json',
@@ -33,7 +32,6 @@ def extrair_dados_estoques_wms(link_wms, user_wms, senha_wms, id_depositante=236
         bearer_token = response.json().get('value', {}).get('bearer')
         headers['Authorization'] = f'Bearer {bearer_token}'
         
-        # Consulta de estoque
         consulta_estoque_url = link_wms + r'webresources/ConsultaEstoqueService/getConsultaEstoqueLocalPorProduto'
         consulta_estoque_data = {
             "idDepositante": id_depositante,
@@ -105,7 +103,6 @@ def extrair_dados_estoques_wms(link_wms, user_wms, senha_wms, id_depositante=236
         print("CSV gerado com sucesso!")
         gerar_csv_response_json = gerar_csv_response.json()
 
-        # Download do CSV
         file_name = gerar_csv_response_json['value']['fileName']
         download_csv_url = f'http://200.143.168.151:8880/siltwms/tsunami/ExportServlet?ExportedFilename={file_name}'
         
@@ -133,7 +130,11 @@ def extrair_dados_estoques_wms(link_wms, user_wms, senha_wms, id_depositante=236
         conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
         
-        cursor.execute('DELETE FROM estoque')
+        try:
+            cursor.execute('DELETE FROM if exists estoque')
+        except:
+            pass
+            
 
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS estoque (
