@@ -122,8 +122,7 @@ def extrair_dados_estoques_wms(link_wms, user_wms, senha_wms, id_depositante=236
         if gerar_csv_response.status_code != 200:
             flash(f"Falha ao gerar o CSV! Status: {gerar_csv_response.status_code}", 'error')
             return False
-            
-        logger.info("CSV gerado com sucesso!")
+        
         gerar_csv_response_json = gerar_csv_response.json()
 
         file_name = gerar_csv_response_json['value']['fileName']
@@ -135,8 +134,6 @@ def extrair_dados_estoques_wms(link_wms, user_wms, senha_wms, id_depositante=236
         if download_response.status_code != 200:
             flash(f"Falha ao baixar o arquivo CSV! Status: {download_response.status_code}", 'error')
             return False
-            
-        logger.info("Arquivo baixado com sucesso!")
         
         novo_nome = "Estoque Local Por Produto"
         full_path = os.path.join(save_path, novo_nome + ".csv")
@@ -258,6 +255,7 @@ def atualizar_estoque():
         senha_wms=SENHAS_WMS[0],
         save_path=app.instance_path
     )
+    
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
