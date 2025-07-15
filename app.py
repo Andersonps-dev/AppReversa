@@ -10,52 +10,57 @@ import pandas as pd
 from datetime import datetime, date, timedelta
 from functools import wraps
 import logging
-import io
 from sqlalchemy import func
+from models import Estoque
 from config import LINK_WMS, LOGINS_WMS, SENHAS_WMS, ID_TOKEN_WMS, TOKENS_SENHAS
 
-# app = Flask(__name__)
+# Configuração do Flask
+app = Flask(__name__)
+app.config['SECRET_KEY'] = 'admin_anderson_luft'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# app.config['SECRET_KEY'] = 'admin_anderson_luft'
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
-# app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db.init_app(app)
+migrate = Migrate(app, db)
 
-# db.init_app(app)
-# migrate = Migrate(app, db)
+load_dotenv()
 
-id_depositante = 2361178
-user_wms = LOGINS_WMS[0]
-senha_wms = SENHAS_WMS[0]
-id_token_wms = ID_TOKEN_WMS[0]
-token_senha_wms = TOKENS_SENHAS[0]
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-def extrair_dados_estoques():
-    from models import Estoque
-    login_url = LINK_WMS + r'webresources/SessionService/login'
-    login_data = {
-        "nomeUsuario": user_wms,
-        "password": senha_wms,
-        "armazem": {
-            "id": 7,
-            "descricao": "LUFT SOLUTIONS - AG2 - CAJAMAR - 16"
-        }
-    }
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36',
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-    }
-    session = requests.Session()
+def extrair_dados_estoques_wms(link_wms, user_wms, senha_wms, id_depositante=538607, armazem="alpargatas%"):
     try:
-        response = session.get(LINK_WMS, headers=headers)
+        # Configuração inicial
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36',
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+        }
+        
+        session = requests.Session()
+        
+        # Login
+        login_url = link_wms + r'webresources/SessionService/login'
+        login_data = {
+            "nomeUsuario": user_wms,
+            "password": senha_wms,
+            "armazem": {
+                "id": 7,
+                "descricao": "LUFT SOLUTIONS - AG2 - CAJAMAR - 16"
+            }
+        }
+        
+        session.get(link_wms, headers=headers)
         response = session.post(login_url, json=login_data, headers=headers)
-        response.raise_for_status()
-        response_json = response.json()
-        bearer_token = response_json.get('value', {}).get('bearer')
-        if not bearer_token:
-            raise Exception('Token de autenticação não encontrado!')
+        if response.status_code != 200:
+            logger.error(f"Falha no login WMS! Status: {response.status_code}")
+            return False
+            
+        bearer_token = response.json().get('value', {}).get('bearer')
         headers['Authorization'] = f'Bearer {bearer_token}'
-        consulta_estoque_url = LINK_WMS + r'webresources/ConsultaEstoqueService/getConsultaEstoqueLocalPorProduto'
+        
+        # Consulta de estoque
+        consulta_estoque_url = link_wms + r'webresources/ConsultaEstoqueService/getConsultaEstoqueLocalPorProduto'
         consulta_estoque_data = {
             "idDepositante": id_depositante,
             "idArmazem": 7,
@@ -63,7 +68,7 @@ def extrair_dados_estoques():
                 "@class": "SqlQueryResultSlickConfig",
                 "sqlQueryLoadMode": "VALUES",
                 "queryType": "TABLEID",
-                "showAll": True,
+                "showAll": False,
                 "orderBy": None,
                 "customWhere": None,
                 "scalarTypes": {
@@ -72,7 +77,7 @@ def extrair_dados_estoques():
                 },
                 "showFilter": [],
                 "filterConfigs": [],
-                "take": 1000,
+                "take": 40,
                 "skip": 0,
                 "advancedSearch": [],
                 "parameters": None,
@@ -80,50 +85,68 @@ def extrair_dados_estoques():
                 "dynamicParameters": None
             }
         }
-        consulta_response = session.post(consulta_estoque_url, json=consulta_estoque_data, headers=headers)
-        consulta_response.raise_for_status()
-        consulta_response_json = consulta_response.json()
-        dados = consulta_response_json.get('value', {}).get('data', [])
         
-        if not dados:
-            print('Nenhum dado de estoque retornado!')
-            return
-        Estoque.query.delete()
-        for item in dados:
-            estoque = Estoque(
-                local=item.get('Local', ''),
-                f_idlocal=item.get('F$IDLOCAL', ''),
-                tipo_local=item.get('Tipo do Local', ''),
-                estado=item.get('Estado', ''),
-                buffer=item.get('Buffer', ''),
-                local_ativo=item.get('Local Ativo', ''),
-                setor=item.get('Setor', ''),
-                regiao=item.get('RegiÃ£o', ''),
-                estoque=item.get('Estoque', ''),
-                pendencia=item.get('PendÃªncia', ''),
-                adicionar=item.get('Adicionar', ''),
-                disponivel=item.get('DisponÃ­vel', ''),
-                barra=item.get('Barra', ''),
-                descricao_reduzida=item.get('DescriÃ§Ã£o Reduzida', ''),
-                id_produto=item.get('idProduto', ''),
-                codigo_produto=item.get('CÃ³digo do Produto', ''),
-                codigo_produto_depositante=item.get('CÃ³digo Produto Depositante', ''),
-                produto=item.get('Produto', ''),
-                depositante=item.get('Depositante', ''),
-                tipo=item.get('Tipo', ''),
-                h_idarmazem=item.get('H$IDARMAZEM', ''),
-                h_iddepositante=item.get('H$IDDEPOSITANTE', ''),
-                h_ordem=item.get('H$ORDEM', ''),
-                h_rn=item.get('H$RN', '')
-            )
-            db.session.add(estoque)
+        consulta_response = session.post(consulta_estoque_url, json=consulta_estoque_data, headers=headers)
+        
+        if consulta_response.status_code != 200:
+            logger.error(f"Falha na consulta de estoque! Status: {consulta_response.status_code}")
+            return False
+            
+        logger.info("Consulta de estoque realizada com sucesso!")
+        consulta_response_json = consulta_response.json()
+        
+        # Processar dados e salvar no banco
+        estoque_data = consulta_response_json.get('value', [])
+        
+        for item in estoque_data:
+            try:
+                # Assumindo que Estoque model tem campos como codigo_produto, quantidade, local, etc.
+                estoque = Estoque(
+                    codigo_produto=item.get('CODIGO', ''),
+                    quantidade=item.get('QUANTIDADE', 0),
+                    local=item.get('LOCAL', ''),
+                    data_atualizacao=datetime.now(),
+                    armazem=armazem,
+                    depositante_id=id_depositante
+                )
+                db.session.add(estoque)
+            except Exception as e:
+                logger.error(f"Erro ao salvar item no banco: {e}")
+                continue
+                
         db.session.commit()
-        print('Dados de estoque gravados no banco de dados com sucesso!')
-    except requests.RequestException as req_err:
-        print(f'Erro de requisição: {req_err}')
+        logger.info("Dados de estoque salvos no banco com sucesso!")
+        return True
+        
     except Exception as e:
-        print(f'Erro inesperado: {e}')
+        logger.error(f"❌ Erro crítico: {e}")
+        db.session.rollback()
+        return False
+
+@app.route('/sync_estoque', methods=['POST'])
+def sync_estoque():
+    try:
+        success = extrair_dados_estoques_wms(
+            link_wms=LINK_WMS,
+            user_wms=LOGINS_WMS[0],
+            senha_wms=SENHAS_WMS[0]
+        )
+        if success:
+            flash('Estoque sincronizado com sucesso!', 'success')
+        else:
+            flash('Falha ao sincronizar estoque.', 'error')
+        return redirect(url_for('index'))
+    except Exception as e:
+        logger.error(f"Erro na rota /sync_estoque: {e}")
+        flash('Erro ao sincronizar estoque.', 'error')
+        return redirect(url_for('index'))
+
+@app.route('/')
+def index():
+    estoques = Estoque.query.all()
+    return render_template('index.html', estoques=estoques)
 
 if __name__ == '__main__':
-    # app.run(debug=True)
-    extrair_dados_estoques()
+    with app.app_context():
+        db.create_all()
+    app.run(debug=True)

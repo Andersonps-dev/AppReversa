@@ -1,4 +1,3 @@
-
 from database import db
 
 class Estoque(db.Model):
