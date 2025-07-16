@@ -5,14 +5,6 @@ from flask_migrate import Migrate
 import requests
 import json
 import os
-# ...existing code...
-from flask import Flask, render_template, request, redirect, url_for, session, flash, get_flashed_messages
-from werkzeug.security import generate_password_hash, check_password_hash
-from database import db
-from flask_migrate import Migrate
-import requests
-import json
-import os
 from dotenv import load_dotenv
 import pandas as pd
 from datetime import datetime, date, timedelta
