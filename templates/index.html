@@ -6,20 +6,36 @@
 </head>
 <body>
     <h1>Consulta de Rua por Código de Barra</h1>
-    <form action="/consultar_rua" method="post">
+
+    <form action="/consultar_rua" method="post" id="form-barra">
         <label for="codigo_barra">Bipe o código de barras:</label>
-        <input type="text" id="codigo_barra" name="codigo_barra" autofocus required>
+        <input type="text" id="codigo_barra" name="codigo_barra" value="{{ codigo_barra if not sucesso else '' }}" autofocus required>
         <button type="submit">Consultar</button>
     </form>
+
+
     {% if rua %}
         <h2>Rua mais próxima com saldo: {{ rua }}</h2>
+        <form action="/salvar_endereco" method="post" id="form-endereco">
+            <input type="hidden" name="codigo_barra" value="{{ codigo_barra }}">
+            <input type="hidden" name="rua" value="{{ rua }}">
+            <label for="endereco">Bipe o endereço:</label>
+            <input type="text" id="endereco" name="endereco" required autofocus>
+            <button type="submit">Salvar</button>
+        </form>
+        <script>
+            document.getElementById('endereco').focus();
+        </script>
     {% elif erro %}
         <p style="color:red;">{{ erro }}</p>
     {% endif %}
-    {% if local %}
-        <h2>Local mais próximo com saldo: {{ local }}</h2>
-    {% elif erro %}
-        <p style="color:red;">{{ erro }}</p>
+
+    {% if sucesso %}
+        <p style="color:green;">{{ sucesso }}</p>
+        <script>
+            document.getElementById('codigo_barra').value = '';
+            document.getElementById('codigo_barra').focus();
+        </script>
     {% endif %}
 </body>
 </html>

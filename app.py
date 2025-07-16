@@ -12,7 +12,7 @@ import sqlite3
 from functools import wraps
 import logging
 from sqlalchemy import func
-from models import Estoque
+from models import Estoque, BarraEndereco
 from sqlalchemy import cast, Integer
 from config import LINK_WMS, LOGINS_WMS, SENHAS_WMS, ID_TOKEN_WMS, TOKENS_SENHAS
 
@@ -244,14 +244,14 @@ def extrair_dados_estoques_wms(link_wms, user_wms, senha_wms, id_depositante=236
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('index.html', codigo_barra=None)
 
 @app.route('/consultar_rua', methods=['POST'])
 def consultar_rua():
     codigo_barra = request.form.get('codigo_barra')
     
     if not codigo_barra:
-        return render_template('index.html', erro='Código de barras não informado.')
+        return render_template('index.html', erro='Código de barras não informado.', codigo_barra=None)
 
     estoque = (
         db.session.query(
@@ -267,11 +267,11 @@ def consultar_rua():
         .limit(1)
         .first()
     )
-    
+
     if estoque:
-        return render_template('index.html', rua=estoque.Rua, local=estoque.Local)
+        return render_template('index.html', rua=estoque.Rua, local=estoque.Local, codigo_barra=codigo_barra)
     else:
-        return render_template('index.html', erro='Nenhuma rua com saldo disponível para esse código de barras.')
+        return render_template('index.html', erro='Nenhuma rua com saldo disponível para esse código de barras.', codigo_barra=codigo_barra)
     
 @app.route('/atualizar_estoque', methods=['GET'])
 def atualizar_estoque():
@@ -285,6 +285,22 @@ def atualizar_estoque():
     os.remove(os.path.join(app.instance_path, "Estoque Local Por Produto.csv"))
     
     return redirect(url_for('index'))
+
+@app.route('/salvar_endereco', methods=['POST'])
+def salvar_endereco():
+    codigo_barra = request.form.get('codigo_barra')
+    rua = request.form.get('rua')
+    endereco = request.form.get('endereco')
+    if not (codigo_barra and rua and endereco):
+        return render_template('index.html', erro='Preencha todos os campos.', codigo_barra=codigo_barra, rua=rua)
+
+    try:
+        novo = BarraEndereco(barra=codigo_barra, rua=rua, endereco=endereco, data_armazenamento=datetime.now())
+        db.session.add(novo)
+        db.session.commit()
+        return render_template('index.html', sucesso='Endereço salvo com sucesso!', codigo_barra=None)
+    except Exception as e:
+        return render_template('index.html', erro=f'Erro ao salvar: {e}', codigo_barra=codigo_barra, rua=rua)
 
 if __name__ == '__main__':
     with app.app_context():

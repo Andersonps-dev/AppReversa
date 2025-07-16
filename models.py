@@ -28,3 +28,11 @@ class Estoque(db.Model):
     H_ORDEM = db.Column(db.String(255))
     H_RN = db.Column(db.String(255))
     data_atualizacao = db.Column(db.DateTime)
+
+class BarraEndereco(db.Model):
+    __tablename__ = 'barra_endereco'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    barra = db.Column(db.String(255), nullable=False)
+    rua = db.Column(db.String(255), nullable=False)
+    endereco = db.Column(db.String(255), nullable=False)
+    data_armazenamento = db.Column(db.DateTime, nullable=False)
