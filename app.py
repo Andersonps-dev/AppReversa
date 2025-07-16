@@ -13,6 +13,7 @@ from functools import wraps
 import logging
 from sqlalchemy import func
 from models import Estoque
+from sqlalchemy import cast, Integer
 from config import LINK_WMS, LOGINS_WMS, SENHAS_WMS, ID_TOKEN_WMS, TOKENS_SENHAS
 
 app = Flask(__name__)
@@ -187,8 +188,7 @@ def extrair_dados_estoques_wms(link_wms, user_wms, senha_wms, id_depositante=236
             )
         ''')
 
-        df = pd.read_csv(full_path)
-        
+        df = pd.read_csv(full_path, dtype={'Barra':str, 'Código do Produto':str, 'Código Produto Depositante':str})
         df = df[(df['Tipo do Local'] == 'PICKING') & (df['Setor'] == 'INSIDER - BOM')]
         
         for _, row in df.iterrows():
@@ -244,10 +244,36 @@ def extrair_dados_estoques_wms(link_wms, user_wms, senha_wms, id_depositante=236
 
 @app.route('/')
 def index():
-    estoques = Estoque.query.limit(20).all()
-    return render_template('index.html', estoques=estoques)
+    return render_template('index.html')
 
-@app.route('/atualizar_estoque', methods=['POST'])
+@app.route('/consultar_rua', methods=['POST'])
+def consultar_rua():
+    codigo_barra = request.form.get('codigo_barra')
+    
+    if not codigo_barra:
+        return render_template('index.html', erro='Código de barras não informado.')
+
+    estoque = (
+        db.session.query(
+            Estoque.Barra,
+            Estoque.Local,
+            Estoque.Rua,
+            func.sum(Estoque.Estoque).label('total_estoque')
+        )
+        .filter(Estoque.Barra == codigo_barra)
+        .group_by(Estoque.Barra, Estoque.Local, Estoque.Rua)
+        .having(func.sum(Estoque.Estoque) < 50)
+        .order_by(cast(Estoque.Rua, Integer).asc())
+        .limit(1)
+        .first()
+    )
+    
+    if estoque:
+        return render_template('index.html', rua=estoque.Rua, local=estoque.Local)
+    else:
+        return render_template('index.html', erro='Nenhuma rua com saldo disponível para esse código de barras.')
+    
+@app.route('/atualizar_estoque', methods=['GET'])
 def atualizar_estoque():
     success = extrair_dados_estoques_wms(
         link_wms=LINK_WMS,
@@ -255,6 +281,8 @@ def atualizar_estoque():
         senha_wms=SENHAS_WMS[0],
         save_path=app.instance_path
     )
+    
+    os.remove(os.path.join(app.instance_path, "Estoque Local Por Produto.csv"))
     
     return redirect(url_for('index'))
 
