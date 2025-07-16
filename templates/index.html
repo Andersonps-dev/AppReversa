@@ -5,7 +5,16 @@
     <title>Consulta de Rua por Código de Barra</title>
 </head>
 <body>
+
+    <nav style="background:#eee;padding:10px 0 10px 10px;margin-bottom:20px;">
+        <a href="/" style="margin-right:20px;">Início</a>
+        <a href="/enderecos" style="margin-right:20px;">Endereços</a>
+        <a href="/atualizar_estoque">Atualizar Estoque</a>
+    </nav>
     <h1>Consulta de Rua por Código de Barra</h1>
+    <form action="/atualizar_estoque" method="get" style="margin-bottom: 20px;">
+        <button type="submit">Atualizar Estoque</button>
+    </form>
 
     <form action="/consultar_rua" method="post" id="form-barra">
         <label for="codigo_barra">Bipe o código de barras:</label>

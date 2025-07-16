@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Endereços Agrupados</title>
+</head>
+<body>
+    <nav style="background:#eee;padding:10px 0 10px 10px;margin-bottom:20px;">
+        <a href="/" style="margin-right:20px;">Início</a>
+        <a href="/enderecos" style="margin-right:20px;">Endereços</a>
+        <a href="/atualizar_estoque">Atualizar Estoque</a>
+    </nav>
+    <h1>Endereços Agrupados por Contagem de Barras</h1>
+    <table border="1" cellpadding="5" cellspacing="0">
+        <thead>
+            <tr>
+                <th>Endereço</th>
+                <th>Quantidade de Barras</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for endereco, count in enderecos %}
+            <tr>
+                <td><a href="{{ url_for('detalhes_endereco', endereco=endereco) }}">{{ endereco }}</a></td>
+                <td>{{ count }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

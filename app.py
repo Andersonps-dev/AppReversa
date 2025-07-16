@@ -1,4 +1,12 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import Flask, render_template, request, redirect, url_for, session, flash, get_flashed_messages
+from werkzeug.security import generate_password_hash, check_password_hash
+from database import db
+from flask_migrate import Migrate
+import requests
+import json
+import os
+# ...existing code...
+from flask import Flask, render_template, request, redirect, url_for, session, flash, get_flashed_messages
 from werkzeug.security import generate_password_hash, check_password_hash
 from database import db
 from flask_migrate import Migrate
@@ -244,7 +252,11 @@ def extrair_dados_estoques_wms(link_wms, user_wms, senha_wms, id_depositante=236
 
 @app.route('/')
 def index():
-    return render_template('index.html', codigo_barra=None)
+    sucesso = None
+    msgs = get_flashed_messages(category_filter=['success'])
+    if msgs:
+        sucesso = msgs[0]
+    return render_template('index.html', codigo_barra=None, sucesso=sucesso)
 
 @app.route('/consultar_rua', methods=['POST'])
 def consultar_rua():
@@ -298,9 +310,20 @@ def salvar_endereco():
         novo = BarraEndereco(barra=codigo_barra, rua=rua, endereco=endereco, data_armazenamento=datetime.now())
         db.session.add(novo)
         db.session.commit()
-        return render_template('index.html', sucesso='Endereço salvo com sucesso!', codigo_barra=None)
+        flash('Endereço salvo com sucesso!', 'success')
+        return redirect(url_for('index'))
     except Exception as e:
         return render_template('index.html', erro=f'Erro ao salvar: {e}', codigo_barra=codigo_barra, rua=rua)
+
+@app.route('/enderecos')
+def enderecos():
+    results = db.session.query(BarraEndereco.endereco, func.count(BarraEndereco.barra)).group_by(BarraEndereco.endereco).all()
+    return render_template('enderecos.html', enderecos=results)
+
+@app.route('/enderecos/<endereco>')
+def detalhes_endereco(endereco):
+    detalhes = BarraEndereco.query.filter_by(endereco=endereco).all()
+    return render_template('detalhes_endereco.html', endereco=endereco, detalhes=detalhes)
 
 if __name__ == '__main__':
     with app.app_context():

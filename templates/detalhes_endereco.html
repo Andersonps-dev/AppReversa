@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Detalhes do Endereço</title>
+</head>
+<body>
+    <nav style="background:#eee;padding:10px 0 10px 10px;margin-bottom:20px;">
+        <a href="/" style="margin-right:20px;">Início</a>
+        <a href="/enderecos" style="margin-right:20px;">Endereços</a>
+        <a href="/atualizar_estoque">Atualizar Estoque</a>
+    </nav>
+    <h1>Detalhes do Endereço: {{ endereco }}</h1>
+    <a href="{{ url_for('enderecos') }}">&larr; Voltar</a>
+    <table border="1" cellpadding="5" cellspacing="0">
+        <thead>
+            <tr>
+                <th>Endereço</th>
+                <th>Barra</th>
+                <th>Rua</th>
+                <th>Data de Armazenamento</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in detalhes %}
+            <tr>
+                <td>{{ item.endereco }}</td>
+                <td>{{ item.barra }}</td>
+                <td>{{ item.rua }}</td>
+                <td>{{ item.data_armazenamento.strftime('%d/%m/%Y %H:%M:%S') if item.data_armazenamento else '' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
