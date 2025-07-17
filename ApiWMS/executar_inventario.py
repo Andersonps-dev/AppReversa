@@ -41,21 +41,22 @@ def criar_escopo_inventario():
     # Inicializar inventário
     inventario_url = urljoin(BASE_URL, 'servlet/InventarioServlet')
     response = session.get(inventario_url + '?op=1', headers=headers)
-    soup = BeautifulSoup(response.text, 'html.parser')
-    select = soup.find('select', {'id': 'inventario'})
+    
+    # soup = BeautifulSoup(response.text, 'html.parser')
+    # select = soup.find('select', {'id': 'inventario'})
 
-    if select:
-        options = select.find_all('option')
-        for option in options:
-            option_text = option.text.strip()
-            match = re.match(r'(\d+)', option_text)
-            if match:
-                numero_inventario = match.group(1)
-                print(f"{option_text}")
-            else:
-                print(f"Número não encontrado na opção: {option_text}")
-    else:
-        print("Elemento <select id='inventario'> não encontrado.")
+    # if select:
+    #     options = select.find_all('option')
+    #     for option in options:
+    #         option_text = option.text.strip()
+    #         match = re.match(r'(\d+)', option_text)
+    #         if match:
+    #             numero_inventario = match.group(1)
+    #             print(f"{option_text}")
+    #         else:
+    #             print(f"Número não encontrado na opção: {option_text}")
+    # else:
+    #     print("Elemento <select id='inventario'> não encontrado.")
         
     session.post(inventario_url, data={'op': '1', 'inventario': '0'}, headers=headers)
 
