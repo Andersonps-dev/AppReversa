@@ -10,6 +10,7 @@ from models import Estoque, BarraEndereco
 from sqlalchemy import cast, Integer
 from config import LINK_WMS, LOGINS_WMS, SENHAS_WMS, ID_TOKEN_WMS, TOKENS_SENHAS
 from ApiWMS.extrair_dados_estoque import extrair_dados_estoques_wms
+from datetime import datetime
 
 app = Flask(__name__)
 
