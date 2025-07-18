@@ -173,6 +173,5 @@ def criar_escopo_inventario():
     liberar_response = session.post(ENDPOINTS['liberar'], json=liberar_payload, headers=headers)
     if liberar_response.status_code != 204:
         raise Exception(f"Failed to release inventory with status {liberar_response.status_code}")
-
-if __name__ == "__main__":
-    criar_escopo_inventario()
+    
+    return inventario_id
