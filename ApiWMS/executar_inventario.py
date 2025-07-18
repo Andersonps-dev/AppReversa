@@ -1,96 +1,281 @@
-import requests
-import pandas as pd
 from urllib.parse import urljoin
 import time
 import re
-from bs4 import BeautifulSoup   
+from bs4 import BeautifulSoup
+import requests
+import pandas as pd
+from datetime import datetime
 
+class InventoryExecutor:
+    """Class to manage inventory creation and execution via API and web scraping."""
 
-BASE_URL = 'http://200.143.168.151:8880/mwms/'
-LOGIN_WMS = 'amanda.reis'
-SENHA_WMS = 'luft@Solutions2025'
-BASE_PATH = r"C:\Users\anderson.santos\Downloads\inventario teste sistema.xlsx"
-
-def criar_escopo_inventario():
-    df = pd.read_excel(BASE_PATH)
-    df['Local'] = df['Local'].str.upper()
-    itens = df[['Codigo', 'qtde', 'Local']].to_dict('records')
-    if not itens:
-        raise Exception("Não foi possível ler os itens da planilha")
-
-    session = requests.Session()
-    headers = {
+    BASE_API_URL = 'http://200.143.168.151:8880/siltwms/webresources'
+    BASE_WMS_URL = 'http://200.143.168.151:8880/mwms/'
+    API_HEADERS = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36',
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'X-HTTP-Method-Override': 'POST'
+    }
+    WMS_HEADERS = {
         'User-Agent': 'Mozilla/5.0',
-        'Referer': urljoin(BASE_URL, '/'),
-        'Origin': BASE_URL,
         'Content-Type': 'application/x-www-form-urlencoded'
     }
+    WMS_CREDENTIALS = [
+        {'username': 'amanda.reis', 'password': 'luft@Solutions2025'},
+        {'username': 'anderson.santos1', 'password': 'Luft@Solutions2025'}
+    ]
+    WMS_WAREHOUSE = '7.0,LUFT SOLUTIONS - AG2 - CAJAMAR - 16,S'
 
-    # Login
-    login_url = urljoin(BASE_URL, 'servlet/LoginServlet')
-    login_data = {'op': '1', 'nomeusuario': LOGIN_WMS, 'senha': SENHA_WMS}
-    login_response = session.post(login_url, data=login_data, headers=headers, allow_redirects=False)
-    if login_response.status_code != 302:
-        raise Exception(f"Login falhou com status {login_response.status_code}")
+    def __init__(self):
+        self.excel_path = r"C:\Users\anderson.santos\Downloads\inventario teste sistema.xlsx"
+        self.inventory_id = self._create_inventory_scope()
 
-    # Selecionar armazém
-    armazem_url = urljoin(BASE_URL, 'servlet/ArmazemServlet')
-    armazem_data = {'armazem': '7.0,LUFT SOLUTIONS - AG2 - CAJAMAR - 16,S'}
-    session.post(armazem_url, data=armazem_data, headers=headers)
+    def _get_api_endpoints(self):
+        """Return a dictionary of API endpoints."""
+        return {
+            'login': f'{self.BASE_API_URL}/SessionService/login',
+            'save': f'{self.BASE_API_URL}/InventarioCRUD/save',
+            'depositantes': f'{self.BASE_API_URL}/InventarioService/addDepositantesInventario',
+            'usuarios': f'{self.BASE_API_URL}/InventarioService/getUsuarios',
+            'add_usuarios': f'{self.BASE_API_URL}/InventarioService/addUsuarios',
+            'locais': f'{self.BASE_API_URL}/InventarioService/getLocais',
+            'add_locais': f'{self.BASE_API_URL}/InventarioService/addLocais',
+            'liberar': f'{self.BASE_API_URL}/InventarioService/liberarInventario'
+        }
 
-    # Inicializar inventário
-    inventario_url = urljoin(BASE_URL, 'servlet/InventarioServlet')
-    response = session.get(inventario_url + '?op=1', headers=headers)
-    
-    # soup = BeautifulSoup(response.text, 'html.parser')
-    # select = soup.find('select', {'id': 'inventario'})
+    def _create_inventory_scope(self):
+        """Create an inventory scope and return its ID."""
+        api_session = requests.Session()
+        endpoints = self._get_api_endpoints()
 
-    # if select:
-    #     options = select.find_all('option')
-    #     for option in options:
-    #         option_text = option.text.strip()
-    #         match = re.match(r'(\d+)', option_text)
-    #         if match:
-    #             numero_inventario = match.group(1)
-    #             print(f"{option_text}")
-    #         else:
-    #             print(f"Número não encontrado na opção: {option_text}")
-    # else:
-    #     print("Elemento <select id='inventario'> não encontrado.")
-        
-    session.post(inventario_url, data={'op': '1', 'inventario': '0'}, headers=headers)
+        # Authenticate
+        login_payload = {
+            "nomeUsuario": "ANDERSON.SANTOS1",
+            "password": "Luft@Solutions2025",
+            "armazem": {"id": 7, "descricao": "LUFT SOLUTIONS - AG2 - CAJAMAR - 16"}
+        }
+        login_response = api_session.post(endpoints['login'], json=login_payload, headers=self.API_HEADERS)
+        if login_response.status_code != 200:
+            raise Exception(f"Login failed with status {login_response.status_code}")
 
-    # Agrupar itens por local
-    itens_por_local = {}
-    for item in itens:
-        local = str(item['Local']).strip()
-        if local not in itens_por_local:
-            itens_por_local[local] = []
-        itens_por_local[local].append(item)
+        bearer_token = login_response.json().get('value', {}).get('bearer')
+        if not bearer_token:
+            raise Exception("Authentication token not found")
+        auth_headers = {**self.API_HEADERS, 'Authorization': f'Bearer {bearer_token}'}
 
-    # Processar inventário por local
-    for local, itens_local in itens_por_local.items():
-        response_op3 = session.post(inventario_url, data={'op': '2', 'local': local}, headers=headers)
-        if response_op3.status_code != 200:
-            continue
+        # Save inventory
+        save_payload = {
+            "entity": {
+                "id": 0,
+                "dataHora": int(datetime.now().timestamp() * 1000),
+                "descricao": "Inventario",
+                "armazem": {"id": 7, "descricao": "LUFT SOLUTIONS - AG2 - CAJAMAR - 16", "codigo": "7", "ativo": True},
+                "idUsuario": {"id": 6501, "nomeUsuario": "ANDERSON.SANTOS1", "ativo": True},
+                "tipoInventario": "ROTATIVO",
+                "tipoContagem": "PICKING_PULMAO",
+                "sequenciaEscopoInventario": "BLOCORUAANDARPRODUTOLOTE",
+                "finalizado": False,
+                "geradoNf": False,
+                "estoqueAtz": False,
+                "estoqueEntrada": False,
+                "estoqueSaida": False,
+                "conferirLoteIndustria": False,
+                "conferirDataVencimento": False,
+                "conferirEstado": False,
+                "conferenciaPorProduto": False,
+                "inventarioTercerizado": False,
+                "qtdeJuntoComBarra": True,
+                "solicitaQtdeCaixa": False,
+                "agruparContagemDoProduto": True,
+                "permitirContDuplicadoProd": False,
+                "permitirContagemDupPorEndereco": False,
+                "liberarContagemMinPorEndereco": False,
+                "ignorarContagemAutomaticamento": True,
+                "liberarOndaPendente": True,
+                "atualizaPickingInventario": False,
+                "atualizaDadosLote": False,
+                "valoralotesgravaestoque": False,
+                "tipoPadraoIdentificacao": "EMBALAGEM"
+            },
+            "tela": "Cadastro de Inventário",
+            "usuario": {"id": 6501, "nomeUsuario": "ANDERSON.SANTOS1", "ativo": True}
+        }
+        save_response = api_session.post(endpoints['save'], json=save_payload, headers=auth_headers)
+        if save_response.status_code != 200:
+            raise Exception(f"Failed to save inventory with status {save_response.status_code}")
 
-        time.sleep(0.5)
+        inventory_id = save_response.json().get("id")
+        if not inventory_id:
+            raise Exception("Inventory ID not returned")
 
-        # Processar itens do local
-        for item in itens_local:
-            codigo = str(item['Codigo']).strip()
-            qtde = str(item['qtde']).strip()
-            if not codigo or not qtde:
+        # Add depositantes
+        depositantes_payload = {
+            "idInventario": inventory_id,
+            "idUsuarioLogado": 6501,
+            "listaDepositantesAdd": [{"id": 2361178}]
+        }
+        depositantes_response = api_session.post(endpoints['depositantes'], json=depositantes_payload, headers=auth_headers)
+        if depositantes_response.status_code != 204:
+            raise Exception(f"Failed to add depositantes with status {depositantes_response.status_code}")
+
+        # Fetch and add users
+        usuarios_payload = {
+            "idInventario": inventory_id,
+            "config": {
+                "@class": "SqlQueryResultTableConfig",
+                "sqlQueryLoadMode": "DEFAULT",
+                "queryType": "ROWID",
+                "showAll": False,
+                "onlyGenerateSql": False,
+                "showQueryCount": False,
+                "skip": 0,
+                "take": 10000
+            }
+        }
+        usuarios_response = api_session.post(endpoints['usuarios'], json=usuarios_payload, headers=auth_headers)
+        if usuarios_response.status_code != 200:
+            raise Exception(f"Failed to fetch users with status {usuarios_response.status_code}")
+
+        allowed_users = ["jadson.sales", "anderson.santos1", "amanda.reis"]
+        usuarios = [
+            {
+                "id": linha["columns"][4],
+                "nomeUsuario": linha["columns"][1].strip().lower(),
+                "ativo": True,
+                "enviarSenha": False
+            }
+            for linha in usuarios_response.json().get("value", {}).get("lines", [])
+            if len(linha.get("columns", [])) >= 5 and linha["columns"][1].strip().lower() in allowed_users
+        ]
+
+        if usuarios:
+            add_usuarios_payload = {
+                "idUsuarioAlteracao": 6501,
+                "idInventario": inventory_id,
+                "adicionarUsuarios": usuarios
+            }
+            add_usuarios_response = api_session.post(endpoints['add_usuarios'], json=add_usuarios_payload, headers=auth_headers)
+            if add_usuarios_response.status_code != 204:
+                raise Exception(f"Failed to add users with status {add_usuarios_response.status_code}")
+
+        # Read and process locations from Excel
+        df = pd.read_excel(self.excel_path)
+        if 'Local' not in df.columns:
+            raise Exception("Column 'Local' not found in spreadsheet")
+
+        locais = []
+        for local in df['Local'].dropna().unique():
+            locais_payload = {
+                "idInventario": inventory_id,
+                "config": {
+                    "@class": "SqlQueryResultTableConfig",
+                    "sqlQueryLoadMode": "DEFAULT",
+                    "queryType": "ROWID",
+                    "showAll": False,
+                    "onlyGenerateSql": False,
+                    "showQueryCount": False,
+                    "skip": 0,
+                    "take": 10000,
+                    "filterConfigs": [{"field": "IDLOCAL", "type": "string", "map": {"value": local}}]
+                }
+            }
+            locais_response = api_session.post(endpoints['locais'], json=locais_payload, headers=auth_headers)
+            if locais_response.status_code != 200:
                 continue
+            for linha in locais_response.json().get("value", {}).get("lines", []):
+                colunas = linha.get("columns", [])
+                if len(colunas) >= 2 and colunas[1]:
+                    locais.append({"id": 0, "ativo": False, "local": colunas[1], "localIntegracao": 0})
 
-            payload_op4 = {'op': '3', 'finalizar': 'N', 'qtde': qtde, 'barra': codigo, 'tipo': '1'}
-            session.post(inventario_url, data=payload_op4, headers=headers)
-            time.sleep(0.5)
+        if not locais:
+            raise Exception("No valid locations found to add")
 
-        # Finalizar local
-        payload_op5 = {'op': '3', 'finalizar': 'S', 'qtde': '0', 'barra': '', 'tipo': '1'}
-        session.post(inventario_url, data=payload_op5, headers=headers)
-        time.sleep(0.5)
+        add_locais_payload = {
+            "idUsuarioAlteracao": 6501,
+            "idInventario": inventory_id,
+            "idUsuarioLogado": 6501,
+            "adicionarLocais": locais
+        }
+        add_locais_response = api_session.post(endpoints['add_locais'], json=add_locais_payload, headers=auth_headers)
+        if add_locais_response.status_code != 204:
+            raise Exception(f"Failed to add locations with status {add_locais_response.status_code}")
+
+        # Release inventory
+        liberar_payload = {"idInventario": inventory_id, "idUsuario": 6501}
+        liberar_response = api_session.post(endpoints['liberar'], json=liberar_payload, headers=auth_headers)
+        if liberar_response.status_code != 204:
+            raise Exception(f"Failed to release inventory with status {liberar_response.status_code}")
+
+        return inventory_id
+
+    def execute_inventory(self):
+        """Execute the inventory process for each user."""
+        for cred in self.WMS_CREDENTIALS:
+            wms_session = requests.Session()
+            wms_headers = {
+                **self.WMS_HEADERS,
+                'Referer': urljoin(self.BASE_WMS_URL, '/'),
+                'Origin': self.BASE_WMS_URL
+            }
+
+            # Login
+            login_url = urljoin(self.BASE_WMS_URL, 'servlet/LoginServlet')
+            login_data = {'op': '1', 'nomeusuario': cred['username'], 'senha': cred['password']}
+            login_response = wms_session.post(login_url, data=login_data, headers=wms_headers, allow_redirects=False)
+            if login_response.status_code != 302:
+                raise Exception(f"Login failed for user {cred['username']} with status {login_response.status_code}")
+
+            # Select warehouse
+            armazem_url = urljoin(self.BASE_WMS_URL, 'servlet/ArmazemServlet')
+            wms_session.post(armazem_url, data={'armazem': self.WMS_WAREHOUSE}, headers=wms_headers)
+
+            # Initialize inventory
+            inventario_url = urljoin(self.BASE_WMS_URL, 'servlet/InventarioServlet')
+            response = wms_session.get(f'{inventario_url}?op=1', headers=wms_headers)
+            soup = BeautifulSoup(response.text, 'html.parser')
+            select = soup.find('select', {'id': 'inventario'})
+
+            scope_ids = [re.sub(r'\D', '', option.text.strip()) for option in select.find_all('option')]
+            scope_index = scope_ids.index(str(self.inventory_id))
+            wms_session.post(inventario_url, data={'op': '1', 'inventario': scope_index}, headers=wms_headers)
+
+            # Group items by location
+            df = pd.read_excel(self.excel_path)
+            df['Local'] = df['Local'].str.upper()
+            items_by_location = df[['Codigo', 'qtde', 'Local']].to_dict('records')
+            location_groups = {}
+            for item in items_by_location:
+                local = str(item['Local']).strip()
+                location_groups.setdefault(local, []).append(item)
+
+            # Process inventory by location
+            for local, items in location_groups.items():
+                response_op3 = wms_session.post(inventario_url, data={'op': '2', 'local': local}, headers=wms_headers)
+                if response_op3.status_code != 200:
+                    continue
+                time.sleep(0.5)
+
+                # Process items in location
+                for item in items:
+                    code, qty = str(item['Codigo']).strip(), str(item['qtde']).strip()
+                    if not code or not qty:
+                        continue
+                    wms_session.post(
+                        inventario_url,
+                        data={'op': '3', 'finalizar': 'N', 'qtde': qty, 'barra': code, 'tipo': '1'},
+                        headers=wms_headers
+                    )
+                    time.sleep(0.5)
+
+                # Finalize location
+                wms_session.post(
+                    inventario_url,
+                    data={'op': '3', 'finalizar': 'S', 'qtde': '0', 'barra': '', 'tipo': '1'},
+                    headers=wms_headers
+                )
+                time.sleep(0.5)
 
 if __name__ == "__main__":
-    criar_escopo_inventario()
+    executor = InventoryExecutor()
+    executor.execute_inventory()
