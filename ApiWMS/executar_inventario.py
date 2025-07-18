@@ -7,8 +7,6 @@ import pandas as pd
 from datetime import datetime
 
 class InventoryExecutor:
-    """Class to manage inventory creation and execution via API and web scraping."""
-
     BASE_API_URL = 'http://200.143.168.151:8880/siltwms/webresources'
     BASE_WMS_URL = 'http://200.143.168.151:8880/mwms/'
     API_HEADERS = {
@@ -32,7 +30,6 @@ class InventoryExecutor:
         self.inventory_id = self._create_inventory_scope()
 
     def _get_api_endpoints(self):
-        """Return a dictionary of API endpoints."""
         return {
             'login': f'{self.BASE_API_URL}/SessionService/login',
             'save': f'{self.BASE_API_URL}/InventarioCRUD/save',
@@ -45,7 +42,6 @@ class InventoryExecutor:
         }
 
     def _create_inventory_scope(self):
-        """Create an inventory scope and return its ID."""
         api_session = requests.Session()
         endpoints = self._get_api_endpoints()
 
@@ -210,7 +206,6 @@ class InventoryExecutor:
         return inventory_id
 
     def execute_inventory(self):
-        """Execute the inventory process for each user."""
         for cred in self.WMS_CREDENTIALS:
             wms_session = requests.Session()
             wms_headers = {
