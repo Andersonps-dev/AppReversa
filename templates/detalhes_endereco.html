@@ -3,6 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <title>Detalhes do Endereço</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        a {
+            text-decoration: none;
+            color: #333;
+            margin-bottom: 10px;
+            display: inline-block;
+        }
+    </style>
 </head>
 <body>
     <nav style="background:#eee;padding:10px 0 10px 10px;margin-bottom:20px;">
@@ -11,23 +32,25 @@
         <a href="/atualizar_estoque">Atualizar Estoque</a>
     </nav>
     <h1>Detalhes do Endereço: {{ endereco }}</h1>
-    <a href="{{ url_for('enderecos') }}">&larr; Voltar</a>
-    <table border="1" cellpadding="5" cellspacing="0">
+    <a href="{{ url_for('enderecos') }}">← Voltar</a>
+    <table>
         <thead>
             <tr>
                 <th>Endereço</th>
                 <th>Barra</th>
+                <th>Qtde</th>
                 <th>Rua</th>
-                <th>Data de Armazenamento</th>
+                <th>Data Atualizado</th>
             </tr>
         </thead>
         <tbody>
             {% for item in detalhes %}
             <tr>
-                <td>{{ item.endereco }}</td>
+                <td>{{ endereco }}</td>
                 <td>{{ item.barra }}</td>
+                <td>{{ item.qtde }}</td>
                 <td>{{ item.rua }}</td>
-                <td>{{ item.data_armazenamento.strftime('%d/%m/%Y %H:%M:%S') if item.data_armazenamento else '' }}</td>
+                <td>{{ item.data_atualizado.strftime('%d/%m/%Y %H:%M:%S') if item.data_atualizado else '' }}</td>
             </tr>
             {% endfor %}
         </tbody>

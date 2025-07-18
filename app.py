@@ -98,7 +98,13 @@ def enderecos():
 
 @app.route('/enderecos/<endereco>')
 def detalhes_endereco(endereco):
-    detalhes = BarraEndereco.query.filter_by(endereco=endereco).all()
+    detalhes = db.session.query(
+        BarraEndereco.barra,
+        func.count(BarraEndereco.endereco).label('qtde'),
+        BarraEndereco.rua,
+        func.max(BarraEndereco.data_armazenamento).label('data_atualizado')
+    ).filter_by(endereco=endereco).group_by(BarraEndereco.barra, BarraEndereco.rua).all()
+    
     return render_template('detalhes_endereco.html', endereco=endereco, detalhes=detalhes)
 
 if __name__ == '__main__':
