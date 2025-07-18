@@ -106,14 +106,37 @@ def detalhes_endereco(endereco):
         func.max(BarraEndereco.data_armazenamento).label('data_atualizado')
     ).filter_by(endereco=endereco).group_by(BarraEndereco.barra, BarraEndereco.rua).all()
     
+    itens = []
+    for detalhe in detalhes:
+        itens.append({
+            'Codigo': detalhe.barra,
+            'qtde': detalhe.qtde,
+            'Local': endereco,
+        })
+    
     if request.method == 'POST':
+        user1 = request.form.get('user1')
+        pass1 = request.form.get('pass1')
+        user2 = request.form.get('user2')
+        pass2 = request.form.get('pass2')
+        
+        print("Tudos aqui: ",user1, pass1, user2, pass2)
+        
         try:
-            InventoryExecutor(local=endereco)
+            executor = InventoryExecutor(
+                user1=user1, 
+                pass1=pass1, 
+                user2=user2, 
+                pass2=pass2,
+                locais_banco=[endereco], 
+                items_by_location=itens,
+            )
+            executor.execute_inventory()
             flash('Inventário executado com sucesso!', 'success')
         except Exception as e:
             flash(f'Erro ao executar inventário: {e}', 'error')
         return redirect(url_for('detalhes_endereco', endereco=endereco))
-    
+        
     return render_template('detalhes_endereco.html', endereco=endereco, detalhes=detalhes)
 
 if __name__ == '__main__':

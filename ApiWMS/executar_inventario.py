@@ -5,6 +5,11 @@ from bs4 import BeautifulSoup
 import requests
 import pandas as pd
 from datetime import datetime
+import logging
+
+from flask import flash
+
+logger = logging.getLogger(__name__)
 
 class InventoryExecutor:
     BASE_API_URL = 'http://200.143.168.151:8880/siltwms/webresources'
@@ -19,16 +24,22 @@ class InventoryExecutor:
         'User-Agent': 'Mozilla/5.0',
         'Content-Type': 'application/x-www-form-urlencoded'
     }
-    WMS_CREDENTIALS = [
-        {'username': 'amanda.reis', 'password': 'luft@Solutions2025'},
-        {'username': 'anderson.santos1', 'password': 'Luft@Solutions2025'}
-    ]
     WMS_WAREHOUSE = '7.0,LUFT SOLUTIONS - AG2 - CAJAMAR - 16,S'
 
-    def __init__(self, locais_banco=None):
+    def __init__(self, user1=None, pass1=None, user2=None, pass2=None, locais_banco=[], items_by_location=[]):
+        
+        self.wms_credentials = [
+            {'username': user1, 'password': pass1},
+            {'username': user2, 'password': pass2}
+        ]
+        
+        self.user1 = user1
+        self.pass1 = pass1
+        self.user2 = user2
+        self.pass2 = pass2
         
         self.locais_banco = locais_banco
-        self.excel_path = r"C:\Users\anderson.santos\Downloads\inventario teste sistema.xlsx"
+        self.items_by_location = items_by_location
         self.inventory_id = self.create_inventory_scope()
 
     def _get_api_endpoints(self):
@@ -40,7 +51,8 @@ class InventoryExecutor:
             'add_usuarios': f'{self.BASE_API_URL}/InventarioService/addUsuarios',
             'locais': f'{self.BASE_API_URL}/InventarioService/getLocais',
             'add_locais': f'{self.BASE_API_URL}/InventarioService/addLocais',
-            'liberar': f'{self.BASE_API_URL}/InventarioService/liberarInventario'
+            'liberar': f'{self.BASE_API_URL}/InventarioService/liberarInventario',
+            'atualizar_critica': f'{self.BASE_API_URL}/InventarioService/atualizarCriticas'
         }
 
     def create_inventory_scope(self):
@@ -49,11 +61,15 @@ class InventoryExecutor:
 
         # Authenticate
         login_payload = {
-            "nomeUsuario": "ANDERSON.SANTOS1",
-            "password": "Luft@Solutions2025",
+            "nomeUsuario": self.user1,
+            "password": self.pass1,
             "armazem": {"id": 7, "descricao": "LUFT SOLUTIONS - AG2 - CAJAMAR - 16"}
         }
+        
         login_response = api_session.post(endpoints['login'], json=login_payload, headers=self.API_HEADERS)
+        
+        id_usuario_logado = login_response.json()['value']['usuario']['id']
+        
         if login_response.status_code != 200:
             raise Exception(f"Login failed with status {login_response.status_code}")
 
@@ -69,7 +85,7 @@ class InventoryExecutor:
                 "dataHora": int(datetime.now().timestamp() * 1000),
                 "descricao": "Inventario",
                 "armazem": {"id": 7, "descricao": "LUFT SOLUTIONS - AG2 - CAJAMAR - 16", "codigo": "7", "ativo": True},
-                "idUsuario": {"id": 6501, "nomeUsuario": "ANDERSON.SANTOS1", "ativo": True},
+                "idUsuario": {"id": id_usuario_logado, "nomeUsuario": self.user1, "ativo": True},
                 "tipoInventario": "ROTATIVO",
                 "tipoContagem": "PICKING_PULMAO",
                 "sequenciaEscopoInventario": "BLOCORUAANDARPRODUTOLOTE",
@@ -97,7 +113,7 @@ class InventoryExecutor:
                 "tipoPadraoIdentificacao": "EMBALAGEM"
             },
             "tela": "Cadastro de Inventário",
-            "usuario": {"id": 6501, "nomeUsuario": "ANDERSON.SANTOS1", "ativo": True}
+            "usuario": {"id": id_usuario_logado, "nomeUsuario": self.user1, "ativo": True}
         }
         save_response = api_session.post(endpoints['save'], json=save_payload, headers=auth_headers)
         if save_response.status_code != 200:
@@ -110,7 +126,7 @@ class InventoryExecutor:
         # Add depositantes
         depositantes_payload = {
             "idInventario": inventory_id,
-            "idUsuarioLogado": 6501,
+            "idUsuarioLogado": id_usuario_logado,
             "listaDepositantesAdd": [{"id": 2361178}]
         }
         depositantes_response = api_session.post(endpoints['depositantes'], json=depositantes_payload, headers=auth_headers)
@@ -135,7 +151,7 @@ class InventoryExecutor:
         if usuarios_response.status_code != 200:
             raise Exception(f"Failed to fetch users with status {usuarios_response.status_code}")
 
-        allowed_users = ["jadson.sales", "anderson.santos1", "amanda.reis"]
+        allowed_users = [self.user1, self.user2]
         usuarios = [
             {
                 "id": linha["columns"][4],
@@ -149,7 +165,7 @@ class InventoryExecutor:
 
         if usuarios:
             add_usuarios_payload = {
-                "idUsuarioAlteracao": 6501,
+                "idUsuarioAlteracao": id_usuario_logado,
                 "idInventario": inventory_id,
                 "adicionarUsuarios": usuarios
             }
@@ -185,9 +201,9 @@ class InventoryExecutor:
             raise Exception("No valid locations found to add")
 
         add_locais_payload = {
-            "idUsuarioAlteracao": 6501,
+            "idUsuarioAlteracao": id_usuario_logado,
             "idInventario": inventory_id,
-            "idUsuarioLogado": 6501,
+            "idUsuarioLogado": id_usuario_logado,
             "adicionarLocais": locais
         }
         add_locais_response = api_session.post(endpoints['add_locais'], json=add_locais_payload, headers=auth_headers)
@@ -195,7 +211,7 @@ class InventoryExecutor:
             raise Exception(f"Failed to add locations with status {add_locais_response.status_code}")
 
         # Release inventory
-        liberar_payload = {"idInventario": inventory_id, "idUsuario": 6501}
+        liberar_payload = {"idInventario": inventory_id, "idUsuario": id_usuario_logado}
         liberar_response = api_session.post(endpoints['liberar'], json=liberar_payload, headers=auth_headers)
         if liberar_response.status_code != 204:
             raise Exception(f"Failed to release inventory with status {liberar_response.status_code}")
@@ -203,7 +219,7 @@ class InventoryExecutor:
         return inventory_id
 
     def execute_inventory(self):
-        for cred in self.WMS_CREDENTIALS:
+        for cred in self.wms_credentials:
             wms_session = requests.Session()
             wms_headers = {
                 **self.WMS_HEADERS,
@@ -230,14 +246,12 @@ class InventoryExecutor:
 
             scope_ids = [re.sub(r'\D', '', option.text.strip()) for option in select.find_all('option')]
             scope_index = scope_ids.index(str(self.inventory_id))
+            
             wms_session.post(inventario_url, data={'op': '1', 'inventario': scope_index}, headers=wms_headers)
-
-            # Group items by location
-            df = pd.read_excel(self.excel_path)
-            df['Local'] = df['Local'].str.upper()
-            items_by_location = df[['Codigo', 'qtde', 'Local']].to_dict('records')
+                        
             location_groups = {}
-            for item in items_by_location:
+            
+            for item in self.items_by_location:
                 local = str(item['Local']).strip()
                 location_groups.setdefault(local, []).append(item)
 
@@ -268,6 +282,35 @@ class InventoryExecutor:
                 )
                 time.sleep(0.5)
 
+    def atualizar_critica(self):
+        api_session = requests.Session()
+        endpoints = self._get_api_endpoints()
+
+        # Authenticate
+        login_payload = {
+            "nomeUsuario": self.user1,
+            "password": self.pass1,
+            "armazem": {"id": 7, "descricao": "LUFT SOLUTIONS - AG2 - CAJAMAR - 16"}
+        }
+        
+        login_response = api_session.post(endpoints['login'], json=login_payload, headers=self.API_HEADERS)
+        
+        id_usuario_logado = login_response.json()['value']['usuario']['id']
+        
+        if login_response.status_code != 200:
+            raise Exception(f"Login failed with status {login_response.status_code}")
+    
+        bearer_token = login_response.json().get('value', {}).get('bearer')
+        
+        if not bearer_token:
+            raise Exception("Authentication token not found")
+        
+        auth_headers = {**self.API_HEADERS, 'Authorization': f'Bearer {bearer_token}'}
+        
 if __name__ == "__main__":
-    executor = InventoryExecutor()
-    executor.execute_inventory()
+    InventoryExecutor(
+                    user1='anderson.santos1', pass1='Luft@Solutions2025', user2='amanda.reis', pass2='luft@Solutions2025', 
+                      locais_banco=['II111012101'], 
+                      items_by_location=[{'Codigo': '7898677401786', 'qtde': 1, 'Local': 'II111012101'},
+                                         {'Codigo': '7908556003168', 'qtde': 1, 'Local': 'II111012101'}]
+                      ).execute_inventory()

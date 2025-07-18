@@ -34,6 +34,50 @@
         .action-button:hover {
             background-color: #45a049;
         }
+        /* Estilos do Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+        .modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 400px;
+            border-radius: 5px;
+        }
+        .modal-content h2 {
+            margin-top: 0;
+        }
+        .modal-content input {
+            width: 100%;
+            padding: 8px;
+            margin: 10px 0;
+            box-sizing: border-box;
+        }
+        .modal-content button {
+            padding: 10px 20px;
+            margin: 10px 5px;
+            cursor: pointer;
+        }
+        .modal-content .submit-btn {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+        }
+        .modal-content .cancel-btn {
+            background-color: #f44336;
+            color: white;
+            border: none;
+        }
     </style>
 </head>
 <body>
@@ -44,9 +88,41 @@
     </nav>
     <h1>Detalhes do Endereço: {{ endereco }}</h1>
     <a href="{{ url_for('enderecos') }}">← Voltar</a>
-    <form method="POST" action="{{ url_for('detalhes_endereco', endereco=endereco) }}">
-        <button type="submit" class="action-button">Executar Inventário</button>
+    <button class="action-button" onclick="openModal('modal1')">Executar Inventário</button>
+
+    <!-- Modal 1 -->
+    <div id="modal1" class="modal">
+        <div class="modal-content">
+            <h2>Autenticação - Usuário 1</h2>
+            <label for="user1">Usuário:</label>
+            <input type="text" id="user1" required>
+            <label for="pass1">Senha:</label>
+            <input type="password" id="pass1" required>
+            <button class="submit-btn" onclick="nextModal()">Próximo</button>
+            <button class="cancel-btn" onclick="closeModal('modal1')">Cancelar</button>
+        </div>
+    </div>
+
+    <!-- Modal 2 -->
+    <div id="modal2" class="modal">
+        <div class="modal-content">
+            <h2>Autenticação - Usuário 2</h2>
+            <label for="user2">Usuário:</label>
+            <input type="text" id="user2" required>
+            <label for="pass2">Senha:</label>
+            <input type="password" id="pass2" required>
+            <button class="submit-btn" onclick="submitCredentials()">Confirmar</button>
+            <button class="cancel-btn" onclick="closeModal('modal2')">Cancelar</button>
+        </div>
+    </div>
+
+    <form id="inventoryForm" method="POST" action="{{ url_for('detalhes_endereco', endereco=endereco) }}" style="display: none;">
+        <input type="hidden" name="user1" id="formUser1">
+        <input type="hidden" name="pass1" id="formPass1">
+        <input type="hidden" name="user2" id="formUser2">
+        <input type="hidden" name="pass2" id="formPass2">
     </form>
+
     <table>
         <thead>
             <tr>
@@ -69,5 +145,53 @@
             {% endfor %}
         </tbody>
     </table>
+
+    <script>
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+            // Limpar apenas os campos do modal atual
+            if (modalId === 'modal1') {
+                document.getElementById('user1').value = '';
+                document.getElementById('pass1').value = '';
+            } else if (modalId === 'modal2') {
+                document.getElementById('user2').value = '';
+                document.getElementById('pass2').value = '';
+            }
+        }
+
+        function nextModal() {
+            const user1 = document.getElementById('user1').value;
+            const pass1 = document.getElementById('pass1').value;
+            if (user1 && pass1) {
+                // Preencher formulário oculto com user1 e pass1
+                document.getElementById('formUser1').value = user1;
+                document.getElementById('formPass1').value = pass1;
+                closeModal('modal1');
+                openModal('modal2');
+            } else {
+                alert('Por favor, preencha ambos os campos.');
+            }
+        }
+
+        function submitCredentials() {
+            const user2 = document.getElementById('user2').value;
+            const pass2 = document.getElementById('pass2').value;
+
+            if (user2 && pass2) {
+                // Preencher formulário oculto com user2 e pass2
+                document.getElementById('formUser2').value = user2;
+                document.getElementById('formPass2').value = pass2;
+
+                // Enviar formulário
+                document.getElementById('inventoryForm').submit();
+            } else {
+                alert('Por favor, preencha ambos os campos.');
+            }
+        }
+    </script>
 </body>
 </html>
