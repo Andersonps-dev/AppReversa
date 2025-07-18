@@ -23,6 +23,17 @@
             margin-bottom: 10px;
             display: inline-block;
         }
+        .action-button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .action-button:hover {
+            background-color: #45a049;
+        }
     </style>
 </head>
 <body>
@@ -33,6 +44,9 @@
     </nav>
     <h1>Detalhes do Endereço: {{ endereco }}</h1>
     <a href="{{ url_for('enderecos') }}">← Voltar</a>
+    <form method="POST" action="{{ url_for('detalhes_endereco', endereco=endereco) }}">
+        <button type="submit" class="action-button">Executar Inventário</button>
+    </form>
     <table>
         <thead>
             <tr>

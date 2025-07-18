@@ -25,9 +25,11 @@ class InventoryExecutor:
     ]
     WMS_WAREHOUSE = '7.0,LUFT SOLUTIONS - AG2 - CAJAMAR - 16,S'
 
-    def __init__(self):
+    def __init__(self, locais_banco=None):
+        
+        self.locais_banco = locais_banco
         self.excel_path = r"C:\Users\anderson.santos\Downloads\inventario teste sistema.xlsx"
-        self.inventory_id = self._create_inventory_scope()
+        self.inventory_id = self.create_inventory_scope()
 
     def _get_api_endpoints(self):
         return {
@@ -41,7 +43,7 @@ class InventoryExecutor:
             'liberar': f'{self.BASE_API_URL}/InventarioService/liberarInventario'
         }
 
-    def _create_inventory_scope(self):
+    def create_inventory_scope(self):
         api_session = requests.Session()
         endpoints = self._get_api_endpoints()
 
@@ -155,13 +157,8 @@ class InventoryExecutor:
             if add_usuarios_response.status_code != 204:
                 raise Exception(f"Failed to add users with status {add_usuarios_response.status_code}")
 
-        # Read and process locations from Excel
-        df = pd.read_excel(self.excel_path)
-        if 'Local' not in df.columns:
-            raise Exception("Column 'Local' not found in spreadsheet")
-
         locais = []
-        for local in df['Local'].dropna().unique():
+        for local in self.locais_banco:
             locais_payload = {
                 "idInventario": inventory_id,
                 "config": {

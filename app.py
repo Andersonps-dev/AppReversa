@@ -10,6 +10,7 @@ from models import Estoque, BarraEndereco
 from sqlalchemy import cast, Integer
 from config import LINK_WMS, LOGINS_WMS, SENHAS_WMS, ID_TOKEN_WMS, TOKENS_SENHAS
 from ApiWMS.extrair_dados_estoque import extrair_dados_estoques_wms
+from ApiWMS.executar_inventario import InventoryExecutor
 from datetime import datetime
 
 app = Flask(__name__)
@@ -96,7 +97,7 @@ def enderecos():
     results = db.session.query(BarraEndereco.endereco, func.count(BarraEndereco.barra)).group_by(BarraEndereco.endereco).all()
     return render_template('enderecos.html', enderecos=results)
 
-@app.route('/enderecos/<endereco>')
+@app.route('/enderecos/<endereco>', methods=['GET', 'POST'])
 def detalhes_endereco(endereco):
     detalhes = db.session.query(
         BarraEndereco.barra,
@@ -104,6 +105,14 @@ def detalhes_endereco(endereco):
         BarraEndereco.rua,
         func.max(BarraEndereco.data_armazenamento).label('data_atualizado')
     ).filter_by(endereco=endereco).group_by(BarraEndereco.barra, BarraEndereco.rua).all()
+    
+    if request.method == 'POST':
+        try:
+            InventoryExecutor(local=endereco)
+            flash('Inventário executado com sucesso!', 'success')
+        except Exception as e:
+            flash(f'Erro ao executar inventário: {e}', 'error')
+        return redirect(url_for('detalhes_endereco', endereco=endereco))
     
     return render_template('detalhes_endereco.html', endereco=endereco, detalhes=detalhes)
 
