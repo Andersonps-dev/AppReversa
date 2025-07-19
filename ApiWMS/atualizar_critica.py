@@ -5,7 +5,8 @@ api_session = requests.Session()
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36',
     'Content-Type': 'application/json',
-    'Accept': 'application/json'
+    'Accept': 'application/json',    
+    'X-HTTP-Method-Override': 'POST'
 }
 
 
@@ -59,7 +60,7 @@ print(response_inventario.status_code)
 
 #---------------------------------------------------------------------------------------------
 json_data_monitorar = {
-    'idInventario': 415149,
+    'idInventario': 415152,
     'config': {
         '@class': 'SqlQueryResultTableConfig',
         'sqlQueryLoadMode': 'METADATA',
@@ -92,7 +93,7 @@ print(response_critica.status_code)
 
 #---------------------------------------------------------------------------------------------
 json_data_atualizar_critica = {
-    'idInventario': 415149,
+    'idInventario': 415152,
     'idUsuarioLogado': 6501,
 }
 
@@ -106,7 +107,7 @@ print(response_critica.status_code)
 
 #---------------------------------------------------------------------------------------------
 json_data_bloqueio_contagem ={
-    'idInventario': 415149,
+    'idInventario': 415152,
     'idUsuario': 6501,
 }
 
@@ -117,4 +118,17 @@ response_bloqueio = requests.post(
 )
 
 print(response_bloqueio.status_code)
+
 #---------------------------------------------------------------------------------------------
+json_data_atualizar_estoque={
+    'idInventario': 415152,
+    'idUsuario': 6501,
+}
+
+response_att_estoque = requests.post(
+    'http://200.143.168.151:8880/siltwms/webresources/InventarioService/atualizarEstoque',
+    headers=headers,
+    json=json_data_atualizar_estoque,
+)
+
+print(response_att_estoque.status_code)

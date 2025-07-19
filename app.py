@@ -132,6 +132,7 @@ def detalhes_endereco(endereco):
                 items_by_location=itens,
             )
             executor.execute_inventory()
+            executor.atualizar_critica()
             flash('Inventário executado com sucesso!', 'success')
         except Exception as e:
             flash(f'Erro ao executar inventário: {e}', 'error')

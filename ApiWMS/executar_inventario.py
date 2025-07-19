@@ -307,10 +307,108 @@ class InventoryExecutor:
         
         auth_headers = {**self.API_HEADERS, 'Authorization': f'Bearer {bearer_token}'}
         
+        #Tela Inventário
+        json_data_getInventario = {
+            'idArmazem': 7,
+            'config': {
+                '@class': 'SqlQueryResultSlickConfig',
+                'sqlQueryLoadMode': 'VALUES',
+                'queryType': 'ROWID',
+                'showAll': False,
+                'orderBy': None,
+                'customWhere': None,
+                'scalarTypes': {},
+                'showFilter': [
+                    0,
+                ],
+                'filterConfigs': [],
+                'take': 40,
+                'skip': 0,
+                'advancedSearch': [],
+                'parameters': None,
+                'onlyGenerateSql': False,
+                'dynamicParameters': None,
+            },
+        }
+
+        response_inventario = api_session.post(
+            'http://200.143.168.151:8880/siltwms/webresources/InventarioService/getInventarios',
+            headers=auth_headers,
+            json=json_data_getInventario,
+        )
+        
+        #Tela Monitorar
+        json_data_monitorar = {
+            'idInventario': self.inventory_id,
+            'config': {
+                '@class': 'SqlQueryResultTableConfig',
+                'sqlQueryLoadMode': 'METADATA',
+                'queryType': 'ROWID',
+                'showAll': False,
+                'orderBy': 'H$IDINVDET1 ASC',
+                'customWhere': None,
+                'scalarTypes': {},
+                'showFilter': [
+                    0,
+                ],
+                'filterConfigs': [],
+                'take': 50,
+                'skip': 0,
+                'advancedSearch': [],
+                'parameters': None,
+                'onlyGenerateSql': False,
+                'dynamicParameters': None,
+                'showQueryCount': True,
+            },
+        }
+
+        response_monitorar = api_session.post(
+            'http://200.143.168.151:8880/siltwms/webresources/InventarioService/getMonitorarInventarios',
+            headers=auth_headers,
+            json=json_data_monitorar,
+        )
+        
+        #Atualizar Critica
+        json_data_atualizar_critica = {
+            'idInventario': self.inventory_id,
+            'idUsuarioLogado': id_usuario_logado,
+        }
+
+        response_critica = api_session.post(
+            'http://200.143.168.151:8880/siltwms/webresources/InventarioService/atualizarCriticas',
+            headers=auth_headers,
+            json=json_data_atualizar_critica,
+        )
+        
+        #Bloquear contagem
+        json_data_bloqueio_contagem ={
+            'idInventario': self.inventory_id,
+            'idUsuario': id_usuario_logado,
+        }
+
+        response_bloqueio = requests.post(
+            'http://200.143.168.151:8880/siltwms/webresources/InventarioService/bloquearInventario',
+            headers=auth_headers,
+            json=json_data_bloqueio_contagem,
+        )
+        
+        #Atualziar Estoque
+        json_data_atualizar_estoque={
+            'idInventario': self.inventory_id,
+            'idUsuario': id_usuario_logado,
+        }
+
+        response_att_estoque = requests.post(
+            'http://200.143.168.151:8880/siltwms/webresources/InventarioService/atualizarEstoque',
+            headers=auth_headers,
+            json=json_data_atualizar_estoque,
+        )
+            
 if __name__ == "__main__":
-    InventoryExecutor(
+    inv = InventoryExecutor(
                     user1='anderson.santos1', pass1='Luft@Solutions2025', user2='amanda.reis', pass2='luft@Solutions2025', 
-                      locais_banco=['II111012101'], 
-                      items_by_location=[{'Codigo': '7898677401786', 'qtde': 1, 'Local': 'II111012101'},
-                                         {'Codigo': '7908556003168', 'qtde': 1, 'Local': 'II111012101'}]
-                      ).execute_inventory()
+                      locais_banco=['RV001051101'], 
+                      items_by_location=[{'Codigo': '7900285010349', 'qtde': 3, 'Local': 'RV001051101'}]
+                      )
+    inv.execute_inventory()
+    inv.atualizar_critica()
