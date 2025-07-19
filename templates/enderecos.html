@@ -2,35 +2,356 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Endereços Agrupados</title>
+    <title>Endereços Agrupados | App Reversa</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --success-color: #4cc9f0;
+            --warning-color: #ffbe0b;
+            --danger-color: #f72585;
+            --dark-color: #1a1a2e;
+            --light-color: #f8f9fa;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7ff;
+            color: #333;
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--primary-color) !important;
+            font-size: 1.5rem;
+        }
+        
+        .nav-link {
+            font-weight: 500;
+            color: var(--dark-color) !important;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            color: var(--primary-color) !important;
+            transform: translateY(-2px);
+        }
+        
+        .main-container {
+            background: linear-gradient(135deg, #f5f7ff 0%, #e8edff 100%);
+            min-height: calc(100vh - 56px);
+            padding: 2rem 0;
+        }
+        
+        .page-header {
+            position: relative;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+        }
+        
+        .page-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(to right, var(--primary-color), var(--success-color));
+            border-radius: 2px;
+        }
+        
+        .address-card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .address-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+        }
+        
+        .address-card.high {
+            background: linear-gradient(135deg, #4cc9f0 0%, #4895ef 100%);
+            color: white;
+        }
+        
+        .address-card.medium {
+            background: linear-gradient(135deg, #ffbe0b 0%, #fb5607 100%);
+            color: white;
+        }
+        
+        .address-card.low {
+            background: linear-gradient(135deg, #f72585 0%, #b5179e 100%);
+            color: white;
+        }
+        
+        .address-card .card-body {
+            padding: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .address-card .card-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+        
+        .address-count {
+            font-size: 2.5rem;
+            font-weight: 700;
+            line-height: 1;
+            margin: 0.5rem 0;
+        }
+        
+        .address-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.8;
+        }
+        
+        .delete-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 2;
+        }
+        
+        .address-card:hover .delete-btn {
+            opacity: 1;
+        }
+        
+        .delete-btn:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+        
+        .card-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1;
+        }
+        
+        .status-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 0.25rem 0.5rem;
+            border-radius: 20px;
+            background-color: rgba(255, 255, 255, 0.3);
+            z-index: 2;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #6c757d;
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #dee2e6;
+        }
+        
+        .modal-content {
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .modal-header {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-radius: 12px 12px 0 0 !important;
+        }
+        
+        .navbar {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .search-container {
+            margin-bottom: 2rem;
+        }
+        
+        .search-box {
+            border-radius: 50px;
+            padding: 12px 20px;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .search-box:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
+        }
+    </style>
 </head>
 <body>
-    <nav style="background:#eee;padding:10px 0 10px 10px;margin-bottom:20px;">
-        <a href="/" style="margin-right:20px;">Início</a>
-        <a href="/enderecos" style="margin-right:20px;">Endereços</a>
-        <a href="/atualizar_estoque">Atualizar Estoque</a>
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-white">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="bi bi-box-seam me-2"></i>App Reversa
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">
+                            <i class="bi bi-house-door me-1"></i> Início
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/enderecos">
+                            <i class="bi bi-map me-1"></i> Endereços
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#modalAtualizarEstoque">
+                            <i class="bi bi-arrow-repeat me-1"></i> Atualizar Estoque
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
     </nav>
-    <h1>Endereços Agrupados por Contagem de Barras</h1>
-    <table border="1" cellpadding="5" cellspacing="0">
-        <thead>
-            <tr>
-                <th>Endereço</th>
-                <th>Quantidade de Barras</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for endereco, count in enderecos %}
-            <tr>
-                <td>
-                    <a href="{{ url_for('detalhes_endereco', endereco=endereco) }}">{{ endereco }}</a>
-                    <form method="POST" action="{{ url_for('excluir_endereco', endereco=endereco) }}" style="display:inline;">
-                        <button type="submit" onclick="return confirm('Tem certeza que deseja excluir este endereço?')" style="background:#f44336;color:white;border:none;padding:5px 10px;cursor:pointer;">Excluir</button>
-                    </form>
-                </td>
-                <td>{{ count }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+
+    <!-- Modal de confirmação para atualizar estoque -->
+    <div class="modal fade" id="modalAtualizarEstoque" tabindex="-1" aria-labelledby="modalAtualizarEstoqueLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modalAtualizarEstoqueLabel">Confirmar atualização</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            Tem certeza que deseja atualizar o estoque? Esta ação pode levar alguns minutos.
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <a href="/atualizar_estoque" class="btn btn-primary">Sim, atualizar</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="main-container">
+        <div class="container">
+            <div class="page-header text-center">
+                <h2><i class="bi bi-map me-2"></i>Endereços Agrupados</h2>
+                <p class="text-muted">Visualização consolidada por contagem de barras</p>
+            </div>
+            
+            <div class="search-container">
+                <div class="row justify-content-center">
+                    <div class="col-md-8 col-lg-6">
+                        <input type="text" class="form-control search-box" placeholder="Pesquisar endereço...">
+                    </div>
+                </div>
+            </div>
+            
+            {% if enderecos %}
+            <div class="row g-4">
+                {% for endereco, count in enderecos %}
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                    <div class="address-card 
+                        {% if count <= 10 %}low
+                        {% elif count <= 15 %}medium
+                        {% else %}high
+                        {% endif %}">
+                        
+                        <span class="status-badge">
+                            {% if count <= 10 %}Baixo
+                            {% elif count <= 15 %}Médio
+                            {% else %}Alto
+                            {% endif %}
+                        </span>
+                        
+                        <div class="card-body text-center">
+                            <h5 class="card-title">{{ endereco }}</h5>
+                            <div class="address-count">{{ count }}</div>
+                            <div class="address-label">barras</div>
+                        </div>
+                        
+                        <form method="POST" action="{{ url_for('excluir_endereco', endereco=endereco) }}" class="delete-btn">
+                            <button type="submit" class="btn btn-link p-0" title="Excluir endereço" onclick="return confirm('Tem certeza que deseja excluir este endereço e todas as suas barras?')">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
+                        
+                        <a href="{{ url_for('detalhes_endereco', endereco=endereco) }}" class="card-link"></a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <i class="bi bi-inbox"></i>
+                <h4>Nenhum endereço encontrado</h4>
+                <p class="text-muted">Parece que não há endereços cadastrados no momento.</p>
+            </div>
+            {% endif %}
+            
+            <div class="text-center text-muted small mt-5">
+                <p>App Reversa &copy; 2025 - Total de {{ enderecos|length }} endereços</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Filtro de pesquisa em tempo real
+        document.querySelector('.search-box').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const cards = document.querySelectorAll('.address-card');
+            
+            cards.forEach(card => {
+                const address = card.querySelector('.card-title').textContent.toLowerCase();
+                if (address.includes(searchTerm)) {
+                    card.parentElement.style.display = 'block';
+                } else {
+                    card.parentElement.style.display = 'none';
+                }
+            });
+        });
+        
+        // Confirmação de exclusão aprimorada
+        document.querySelectorAll('.delete-btn button').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                if (!confirm('Tem certeza que deseja excluir este endereço permanentemente?')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+            });
+        });
+    </script>
 </body>
 </html>
