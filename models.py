@@ -36,3 +36,13 @@ class BarraEndereco(db.Model):
     rua = db.Column(db.String(255), nullable=False)
     endereco = db.Column(db.String(255), nullable=False)
     data_armazenamento = db.Column(db.DateTime, nullable=False)
+
+# Novo modelo para registrar inventários realizados
+class InventariosRealizados(db.Model):
+    __tablename__ = 'inventarios_realizados'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    barra = db.Column(db.String(255), nullable=False)
+    rua = db.Column(db.String(255), nullable=False)
+    endereco = db.Column(db.String(255), nullable=False)
+    data_armazenamento = db.Column(db.DateTime, nullable=False)
+    data_inventario = db.Column(db.DateTime, nullable=False)

@@ -6,7 +6,8 @@ import os
 from dotenv import load_dotenv
 import logging
 from sqlalchemy import func
-from models import Estoque, BarraEndereco
+from models import Estoque, BarraEndereco, InventariosRealizados
+
 from sqlalchemy import cast, Integer
 from config import LINK_WMS, LOGINS_WMS, SENHAS_WMS, ID_TOKEN_WMS, TOKENS_SENHAS
 from ApiWMS.extrair_dados_estoque import extrair_dados_estoques_wms
@@ -119,26 +120,70 @@ def detalhes_endereco(endereco):
         pass1 = request.form.get('pass1')
         user2 = request.form.get('user2')
         pass2 = request.form.get('pass2')
-        
-        print("Tudos aqui: ",user1, pass1, user2, pass2)
-        
+
+        print("Tudos aqui: ", user1, pass1, user2, pass2)
+
         try:
             executor = InventoryExecutor(
-                user1=user1, 
-                pass1=pass1, 
-                user2=user2, 
+                user1=user1,
+                pass1=pass1,
+                user2=user2,
                 pass2=pass2,
-                locais_banco=[endereco], 
+                locais_banco=[endereco],
                 items_by_location=itens,
             )
             executor.execute_inventory()
             executor.atualizar_critica()
+
+            # Buscar todos os registros da BarraEndereco para o endereço
+            registros = db.session.query(BarraEndereco).filter_by(endereco=endereco).all()
+            for registro in registros:
+                inventario = InventariosRealizados(
+                    barra=registro.barra,
+                    rua=registro.rua,
+                    endereco=registro.endereco,
+                    data_armazenamento=registro.data_armazenamento,
+                    data_inventario=datetime.now()
+                )
+                db.session.add(inventario)
+                db.session.delete(registro)
+            db.session.commit()
+
             flash('Inventário executado com sucesso!', 'success')
         except Exception as e:
+            db.session.rollback()
             flash(f'Erro ao executar inventário: {e}', 'error')
         return redirect(url_for('detalhes_endereco', endereco=endereco))
         
     return render_template('detalhes_endereco.html', endereco=endereco, detalhes=detalhes)
+
+@app.route('/enderecos/<endereco>/excluir', methods=['POST'])
+def excluir_endereco(endereco):
+    try:
+        db.session.query(BarraEndereco).filter_by(endereco=endereco).delete()
+        db.session.commit()
+        flash('Endereço excluído com sucesso!', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Erro ao excluir endereço: {e}', 'error')
+    return redirect(url_for('enderecos'))
+
+@app.route('/enderecos/<endereco>/excluir_item', methods=['POST'])
+def excluir_item(endereco):
+    barra = request.form.get('barra')
+    rua = request.form.get('rua')
+    try:
+        registro = db.session.query(BarraEndereco).filter_by(endereco=endereco, barra=barra, rua=rua).first()
+        if registro:
+            db.session.delete(registro)
+            db.session.commit()
+            flash('Item excluído com sucesso!', 'success')
+        else:
+            flash('Item não encontrado.', 'error')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Erro ao excluir item: {e}', 'error')
+    return redirect(url_for('detalhes_endereco', endereco=endereco))
 
 if __name__ == '__main__':
     with app.app_context():

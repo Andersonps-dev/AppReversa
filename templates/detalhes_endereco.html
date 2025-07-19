@@ -141,6 +141,13 @@
                 <td>{{ item.qtde }}</td>
                 <td>{{ item.rua }}</td>
                 <td>{{ item.data_atualizado.strftime('%d/%m/%Y %H:%M:%S') if item.data_atualizado else '' }}</td>
+                <td>
+                    <form method="POST" action="{{ url_for('excluir_item', endereco=endereco) }}" style="display:inline;">
+                        <input type="hidden" name="barra" value="{{ item.barra }}">
+                        <input type="hidden" name="rua" value="{{ item.rua }}">
+                        <button type="submit" onclick="return confirm('Tem certeza que deseja excluir este item?')" style="background:#f44336;color:white;border:none;padding:5px 10px;cursor:pointer;">Excluir</button>
+                    </form>
+                </td>
             </tr>
             {% endfor %}
         </tbody>

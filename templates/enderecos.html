@@ -21,7 +21,12 @@
         <tbody>
             {% for endereco, count in enderecos %}
             <tr>
-                <td><a href="{{ url_for('detalhes_endereco', endereco=endereco) }}">{{ endereco }}</a></td>
+                <td>
+                    <a href="{{ url_for('detalhes_endereco', endereco=endereco) }}">{{ endereco }}</a>
+                    <form method="POST" action="{{ url_for('excluir_endereco', endereco=endereco) }}" style="display:inline;">
+                        <button type="submit" onclick="return confirm('Tem certeza que deseja excluir este endereço?')" style="background:#f44336;color:white;border:none;padding:5px 10px;cursor:pointer;">Excluir</button>
+                    </form>
+                </td>
                 <td>{{ count }}</td>
             </tr>
             {% endfor %}
