@@ -112,6 +112,21 @@
             transform: translateY(-2px);
         }
         
+        .btn-clear {
+            background-color: #dc3545;
+            border: none;
+            border-radius: 8px;
+            padding: 12px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-clear:hover {
+            background-color: #c82333;
+            transform: translateY(-2px);
+        }
+        
         .alert {
             border-radius: 8px;
             padding: 1rem 1.5rem;
@@ -235,13 +250,40 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-            <a href="/atualizar_estoque" class="btn btn-primary">Sim, atualizar</a>
+            <button id="btn-atualizar-estoque" class="btn btn-primary">Sim, atualizar</button>
           </div>
         </div>
       </div>
     </div>
 
     <div class="main-container">
+    <!-- Modal de Confirmação após bipar endereço -->
+    <div class="modal fade" id="modalConfirmarEndereco" tabindex="-1" aria-labelledby="modalConfirmarEnderecoLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modalConfirmarEnderecoLabel">Confirmar endereço</h5>
+          </div>
+          <div class="modal-body">
+            Deseja realmente salvar este endereço?
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Não</button>
+            <button id="btn-confirmar-endereco" type="button" class="btn btn-primary">Sim, salvar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal fade" id="modalLoading" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="text-align:center; padding:2rem;">
+          <div class="spinner-border text-primary" style="width: 4rem; height: 4rem;" role="status">
+            <span class="visually-hidden">Carregando...</span>
+          </div>
+          <div style="margin-top:1.5rem; font-size:1.2rem;">Atualizando estoque, aguarde...</div>
+        </div>
+      </div>
+    </div>
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-lg-8 col-xl-6">
@@ -261,9 +303,14 @@
                                     <label for="codigo_barra">Código de barras</label>
                                     <i class="bi bi-upc-scan"></i>
                                 </div>
-                                <button type="submit" class="btn btn-primary w-100 py-3">
-                                    <i class="bi bi-search me-2"></i> Consultar
-                                </button>
+                                <div class="d-flex gap-2">
+                                    <button type="submit" class="btn btn-primary w-75 py-3">
+                                        <i class="bi bi-search me-2"></i> Consultar
+                                    </button>
+                                    <button type="button" class="btn btn-clear w-25 py-3" id="btn-limpar">
+                                        <i class="bi bi-trash me-2"></i> Limpar
+                                    </button>
+                                </div>
                             </form>
 
                             {% if rua %}
@@ -282,7 +329,7 @@
                                     <label for="endereco">Endereço</label>
                                     <i class="bi bi-signpost"></i>
                                 </div>
-                                <button type="submit" class="btn btn-success w-100 py-3">
+                                <button type="button" class="btn btn-success w-100 py-3" id="btn-salvar-endereco">
                                     <i class="bi bi-save me-2"></i> Salvar Endereço
                                 </button>
                             </form>
@@ -311,6 +358,98 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // Atualização de estoque com loading
+        document.getElementById('btn-atualizar-estoque')?.addEventListener('click', function(e) {
+            e.preventDefault();
+            var modalAtualizar = bootstrap.Modal.getInstance(document.getElementById('modalAtualizarEstoque'));
+            modalAtualizar.hide();
+            var modalLoading = new bootstrap.Modal(document.getElementById('modalLoading'));
+            modalLoading.show();
+            fetch('/atualizar_estoque', { method: 'GET' })
+                .then(resp => {
+                    window.location.href = '/';
+                })
+                .catch(() => {
+                    window.location.href = '/';
+                });
+        });
+
+        // Foco automático no endereço após bipar código de barras
+        document.addEventListener('DOMContentLoaded', function() {
+            const barraInput = document.getElementById('codigo_barra');
+            const enderecoInput = document.getElementById('endereco');
+            const formBarra = document.getElementById('form-barra');
+            if (barraInput && formBarra) {
+                formBarra.addEventListener('submit', function(e) {
+                    if (enderecoInput && barraInput.value.length > 0) {
+                        setTimeout(() => { enderecoInput.focus(); enderecoInput.select(); }, 100);
+                    }
+                });
+            }
+        });
+
+        // Modal de confirmação ao bipar endereço ou clicar no botão salvar
+        document.addEventListener('DOMContentLoaded', function() {
+            const enderecoInput = document.getElementById('endereco');
+            const formEndereco = document.getElementById('form-endereco');
+            const btnSalvarEndereco = document.getElementById('btn-salvar-endereco');
+            
+            if (enderecoInput && formEndereco) {
+                // Confirmação ao pressionar Enter no campo endereço
+                enderecoInput.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        var modal = new bootstrap.Modal(document.getElementById('modalConfirmarEndereco'));
+                        modal.show();
+                        // Salvar submit ao clicar em sim
+                        document.getElementById('btn-confirmar-endereco').onclick = function() {
+                            modal.hide();
+                            formEndereco.submit();
+                        };
+                    }
+                });
+            }
+
+            if (btnSalvarEndereco && formEndereco) {
+                // Confirmação ao clicar no botão Salvar Endereço
+                btnSalvarEndereco.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    var modal = new bootstrap.Modal(document.getElementById('modalConfirmarEndereco'));
+                    modal.show();
+                    // Salvar submit ao clicar em sim
+                    document.getElementById('btn-confirmar-endereco').onclick = function() {
+                        modal.hide();
+                        formEndereco.submit();
+                    };
+                });
+            }
+        });
+
+        // Limpar formulário e exibir apenas o campo de código de barras
+        document.getElementById('btn-limpar')?.addEventListener('click', function() {
+            const formBarra = document.getElementById('form-barra');
+            const formEndereco = document.getElementById('form-endereco');
+            const alerts = document.querySelectorAll('.alert');
+            const codigoBarraInput = document.getElementById('codigo_barra');
+            
+            // Limpar o campo de código de barras
+            if (codigoBarraInput) {
+                codigoBarraInput.value = '';
+            }
+            
+            // Remover formulário de endereço e alertas
+            if (formEndereco) {
+                formEndereco.remove();
+            }
+            alerts.forEach(alert => alert.remove());
+            
+            // Focar no campo de código de barras
+            if (codigoBarraInput) {
+                codigoBarraInput.focus();
+                codigoBarraInput.select();
+            }
+        });
+
         // Efeito de foco automático melhorado
         document.addEventListener('DOMContentLoaded', function() {
             const input = document.getElementById('codigo_barra');

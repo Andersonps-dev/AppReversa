@@ -1,5 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash, get_flashed_messages
-from werkzeug.security import generate_password_hash, check_password_hash
+from flask import Flask, render_template, request, redirect, url_for, flash, get_flashed_messages
 from database import db
 from flask_migrate import Migrate
 import os
@@ -34,7 +33,7 @@ def index():
     msgs = get_flashed_messages(category_filter=['success'])
     if msgs:
         sucesso = msgs[0]
-    return render_template('index.html', codigo_barra=None, sucesso=sucesso)
+    return render_template('index.html', codigo_barra='', sucesso=sucesso)
 
 @app.route('/consultar_rua', methods=['POST'])
 def consultar_rua():
@@ -120,8 +119,6 @@ def detalhes_endereco(endereco):
         pass1 = request.form.get('pass1')
         user2 = request.form.get('user2')
         pass2 = request.form.get('pass2')
-
-        print("Tudos aqui: ", user1, pass1, user2, pass2)
 
         try:
             executor = InventoryExecutor(

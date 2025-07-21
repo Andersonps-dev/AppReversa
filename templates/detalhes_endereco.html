@@ -258,6 +258,25 @@
       </div>
     </div>
 
+    <!-- Modal de confirmação para exclusão de item -->
+    <div class="modal fade" id="modalExcluirItem" tabindex="-1" aria-labelledby="modalExcluirItemLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modalExcluirItemLabel">Confirmar exclusão</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            Tem certeza que deseja excluir o item com código de barras <span id="itemBarra"></span> permanentemente?
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="button" class="btn btn-danger" id="confirmarExclusaoItem">Excluir</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="main-container">
         <div class="container">
             <div class="card">
@@ -300,7 +319,7 @@
                                 </div>
                                 <div class="modal-footer">
                                     <button class="btn btn-primary" onclick="nextModal()">Próximo</button>
-                                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                    <button class="btn btn-secondary" data-bs-dismiss="modal">.notifications</button>
                                 </div>
                             </div>
                         </div>
@@ -361,10 +380,10 @@
                                     <td>{{ item.rua }}</td>
                                     <td>{{ item.data_atualizado.strftime('%d/%m/%Y %H:%M') if item.data_atualizado else 'N/A' }}</td>
                                     <td class="text-center">
-                                        <form method="POST" action="{{ url_for('excluir_item', endereco=endereco) }}" style="display:inline;">
+                                        <form method="POST" action="{{ url_for('excluir_item', endereco=endereco) }}" class="delete-item-form" id="delete-item-form-{{ item.barra | replace('/', '-') }}">
                                             <input type="hidden" name="barra" value="{{ item.barra }}">
                                             <input type="hidden" name="rua" value="{{ item.rua }}">
-                                            <button type="submit" class="btn btn-link text-danger action-btn" title="Excluir item" onclick="return confirm('Tem certeza que deseja excluir permanentemente este item?')">
+                                            <button type="button" class="btn btn-link text-danger action-btn" title="Excluir item" data-bs-toggle="modal" data-bs-target="#modalExcluirItem" data-barra="{{ item.barra }}">
                                                 <i class="bi bi-trash"></i>
                                             </button>
                                         </form>
@@ -395,6 +414,7 @@
         // Inicializar modais
         var modal1 = new bootstrap.Modal(document.getElementById('modal1'));
         var modal2 = new bootstrap.Modal(document.getElementById('modal2'));
+        var deleteModal = new bootstrap.Modal(document.getElementById('modalExcluirItem'));
         
         function openModal(modalId) {
             if (modalId === 'modal1') {
@@ -435,11 +455,53 @@
         document.getElementById('modal1').addEventListener('hidden.bs.modal', function () {
             document.getElementById('user1').value = '';
             document.getElementById('pass1').value = '';
+            document.body.classList.remove('modal-open');
+            const backdrops = document.querySelectorAll('.modal-backdrop');
+            backdrops.forEach(backdrop => backdrop.remove());
+            document.body.style.overflow = '';
+            document.body.style.paddingRight = '';
         });
         
         document.getElementById('modal2').addEventListener('hidden.bs.modal', function () {
             document.getElementById('user2').value = '';
             document.getElementById('pass2').value = '';
+            document.body.classList.remove('modal-open');
+            const backdrops = document.querySelectorAll('.modal-backdrop');
+            backdrops.forEach(backdrop => backdrop.remove());
+            document.body.style.overflow = '';
+            document.body.style.paddingRight = '';
+        });
+
+        // Manipulação do modal de exclusão de item
+        const itemBarra = document.getElementById('itemBarra');
+        const confirmarExclusaoItem = document.getElementById('confirmarExclusaoItem');
+        let currentItemForm = null;
+
+        document.querySelectorAll('.action-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const barra = this.getAttribute('data-barra');
+                itemBarra.textContent = barra;
+                // Substitui '/' por '-' no ID do formulário para evitar problemas com seletores
+                currentItemForm = document.getElementById('delete-item-form-' + barra.replace('/', '-'));
+                deleteModal.show();
+            });
+        });
+
+        confirmarExclusaoItem.addEventListener('click', function() {
+            if (currentItemForm) {
+                currentItemForm.submit();
+            }
+        });
+
+        document.getElementById('modalExcluirItem').addEventListener('hidden.bs.modal', function() {
+            document.body.classList.remove('modal-open');
+            const backdrops = document.querySelectorAll('.modal-backdrop');
+            backdrops.forEach(backdrop => backdrop.remove());
+            document.body.style.overflow = '';
+            document.body.style.paddingRight = '';
+            currentItemForm = null;
+            itemBarra.textContent = '';
         });
     </script>
 </body>
