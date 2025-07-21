@@ -60,7 +60,7 @@ def consultar_rua():
     if estoque:
         return render_template('index.html', rua=estoque.Rua, local=estoque.Local, codigo_barra=codigo_barra)
     else:
-        return render_template('index.html', erro='Nenhuma rua com saldo disponível para esse código de barras.', codigo_barra=codigo_barra)
+        return render_template('index.html', erro='Produto não existe no picking.', codigo_barra=codigo_barra)
     
 @app.route('/atualizar_estoque', methods=['GET'])
 def atualizar_estoque():
@@ -152,7 +152,8 @@ def detalhes_endereco(endereco):
             flash(f'Erro ao executar inventário: {e}', 'error')
         return redirect(url_for('detalhes_endereco', endereco=endereco))
         
-    return render_template('detalhes_endereco.html', endereco=endereco, detalhes=detalhes)
+    cred = db.session.query(UserCredential).first()
+    return render_template('detalhes_endereco.html', endereco=endereco, detalhes=detalhes, cred=cred)
 
 @app.route('/enderecos/<endereco>/excluir', methods=['POST'])
 def excluir_endereco(endereco):

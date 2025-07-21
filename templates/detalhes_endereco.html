@@ -315,16 +315,16 @@
                                 <div class="modal-body">
                                     <div class="mb-3">
                                         <label for="user1" class="form-label">Usuário:</label>
-                                        <input type="text" class="form-control" id="user1" required>
+                                        <input type="text" class="form-control" id="user1" required value="{{ cred.user1 }}">
                                     </div>
                                     <div class="mb-3">
                                         <label for="pass1" class="form-label">Senha:</label>
-                                        <input type="password" class="form-control" id="pass1" required>
+                                        <input type="password" class="form-control" id="pass1" required value="{{ cred.pass1 }}">
                                     </div>
                                 </div>
                                 <div class="modal-footer">
                                     <button class="btn btn-primary" onclick="nextModal()">Próximo</button>
-                                    <button class="btn btn-secondary" data-bs-dismiss="modal">.notifications</button>
+                                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                                 </div>
                             </div>
                         </div>
@@ -341,11 +341,11 @@
                                 <div class="modal-body">
                                     <div class="mb-3">
                                         <label for="user2" class="form-label">Usuário:</label>
-                                        <input type="text" class="form-control" id="user2" required>
+                                        <input type="text" class="form-control" id="user2" required value="{{ cred.user2 }}">
                                     </div>
                                     <div class="mb-3">
                                         <label for="pass2" class="form-label">Senha:</label>
-                                        <input type="password" class="form-control" id="pass2" required>
+                                        <input type="password" class="form-control" id="pass2" required value="{{ cred.pass2 }}">
                                     </div>
                                 </div>
                                 <div class="modal-footer">
@@ -415,99 +415,102 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Inicializar modais
-        var modal1 = new bootstrap.Modal(document.getElementById('modal1'));
-        var modal2 = new bootstrap.Modal(document.getElementById('modal2'));
-        var deleteModal = new bootstrap.Modal(document.getElementById('modalExcluirItem'));
-        
-        function openModal(modalId) {
-            if (modalId === 'modal1') {
-                modal1.show();
-            } else if (modalId === 'modal2') {
-                modal2.show();
-            }
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Inicializar modais
+    var modal1 = new bootstrap.Modal(document.getElementById('modal1'));
+    var modal2 = new bootstrap.Modal(document.getElementById('modal2'));
+    var deleteModal = new bootstrap.Modal(document.getElementById('modalExcluirItem'));
+
+    // Valores iniciais do objeto cred (passados pelo Jinja2)
+    const cred = {
+        user1: "{{ cred.user1 | safe }}",
+        pass1: "{{ cred.pass1 | safe }}",
+        user2: "{{ cred.user2 | safe }}",
+        pass2: "{{ cred.pass2 | safe }}"
+    };
+
+    function openModal(modalId) {
+        if (modalId === 'modal1') {
+            // Preencher os campos do modal1 ao abrir
+            document.getElementById('user1').value = cred.user1;
+            document.getElementById('pass1').value = cred.pass1;
+            modal1.show();
+        } else if (modalId === 'modal2') {
+            // Preencher os campos do modal2 ao abrir
+            document.getElementById('user2').value = cred.user2;
+            document.getElementById('pass2').value = cred.pass2;
+            modal2.show();
         }
-        
-        function nextModal() {
-            const user1 = document.getElementById('user1').value;
-            const pass1 = document.getElementById('pass1').value;
-            
-            if (user1 && pass1) {
-                document.getElementById('formUser1').value = user1;
-                document.getElementById('formPass1').value = pass1;
-                modal1.hide();
-                modal2.show();
-            } else {
-                alert('Por favor, preencha ambos os campos.');
-            }
+    }
+
+    function nextModal() {
+        const user1 = document.getElementById('user1').value;
+        const pass1 = document.getElementById('pass1').value;
+
+        if (user1 && pass1) {
+            document.getElementById('formUser1').value = user1;
+            document.getElementById('formPass1').value = pass1;
+            modal1.hide();
+            openModal('modal2'); // Chama openModal para garantir que modal2 tenha os valores
+        } else {
+            alert('Por favor, preencha ambos os campos.');
         }
-        
-        function submitCredentials() {
-            const user2 = document.getElementById('user2').value;
-            const pass2 = document.getElementById('pass2').value;
-            
-            if (user2 && pass2) {
-                document.getElementById('formUser2').value = user2;
-                document.getElementById('formPass2').value = pass2;
-                document.getElementById('inventoryForm').submit();
-            } else {
-                alert('Por favor, preencha ambos os campos.');
-            }
+    }
+
+    function submitCredentials() {
+        const user2 = document.getElementById('user2').value;
+        const pass2 = document.getElementById('pass2').value;
+
+        if (user2 && pass2) {
+            document.getElementById('formUser2').value = user2;
+            document.getElementById('formPass2').value = pass2;
+            document.getElementById('inventoryForm').submit();
+        } else {
+            alert('Por favor, preencha ambos os campos.');
         }
-        
-        // Limpar campos quando os modais são fechados
-        document.getElementById('modal1').addEventListener('hidden.bs.modal', function () {
-            document.getElementById('user1').value = '';
-            document.getElementById('pass1').value = '';
-            document.body.classList.remove('modal-open');
-            const backdrops = document.querySelectorAll('.modal-backdrop');
-            backdrops.forEach(backdrop => backdrop.remove());
-            document.body.style.overflow = '';
-            document.body.style.paddingRight = '';
-        });
-        
-        document.getElementById('modal2').addEventListener('hidden.bs.modal', function () {
-            document.getElementById('user2').value = '';
-            document.getElementById('pass2').value = '';
-            document.body.classList.remove('modal-open');
-            const backdrops = document.querySelectorAll('.modal-backdrop');
-            backdrops.forEach(backdrop => backdrop.remove());
-            document.body.style.overflow = '';
-            document.body.style.paddingRight = '';
-        });
+    }
 
-        // Manipulação do modal de exclusão de item
-        const itemBarra = document.getElementById('itemBarra');
-        const confirmarExclusaoItem = document.getElementById('confirmarExclusaoItem');
-        let currentItemForm = null;
+    // Limpar classes e backdrops ao fechar modais
+    function clearModalBackdrops() {
+        document.body.classList.remove('modal-open');
+        const backdrops = document.querySelectorAll('.modal-backdrop');
+        backdrops.forEach(backdrop => backdrop.remove());
+        document.body.style.overflow = '';
+        document.body.style.paddingRight = '';
+    }
 
-        document.querySelectorAll('.action-btn').forEach(btn => {
-            btn.addEventListener('click', function(e) {
-                e.preventDefault();
-                const barra = this.getAttribute('data-barra');
-                itemBarra.textContent = barra;
-                // Substitui '/' por '-' no ID do formulário para evitar problemas com seletores
-                currentItemForm = document.getElementById('delete-item-form-' + barra.replace('/', '-'));
-                deleteModal.show();
-            });
-        });
+    // Configurar evento para limpar backdrops ao fechar modais
+    document.getElementById('modal1').addEventListener('hidden.bs.modal', clearModalBackdrops);
+    document.getElementById('modal2').addEventListener('hidden.bs.modal', clearModalBackdrops);
 
-        confirmarExclusaoItem.addEventListener('click', function() {
-            if (currentItemForm) {
-                currentItemForm.submit();
-            }
-        });
+    // Manipulação do modal de exclusão de item
+    const itemBarra = document.getElementById('itemBarra');
+    const confirmarExclusaoItem = document.getElementById('confirmarExclusaoItem');
+    let currentItemForm = null;
 
-        document.getElementById('modalExcluirItem').addEventListener('hidden.bs.modal', function() {
-            document.body.classList.remove('modal-open');
-            const backdrops = document.querySelectorAll('.modal-backdrop');
-            backdrops.forEach(backdrop => backdrop.remove());
-            document.body.style.overflow = '';
-            document.body.style.paddingRight = '';
-            currentItemForm = null;
-            itemBarra.textContent = '';
+    document.querySelectorAll('.action-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const barra = this.getAttribute('data-barra');
+            itemBarra.textContent = barra;
+            // Substitui '/' por '-' no ID do formulário para evitar problemas com seletores
+            currentItemForm = document.getElementById('delete-item-form-' + barra.replace('/', '-'));
+            deleteModal.show();
         });
-    </script>
+    });
+
+    confirmarExclusaoItem.addEventListener('click', function() {
+        if (currentItemForm) {
+            currentItemForm.submit();
+        }
+    });
+
+    document.getElementById('modalExcluirItem').addEventListener('hidden.bs.modal', function() {
+        clearModalBackdrops();
+        currentItemForm = null;
+        itemBarra.textContent = '';
+    });
+</script>
 </body>
 </html>
