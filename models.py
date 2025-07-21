@@ -46,3 +46,11 @@ class InventariosRealizados(db.Model):
     endereco = db.Column(db.String(255), nullable=False)
     data_armazenamento = db.Column(db.DateTime, nullable=False)
     data_inventario = db.Column(db.DateTime, nullable=False)
+    
+class UserCredential(db.Model):
+    __tablename__ = 'user_credential'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    user1 = db.Column(db.String(128))
+    pass1 = db.Column(db.String(128))
+    user2 = db.Column(db.String(128))
+    pass2 = db.Column(db.String(128))

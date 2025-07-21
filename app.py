@@ -5,7 +5,7 @@ import os
 from dotenv import load_dotenv
 import logging
 from sqlalchemy import func
-from models import Estoque, BarraEndereco, InventariosRealizados
+from models import Estoque, BarraEndereco, InventariosRealizados, UserCredential
 
 from sqlalchemy import cast, Integer
 from config import LINK_WMS, LOGINS_WMS, SENHAS_WMS, ID_TOKEN_WMS, TOKENS_SENHAS
@@ -181,6 +181,23 @@ def excluir_item(endereco):
         db.session.rollback()
         flash(f'Erro ao excluir item: {e}', 'error')
     return redirect(url_for('detalhes_endereco', endereco=endereco))
+
+@app.route('/credenciais', methods=['GET', 'POST'])
+def credenciais():
+    cred = UserCredential.query.first()
+    if not cred:
+        cred = UserCredential(user1='', pass1='', user2='', pass2='')
+        db.session.add(cred)
+        db.session.commit()
+    if request.method == 'POST':
+        cred.user1 = request.form.get('user1', '')
+        cred.pass1 = request.form.get('pass1', '')
+        cred.user2 = request.form.get('user2', '')
+        cred.pass2 = request.form.get('pass2', '')
+        db.session.commit()
+        flash('Credenciais atualizadas com sucesso!', 'success')
+        return redirect(url_for('credenciais'))
+    return render_template('credenciais.html', cred=cred)
 
 if __name__ == '__main__':
     with app.app_context():
