@@ -247,7 +247,7 @@
                     <div class="card mb-4">
                         <div class="card-header text-center">
                             <h2 class="card-title mb-0">
-                                <i class="bi bi-upc-scan me-2"></i>Consulta de Rua por Código de Barra
+                                <i class="bi bi-upc-scan me-2"></i>Consultar Produto
                             </h2>
                         </div>
                         <div class="status-indicator"></div>
@@ -269,7 +269,7 @@
                             <div class="alert alert-success success-animation text-center mb-4">
                                 <h5 class="mb-0">
                                     <i class="bi bi-check-circle me-2"></i>
-                                    Rua mais próxima com saldo: <span class="fw-bold">{{ rua }}</span>
+                                    Rua: <span class="fw-bold">{{ rua }}</span>
                                 </h5>
                             </div>
                             <form action="/salvar_endereco" method="post" id="form-endereco">
@@ -302,10 +302,6 @@
                             </script>
                             {% endif %}
                         </div>
-                    </div>
-                    
-                    <div class="text-center text-muted small">
-                        <p>App Reversa &copy; 2025- Todos os direitos reservados</p>
                     </div>
                 </div>
             </div>
