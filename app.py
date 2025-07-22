@@ -33,7 +33,9 @@ def index():
     msgs = get_flashed_messages(category_filter=['success'])
     if msgs:
         sucesso = msgs[0]
-    return render_template('index.html', codigo_barra='', sucesso=sucesso)
+    # Buscar a última data de atualização do estoque
+    data_atualizacao_estoque = db.session.query(func.max(Estoque.data_atualizacao)).scalar()
+    return render_template('index.html', codigo_barra='', sucesso=sucesso, data_atualizacao_estoque=data_atualizacao_estoque)
 
 @app.route('/consultar_rua', methods=['POST'])
 def consultar_rua():
@@ -95,7 +97,8 @@ def salvar_endereco():
 @app.route('/enderecos')
 def enderecos():
     results = db.session.query(BarraEndereco.endereco, func.count(BarraEndereco.barra)).group_by(BarraEndereco.endereco).all()
-    return render_template('enderecos.html', enderecos=results)
+    data_atualizacao_estoque = db.session.query(func.max(Estoque.data_atualizacao)).scalar()
+    return render_template('enderecos.html', enderecos=results, data_atualizacao_estoque=data_atualizacao_estoque)
 
 @app.route('/enderecos/<endereco>', methods=['GET', 'POST'])
 def detalhes_endereco(endereco):
@@ -153,7 +156,8 @@ def detalhes_endereco(endereco):
         return redirect(url_for('detalhes_endereco', endereco=endereco))
         
     cred = db.session.query(UserCredential).first()
-    return render_template('detalhes_endereco.html', endereco=endereco, detalhes=detalhes, cred=cred)
+    data_atualizacao_estoque = db.session.query(func.max(Estoque.data_atualizacao)).scalar()
+    return render_template('detalhes_endereco.html', endereco=endereco, detalhes=detalhes, cred=cred, data_atualizacao_estoque=data_atualizacao_estoque)
 
 @app.route('/enderecos/<endereco>/excluir', methods=['POST'])
 def excluir_endereco(endereco):
@@ -198,7 +202,8 @@ def credenciais():
         db.session.commit()
         flash('Credenciais atualizadas com sucesso!', 'success')
         return redirect(url_for('credenciais'))
-    return render_template('credenciais.html', cred=cred)
+    data_atualizacao_estoque = db.session.query(func.max(Estoque.data_atualizacao)).scalar()
+    return render_template('credenciais.html', cred=cred, data_atualizacao_estoque=data_atualizacao_estoque)
 
 if __name__ == '__main__':
     with app.app_context():

@@ -250,6 +250,11 @@
                         <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#modalAtualizarEstoque">
                             <i class="bi bi-arrow-repeat me-1"></i> Atualizar Estoque
                         </a>
+                        {% if data_atualizacao_estoque %}
+                        <div class="text-center small text-muted" style="margin-top: -8px;">
+                            <span>Última atualização: {{ data_atualizacao_estoque.strftime('%d/%m/%Y %H:%M') }}</span>
+                        </div>
+                        {% endif %}
                     </li>
                 </ul>
             </div>
@@ -269,8 +274,20 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-            <a href="/atualizar_estoque" class="btn btn-primary">Sim, atualizar</a>
+            <button id="btn-atualizar-estoque" class="btn btn-primary">Sim, atualizar</button>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal de loading global -->
+    <div class="modal fade" id="modalLoading" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="text-align:center; padding:1.5rem;">
+          <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+            <span class="visually-hidden">Carregando...</span>
+          </div>
+          <div style="margin-top:1rem; font-size:1rem;">Atualizando estoque, aguarde...</div>
         </div>
       </div>
     </div>
@@ -329,7 +346,7 @@
                         <div class="card-body text-center">
                             <h5 class="card-title">{{ endereco }}</h5>
                             <div class="address-count">{{ count }}</div>
-                            <div class="address-label">barras</div>
+                            <div class="address-label">Produtos</div>
                         </div>
                         
                         <form method="POST" action="{{ url_for('excluir_endereco', endereco=endereco) }}" class="delete-form" id="delete-form-{{ endereco }}">
@@ -355,6 +372,17 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // Atualização de estoque com loading
+        document.getElementById('btn-atualizar-estoque')?.addEventListener('click', function(e) {
+            e.preventDefault();
+            var modalAtualizar = bootstrap.Modal.getInstance(document.getElementById('modalAtualizarEstoque'));
+            modalAtualizar.hide();
+            var modalLoading = new bootstrap.Modal(document.getElementById('modalLoading'));
+            modalLoading.show();
+            fetch('/atualizar_estoque', { method: 'GET' })
+                .then(resp => { window.location.href = '/enderecos'; })
+                .catch(() => { window.location.href = '/enderecos'; });
+        });
         // Filtro de pesquisa em tempo real
         document.querySelector('.search-box').addEventListener('input', function(e) {
             const searchTerm = e.target.value.toLowerCase();
