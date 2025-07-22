@@ -358,11 +358,6 @@
                 barraInput.addEventListener('keydown', function(e) {
                     if (e.key === 'Enter') {
                         e.preventDefault();
-                        const enderecoInput = document.getElementById('endereco');
-                        if (enderecoInput) {
-                            enderecoInput.focus();
-                            enderecoInput.select();
-                        }
                         formBarra.submit();
                     }
                 });
@@ -440,13 +435,23 @@
             }
         });
         
-        // Validação do formulário
+        // Validação do formulário e foco no campo endereço após consulta
         document.getElementById('form-barra')?.addEventListener('submit', function(e) {
             const codigoBarra = document.getElementById('codigo_barra').value.trim();
             if (!codigoBarra) {
                 e.preventDefault();
                 alert('Por favor, digite ou escaneie um código de barras válido.');
+                return;
             }
+
+            // Aguarda o DOM ser atualizado após a submissão
+            setTimeout(() => {
+                const enderecoInput = document.getElementById('endereco');
+                if (enderecoInput) {
+                    enderecoInput.focus();
+                    enderecoInput.select();
+                }
+            }, 100);
         });
     </script>
 </body>
