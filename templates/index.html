@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Index</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="icon" type="image/png" href="https://i.postimg.cc/ZKPM50BD/distribuido-1.png">
@@ -15,176 +15,156 @@
             --dark-color: #1a1a2e;
             --light-color: #f8f9fa;
         }
+        
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f5f7ff;
             color: #333;
-            font-size: 14px;
+            height: 100vh;
+            overflow: hidden;
         }
+        
         .navbar-brand {
             font-weight: 700;
             color: var(--primary-color) !important;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
+            padding: 0.5rem 0;
         }
+        
         .nav-link {
             font-weight: 500;
             color: var(--dark-color) !important;
-            font-size: 0.95rem;
-            padding: 0.3rem 0.7rem;
+            font-size: 0.9rem;
+            padding: 0.5rem 0.75rem;
         }
+        
+        .navbar {
+            min-height: 56px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+        
         .main-container {
+            height: calc(100vh - 56px);
+            overflow-y: auto;
+            padding: 1rem 0;
             background: linear-gradient(135deg, #f5f7ff 0%, #e8edff 100%);
-            min-height: calc(100vh - 46px);
-            padding: 2.0rem 0 0.5rem 0;
         }
+        
         .card {
             border: none;
             border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.10);
-            overflow: hidden;
-            margin-bottom: 0.5rem;
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.15);
+            margin-bottom: 1rem;
         }
+        
         .card-header {
             background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
             color: white;
-            padding: 0.7rem 1rem;
+            padding: 0.75rem 1rem;
             border-bottom: none;
         }
+        
         .card-title {
             font-weight: 700;
             margin-bottom: 0;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
         }
+        
+        .card-body {
+            padding: 1rem;
+        }
+        
         .form-control {
             border-radius: 6px;
-            padding: 7px 10px;
-            border: 1px solid #e0e0e0;
-            font-size: 1rem;
+            padding: 10px 12px;
+            font-size: 0.9rem;
         }
-        .form-control:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 0.15rem rgba(67, 97, 238, 0.15);
-        }
-        .btn-primary, .btn-success, .btn-clear {
+        
+        .btn {
+            padding: 10px;
+            font-size: 0.9rem;
             border-radius: 6px;
-            padding: 7px 0;
-            font-weight: 600;
-            font-size: 1rem;
-            letter-spacing: 0.2px;
         }
-        @media (max-width: 600px) {
-            .btn-primary, .btn-success, .btn-clear {
-                padding-top: 4px !important;
-                padding-bottom: 4px !important;
-                font-size: 0.95rem;
-            }
-            .py-3 {
-                padding-top: 0.3rem !important;
-                padding-bottom: 0.3rem !important;
-            }
-        }
+        
         .btn-primary {
             background-color: var(--primary-color);
-            border: none;
         }
-        .btn-primary:hover {
-            background-color: var(--secondary-color);
-        }
+        
         .btn-success {
             background-color: var(--success-color);
-            border: none;
         }
-        .btn-success:hover {
-            background-color: #3aa8d8;
-        }
+        
         .btn-clear {
             background-color: #dc3545;
-            border: none;
         }
-        .btn-clear:hover {
-            background-color: #c82333;
-        }
+        
         .alert {
             border-radius: 6px;
-            padding: 0.7rem 1rem;
-            font-size: 0.95rem;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
         }
-        .success-animation {
-            animation: pulse 2s infinite;
-        }
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.02); }
-            100% { transform: scale(1); }
-        }
-        .input-icon {
-            position: relative;
-        }
-        .input-icon i {
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--primary-color);
-        }
+        
         .floating-label {
             position: relative;
-            margin-bottom: 0.7rem;
+            margin-bottom: 1rem;
         }
+        
         .floating-label label {
             position: absolute;
-            top: 7px;
-            left: 10px;
-            color: #999;
+            top: 10px;
+            left: 12px;
+            font-size: 0.9rem;
             transition: all 0.3s ease;
-            pointer-events: none;
             background-color: white;
-            padding: 0 3px;
-            font-size: 0.95rem;
+            padding: 0 5px;
         }
+        
         .floating-label input:focus + label,
         .floating-label input:not(:placeholder-shown) + label {
-            top: -10px;
-            left: 7px;
+            top: -8px;
+            left: 8px;
             font-size: 0.75rem;
-            color: var(--primary-color);
         }
-        .modal-content {
-            border-radius: 8px;
-            border: none;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-        }
-        .modal-header {
-            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
-            color: white;
-            border-radius: 8px 8px 0 0 !important;
-            padding: 0.7rem 1rem;
-        }
-        .modal-title {
-            font-weight: 600;
-            font-size: 1rem;
-        }
-        .navbar {
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-        }
+        
         .status-indicator {
             height: 3px;
             background: linear-gradient(to right, var(--primary-color), var(--success-color));
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.75rem;
         }
-        @media (max-width: 600px) {
-            .container, .main-container, .card, .card-body, .card-header {
-                padding-left: 0.3rem !important;
-                padding-right: 0.3rem !important;
-            }
-            .card-body {
-                padding: 0.7rem !important;
-            }
+        
+        .input-icon i {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1rem;
+        }
+        
+        /* Otimizações para telas pequenas */
+        @media (max-height: 700px) {
             .card-header {
-                padding: 0.5rem 0.7rem !important;
+                padding: 0.5rem;
             }
-            .main-container {
-                padding: 0.4rem 0 0.2rem 0 !important;
+            
+            .card-title {
+                font-size: 1rem;
+            }
+            
+            .form-control, .btn {
+                padding: 8px 10px;
+                font-size: 0.85rem;
+            }
+            
+            .floating-label label {
+                font-size: 0.85rem;
+                top: 8px;
+            }
+            
+            .floating-label input:focus + label,
+            .floating-label input:not(:placeholder-shown) + label {
+                top: -6px;
+                font-size: 0.7rem;
             }
         }
     </style>
@@ -192,9 +172,9 @@
 <body>
 
     <nav class="navbar navbar-expand-lg navbar-light bg-white">
-        <div class="container">
+        <div class="container-fluid">
             <a class="navbar-brand" href="/">
-                <i class="bi bi-box-seam me-2"></i>RTP
+                <i class="bi bi-box-seam me-1"></i>RTP
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -218,7 +198,7 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#modalAtualizarEstoque">
-                            <i class="bi bi-arrow-repeat me-1"></i> Atualizar Estoque
+                            <i class="bi bi-arrow-repeat me-1"></i> Atualizar
                         </a>
                     </li>
                 </ul>
@@ -246,45 +226,47 @@
     </div>
 
     <div class="main-container">
-    <!-- Modal de Confirmação após bipar endereço -->
-    <div class="modal fade" id="modalConfirmarEndereco" tabindex="-1" aria-labelledby="modalConfirmarEnderecoLabel" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="modalConfirmarEnderecoLabel">Confirmar endereço</h5>
-          </div>
-          <div class="modal-body">
-            Deseja realmente salvar este endereço?
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Não</button>
-            <button id="btn-confirmar-endereco" type="button" class="btn btn-primary">Sim, salvar</button>
+        <!-- Modal de Confirmação após bipar endereço -->
+        <div class="modal fade" id="modalConfirmarEndereco" tabindex="-1" aria-labelledby="modalConfirmarEnderecoLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="modalConfirmarEnderecoLabel">Confirmar endereço</h5>
+              </div>
+              <div class="modal-body">
+                Deseja realmente salvar este endereço?
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Não</button>
+                <button id="btn-confirmar-endereco" type="button" class="btn btn-primary">Sim, salvar</button>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
-    <div class="modal fade" id="modalLoading" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content" style="text-align:center; padding:2rem;">
-          <div class="spinner-border text-primary" style="width: 4rem; height: 4rem;" role="status">
-            <span class="visually-hidden">Carregando...</span>
+        
+        <div class="modal fade" id="modalLoading" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="text-align:center; padding:1.5rem;">
+              <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+                <span class="visually-hidden">Carregando...</span>
+              </div>
+              <div style="margin-top:1rem; font-size:1rem;">Atualizando estoque, aguarde...</div>
+            </div>
           </div>
-          <div style="margin-top:1.5rem; font-size:1.2rem;">Atualizando estoque, aguarde...</div>
         </div>
-      </div>
-    </div>
-        <div class="container">
+        
+        <div class="container-fluid">
             <div class="row justify-content-center">
-                <div class="col-lg-8 col-xl-6">
-                    <div class="card mb-4">
+                <div class="col-12 col-md-8 col-lg-6">
+                    <div class="card">
                         <div class="card-header text-center">
                             <h2 class="card-title mb-0">
-                                <i class="bi bi-upc-scan me-2"></i>Consultar Produto
+                                <i class="bi bi-upc-scan me-1"></i>Consultar Produto
                             </h2>
                         </div>
                         <div class="status-indicator"></div>
-                        <div class="card-body p-4">
-                            <form action="/consultar_rua" method="post" id="form-barra" class="mb-4">
+                        <div class="card-body">
+                            <form action="/consultar_rua" method="post" id="form-barra" class="mb-3">
                                 <div class="floating-label">
                                     <input type="text" class="form-control" id="codigo_barra" name="codigo_barra" 
                                            value="{{ codigo_barra if not sucesso else '' }}" 
@@ -292,46 +274,46 @@
                                     <label for="codigo_barra">Código de barras</label>
                                     <i class="bi bi-upc-scan"></i>
                                 </div>
-                                <div class="d-flex gap-2">
-                                    <button type="submit" class="btn btn-primary w-75 py-3">
-                                        <i class="bi bi-search me-2"></i> Consultar
+                                <div class="d-flex gap-2 mt-2">
+                                    <button type="submit" class="btn btn-primary flex-grow-1">
+                                        <i class="bi bi-search me-1"></i> Consultar
                                     </button>
-                                    <button type="button" class="btn btn-clear w-25 py-3" id="btn-limpar">
-                                        <i class="bi bi-trash me-1"></i>
+                                    <button type="button" class="btn btn-clear" id="btn-limpar">
+                                        <i class="bi bi-trash"></i>
                                     </button>
                                 </div>
                             </form>
 
                             {% if rua %}
-                            <div class="alert alert-success success-animation text-center mb-4">
-                                <h5 class="mb-0">
-                                    <i class="bi bi-check-circle me-2"></i>
+                            <div class="alert alert-success text-center mb-3">
+                                <h5 class="mb-0" style="font-size:1rem;">
+                                    <i class="bi bi-check-circle me-1"></i>
                                     Rua: <span class="fw-bold">{{ rua }}</span>
                                 </h5>
                             </div>
                             <form action="/salvar_endereco" method="post" id="form-endereco">
                                 <input type="hidden" name="codigo_barra" value="{{ codigo_barra }}">
                                 <input type="hidden" name="rua" value="{{ rua }}">
-                                <div class="floating-label mb-4">
+                                <div class="floating-label mb-3">
                                     <input type="text" class="form-control" id="endereco" name="endereco" 
                                            placeholder=" " required autofocus>
                                     <label for="endereco">Endereço</label>
                                     <i class="bi bi-signpost"></i>
                                 </div>
-                                <button type="button" class="btn btn-success w-100 py-3" id="btn-salvar-endereco">
-                                    <i class="bi bi-save me-2"></i> Salvar Endereço
+                                <button type="button" class="btn btn-success w-100" id="btn-salvar-endereco">
+                                    <i class="bi bi-save me-1"></i> Salvar
                                 </button>
                             </form>
                             <script>document.getElementById('endereco').focus();</script>
                             {% elif erro %}
                             <div class="alert alert-danger text-center">
-                                <i class="bi bi-exclamation-triangle me-2"></i>{{ erro }}
+                                <i class="bi bi-exclamation-triangle me-1"></i>{{ erro }}
                             </div>
                             {% endif %}
 
                             {% if sucesso %}
-                            <div class="alert alert-success success-animation text-center">
-                                <i class="bi bi-check-circle me-2"></i>{{ sucesso }}
+                            <div class="alert alert-success text-center">
+                                <i class="bi bi-check-circle me-1"></i>{{ sucesso }}
                             </div>
                             <script>
                                 document.getElementById('codigo_barra').value = '';
@@ -451,12 +433,6 @@
                 input.focus();
                 input.select();
             }
-            
-            // Adiciona classe de animação quando há sucesso
-            const successAlerts = document.querySelectorAll('.alert-success');
-            successAlerts.forEach(alert => {
-                alert.classList.add('animate__animated', 'animate__fadeIn');
-            });
         });
         
         // Validação do formulário
