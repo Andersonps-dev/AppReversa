@@ -8,6 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="icon" type="image/png" href="https://i.postimg.cc/ZKPM50BD/distribuido-1.png">
     <style>
+        /* Seu CSS permanece inalterado */
         :root {
             --primary-color: #4361ee;
             --secondary-color: #3f37c9;
@@ -45,7 +46,6 @@
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
         }
 
-        
         .main-container {
             background: linear-gradient(135deg, #f5f7ff 0%, #e8edff 100%);
             height: calc(100vh - 56px);
@@ -293,7 +293,7 @@
     </div>
 
     <!-- Modal de confirmação para exclusão de endereço -->
-    <div class="modal fade" id="modalExcluirEndereco" tabindex="-1" aria-labelledby="modalExcluirEnderecoLabel" aria-hidden="true">
+    <div class="modal fade" id="modalExcluirEndereco" tabindex="-1" aria-labelledby="formattedExcluirEnderecoLabel" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
@@ -344,7 +344,7 @@
                         </span>
                         
                         <div class="card-body text-center">
-                            <h5 class="card-title">{{ endereco }}</h5>
+                            <h5 class="card-title" data-raw-endereco="{{ endereco }}">{{ endereco }}</h5>
                             <div class="address-count">{{ count }}</div>
                             <div class="address-label">Produtos</div>
                         </div>
@@ -372,6 +372,20 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // Função para formatar o endereço
+        function formatarEndereco(endereco) {
+            if (endereco.length !== 11) return endereco; // Verifica se o endereço tem o tamanho correto
+            return `${endereco.slice(0, 2)}-${endereco.slice(2, 5)}-${endereco.slice(5, 8)}-${endereco.slice(8, 9)}-${endereco.slice(9, 11)}`;
+        }
+
+        // Aplicar formatação aos endereços ao carregar a página
+        document.querySelectorAll('.card-title').forEach(element => {
+            const rawEndereco = element.getAttribute('data-raw-endereco');
+            if (rawEndereco) {
+                element.textContent = formatarEndereco(rawEndereco);
+            }
+        });
+
         // Atualização de estoque com loading
         document.getElementById('btn-atualizar-estoque')?.addEventListener('click', function(e) {
             e.preventDefault();
@@ -383,13 +397,14 @@
                 .then(resp => { window.location.href = '/enderecos'; })
                 .catch(() => { window.location.href = '/enderecos'; });
         });
+
         // Filtro de pesquisa em tempo real
         document.querySelector('.search-box').addEventListener('input', function(e) {
             const searchTerm = e.target.value.toLowerCase();
             const cards = document.querySelectorAll('.address-card');
             
             cards.forEach(card => {
-                const address = card.querySelector('.card-title').textContent.toLowerCase();
+                const address = card.querySelector('.card-title').getAttribute('data-raw-endereco').toLowerCase();
                 if (address.includes(searchTerm)) {
                     card.parentElement.style.display = 'block';
                 } else {
@@ -409,7 +424,7 @@
                 e.preventDefault();
                 e.stopPropagation();
                 const endereco = this.getAttribute('data-endereco');
-                enderecoNome.textContent = endereco;
+                enderecoNome.textContent = formatarEndereco(endereco); // Usa endereço formatado no modal
                 currentForm = document.getElementById('delete-form-' + endereco);
                 const modal = new bootstrap.Modal(deleteModal);
                 modal.show();
