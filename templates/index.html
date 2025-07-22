@@ -15,193 +15,177 @@
             --dark-color: #1a1a2e;
             --light-color: #f8f9fa;
         }
-        
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f5f7ff;
             color: #333;
+            font-size: 14px;
         }
-        
         .navbar-brand {
             font-weight: 700;
             color: var(--primary-color) !important;
-            font-size: 1.5rem;
+            font-size: 1.1rem;
         }
-        
         .nav-link {
             font-weight: 500;
             color: var(--dark-color) !important;
-            transition: all 0.3s ease;
+            font-size: 0.95rem;
+            padding: 0.3rem 0.7rem;
         }
-        
-        .nav-link:hover {
-            color: var(--primary-color) !important;
-            transform: translateY(-2px);
-        }
-        
         .main-container {
             background: linear-gradient(135deg, #f5f7ff 0%, #e8edff 100%);
-            min-height: calc(100vh - 56px);
-            padding: 2rem 0;
+            min-height: calc(100vh - 46px);
+            padding: 0.5rem 0 0.5rem 0;
         }
-        
         .card {
             border: none;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(67, 97, 238, 0.15);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.10);
             overflow: hidden;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin-bottom: 0.5rem;
         }
-        
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(67, 97, 238, 0.2);
-        }
-        
         .card-header {
             background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
             color: white;
-            padding: 1.5rem;
+            padding: 0.7rem 1rem;
             border-bottom: none;
         }
-        
         .card-title {
             font-weight: 700;
             margin-bottom: 0;
+            font-size: 1.1rem;
         }
-        
         .form-control {
-            border-radius: 8px;
-            padding: 12px 15px;
+            border-radius: 6px;
+            padding: 7px 10px;
             border: 1px solid #e0e0e0;
-            transition: all 0.3s ease;
+            font-size: 1rem;
         }
-        
         .form-control:focus {
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
+            box-shadow: 0 0 0 0.15rem rgba(67, 97, 238, 0.15);
         }
-        
+        .btn-primary, .btn-success, .btn-clear {
+            border-radius: 6px;
+            padding: 7px 0;
+            font-weight: 600;
+            font-size: 1rem;
+            letter-spacing: 0.2px;
+        }
+        @media (max-width: 600px) {
+            .btn-primary, .btn-success, .btn-clear {
+                padding-top: 4px !important;
+                padding-bottom: 4px !important;
+                font-size: 0.95rem;
+            }
+            .py-3 {
+                padding-top: 0.3rem !important;
+                padding-bottom: 0.3rem !important;
+            }
+        }
         .btn-primary {
             background-color: var(--primary-color);
             border: none;
-            border-radius: 8px;
-            padding: 12px;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            transition: all 0.3s ease;
         }
-        
         .btn-primary:hover {
             background-color: var(--secondary-color);
-            transform: translateY(-2px);
         }
-        
         .btn-success {
             background-color: var(--success-color);
             border: none;
-            border-radius: 8px;
-            padding: 12px;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            transition: all 0.3s ease;
         }
-        
         .btn-success:hover {
             background-color: #3aa8d8;
-            transform: translateY(-2px);
         }
-        
         .btn-clear {
             background-color: #dc3545;
             border: none;
-            border-radius: 8px;
-            padding: 12px;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            transition: all 0.3s ease;
         }
-        
         .btn-clear:hover {
             background-color: #c82333;
-            transform: translateY(-2px);
         }
-        
         .alert {
-            border-radius: 8px;
-            padding: 1rem 1.5rem;
+            border-radius: 6px;
+            padding: 0.7rem 1rem;
+            font-size: 0.95rem;
         }
-        
         .success-animation {
             animation: pulse 2s infinite;
         }
-        
         @keyframes pulse {
             0% { transform: scale(1); }
             50% { transform: scale(1.02); }
             100% { transform: scale(1); }
         }
-        
         .input-icon {
             position: relative;
         }
-        
         .input-icon i {
             position: absolute;
-            right: 15px;
+            right: 10px;
             top: 50%;
             transform: translateY(-50%);
             color: var(--primary-color);
         }
-        
         .floating-label {
             position: relative;
-            margin-bottom: 1.5rem;
+            margin-bottom: 0.7rem;
         }
-        
         .floating-label label {
             position: absolute;
-            top: 12px;
-            left: 15px;
+            top: 7px;
+            left: 10px;
             color: #999;
             transition: all 0.3s ease;
             pointer-events: none;
             background-color: white;
-            padding: 0 5px;
+            padding: 0 3px;
+            font-size: 0.95rem;
         }
-        
         .floating-label input:focus + label,
         .floating-label input:not(:placeholder-shown) + label {
             top: -10px;
-            left: 10px;
-            font-size: 0.8rem;
+            left: 7px;
+            font-size: 0.75rem;
             color: var(--primary-color);
         }
-        
         .modal-content {
-            border-radius: 12px;
+            border-radius: 8px;
             border: none;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
         }
-        
         .modal-header {
             background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
             color: white;
-            border-radius: 12px 12px 0 0 !important;
+            border-radius: 8px 8px 0 0 !important;
+            padding: 0.7rem 1rem;
         }
-        
         .modal-title {
             font-weight: 600;
+            font-size: 1rem;
         }
-        
         .navbar {
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
         }
-        
         .status-indicator {
-            height: 5px;
+            height: 3px;
             background: linear-gradient(to right, var(--primary-color), var(--success-color));
-            margin-bottom: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        @media (max-width: 600px) {
+            .container, .main-container, .card, .card-body, .card-header {
+                padding-left: 0.3rem !important;
+                padding-right: 0.3rem !important;
+            }
+            .card-body {
+                padding: 0.7rem !important;
+            }
+            .card-header {
+                padding: 0.5rem 0.7rem !important;
+            }
+            .main-container {
+                padding: 0.2rem 0 0.2rem 0 !important;
+            }
         }
     </style>
 </head>
@@ -313,7 +297,7 @@
                                         <i class="bi bi-search me-2"></i> Consultar
                                     </button>
                                     <button type="button" class="btn btn-clear w-25 py-3" id="btn-limpar">
-                                        <i class="bi bi-trash me-2"></i> Limpar
+                                        <i class="bi bi-trash me-1"></i>
                                     </button>
                                 </div>
                             </form>
