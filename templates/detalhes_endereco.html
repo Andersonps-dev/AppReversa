@@ -443,12 +443,24 @@
         var modalLoading = new bootstrap.Modal(document.getElementById('modalLoading'));
         modalLoading.show();
         fetch('/atualizar_estoque', { method: 'GET' })
-            .then(resp => { window.location.href = '/enderecos'; })
-            .catch(() => { window.location.href = '/detalhes_endereco'; });
+            .then(resp => {
+                setTimeout(() => {
+                    modalLoading.hide();
+                    window.location.href = '/enderecos';
+                }, 2000); // 2-second delay
+            })
+            .catch(() => {
+                setTimeout(() => {
+                    modalLoading.hide();
+                    window.location.href = '/detalhes_endereco';
+                }, 2000); // 2-second delay
+            });
     });
+
     // Inicializar modais
     var modal1 = new bootstrap.Modal(document.getElementById('modal1'));
     var modal2 = new bootstrap.Modal(document.getElementById('modal2'));
+    var modalLoading = new bootstrap.Modal(document.getElementById('modalLoading'));
     var deleteModal = new bootstrap.Modal(document.getElementById('modalExcluirItem'));
 
     // Valores iniciais do objeto cred (passados pelo Jinja2)
@@ -481,7 +493,7 @@
             document.getElementById('formUser1').value = user1;
             document.getElementById('formPass1').value = pass1;
             modal1.hide();
-            openModal('modal2'); // Chama openModal para garantir que modal2 tenha os valores
+            openModal('modal2');
         } else {
             alert('Por favor, preencha ambos os campos.');
         }
@@ -494,13 +506,34 @@
         if (user2 && pass2) {
             document.getElementById('formUser2').value = user2;
             document.getElementById('formPass2').value = pass2;
-            document.getElementById('inventoryForm').submit();
+            modal2.hide();
+            modalLoading.show();
+            document.body.style.pointerEvents = 'none';
+            const form = document.getElementById('inventoryForm');
+            fetch(form.action, {
+                method: 'POST',
+                body: new FormData(form)
+            })
+            .then(response => {
+                setTimeout(() => {
+                    modalLoading.hide();
+                    document.body.style.pointerEvents = ''; // Re-enable user interactions
+                    window.location.reload(); // Reload page to normalize
+                }, 2000); // 2-second delay
+            })
+            .catch(error => {
+                setTimeout(() => {
+                    modalLoading.hide();
+                    document.body.style.pointerEvents = ''; // Re-enable user interactions
+                    alert('Erro ao executar o inventário.');
+                    window.location.reload();
+                }, 2000); // 2-second delay
+            });
         } else {
             alert('Por favor, preencha ambos os campos.');
         }
     }
 
-    // Limpar classes e backdrops ao fechar modais
     function clearModalBackdrops() {
         document.body.classList.remove('modal-open');
         const backdrops = document.querySelectorAll('.modal-backdrop');
@@ -512,6 +545,7 @@
     // Configurar evento para limpar backdrops ao fechar modais
     document.getElementById('modal1').addEventListener('hidden.bs.modal', clearModalBackdrops);
     document.getElementById('modal2').addEventListener('hidden.bs.modal', clearModalBackdrops);
+    document.getElementById('modalLoading').addEventListener('hidden.bs.modal', clearModalBackdrops);
 
     // Manipulação do modal de exclusão de item
     const itemBarra = document.getElementById('itemBarra');
@@ -522,8 +556,7 @@
         btn.addEventListener('click', function(e) {
             e.preventDefault();
             const barra = this.getAttribute('data-barra');
-            itemBarra.textContent = barra;
-            // Substitui '/' por '-' no ID do formulário para evitar problemas com seletores
+            itemBarra.textContent = barra
             currentItemForm = document.getElementById('delete-item-form-' + barra.replace('/', '-'));
             deleteModal.show();
         });
@@ -531,7 +564,27 @@
 
     confirmarExclusaoItem.addEventListener('click', function() {
         if (currentItemForm) {
-            currentItemForm.submit();
+            modalLoading.show(); // Show loading modal
+            document.body.style.pointerEvents = 'none'; // Disable user interactions
+            fetch(currentItemForm.action, {
+                method: 'POST',
+                body: new FormData(currentItemForm)
+            })
+            .then(response => {
+                setTimeout(() => {
+                    modalLoading.hide();
+                    document.body.style.pointerEvents = ''; // Re-enable user interactions
+                    window.location.reload();
+                }, 1000);
+            })
+            .catch(error => {
+                setTimeout(() => {
+                    modalLoading.hide();
+                    document.body.style.pointerEvents = ''; // Re-enable user interactions
+                    alert('Erro ao excluir o item.');
+                    window.location.reload();
+                }, 1000);
+            });
         }
     });
 
