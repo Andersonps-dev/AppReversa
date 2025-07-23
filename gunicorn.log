@@ -1,0 +1,114 @@
+[2025-07-23 10:05:18 -0300] [62506] [DEBUG] Current configuration:
+  config: ./gunicorn.conf.py
+  wsgi_app: None
+  bind: ['0.0.0.0:5000']
+  backlog: 2048
+  workers: 2
+  worker_class: sync
+  threads: 1
+  worker_connections: 1000
+  max_requests: 0
+  max_requests_jitter: 0
+  timeout: 120
+  graceful_timeout: 30
+  keepalive: 2
+  limit_request_line: 4094
+  limit_request_fields: 100
+  limit_request_field_size: 8190
+  reload: False
+  reload_engine: auto
+  reload_extra_files: []
+  spew: False
+  check_config: False
+  print_config: False
+  preload_app: False
+  sendfile: None
+  reuse_port: False
+  chdir: /home/luftsrv/AppReversa
+  daemon: False
+  raw_env: []
+  pidfile: None
+  worker_tmp_dir: None
+  user: 1000
+  group: 33
+  umask: 0
+  initgroups: False
+  tmp_upload_dir: None
+  secure_scheme_headers: {'X-FORWARDED-PROTOCOL': 'ssl', 'X-FORWARDED-PROTO': 'https', 'X-FORWARDED-SSL': 'on'}
+  forwarded_allow_ips: ['127.0.0.1', '::1']
+  accesslog: None
+  disable_redirect_access_to_syslog: False
+  access_log_format: %(h)s %(l)s %(u)s %(t)s "%(r)s" %(s)s %(b)s "%(f)s" "%(a)s"
+  errorlog: /home/luftsrv/AppReversa/gunicorn.log
+  loglevel: debug
+  capture_output: False
+  logger_class: gunicorn.glogging.Logger
+  logconfig: None
+  logconfig_dict: {}
+  logconfig_json: None
+  syslog_addr: udp://localhost:514
+  syslog: False
+  syslog_prefix: None
+  syslog_facility: user
+  enable_stdio_inheritance: False
+  statsd_host: None
+  dogstatsd_tags: 
+  statsd_prefix: 
+  proc_name: None
+  default_proc_name: app:app
+  pythonpath: None
+  paste: None
+  on_starting: <function OnStarting.on_starting at 0x7980ed434f40>
+  on_reload: <function OnReload.on_reload at 0x7980ed435080>
+  when_ready: <function WhenReady.when_ready at 0x7980ed4351c0>
+  pre_fork: <function Prefork.pre_fork at 0x7980ed4353a0>
+  post_fork: <function Postfork.post_fork at 0x7980ed4354e0>
+  post_worker_init: <function PostWorkerInit.post_worker_init at 0x7980ed435620>
+  worker_int: <function WorkerInt.worker_int at 0x7980ed435760>
+  worker_abort: <function WorkerAbort.worker_abort at 0x7980ed4358a0>
+  pre_exec: <function PreExec.pre_exec at 0x7980ed4359e0>
+  pre_request: <function PreRequest.pre_request at 0x7980ed435b20>
+  post_request: <function PostRequest.post_request at 0x7980ed435bc0>
+  child_exit: <function ChildExit.child_exit at 0x7980ed435d00>
+  worker_exit: <function WorkerExit.worker_exit at 0x7980ed435e40>
+  nworkers_changed: <function NumWorkersChanged.nworkers_changed at 0x7980ed435f80>
+  on_exit: <function OnExit.on_exit at 0x7980ed4360c0>
+  ssl_context: <function NewSSLContext.ssl_context at 0x7980ed4362a0>
+  proxy_protocol: False
+  proxy_allow_ips: ['127.0.0.1', '::1']
+  keyfile: None
+  certfile: None
+  ssl_version: 2
+  cert_reqs: 0
+  ca_certs: None
+  suppress_ragged_eofs: True
+  do_handshake_on_connect: False
+  ciphers: None
+  raw_paste_global_conf: []
+  permit_obsolete_folding: False
+  strip_header_spaces: False
+  permit_unconventional_http_method: False
+  permit_unconventional_http_version: False
+  casefold_http_method: False
+  forwarder_headers: ['SCRIPT_NAME', 'PATH_INFO']
+  header_map: drop
+[2025-07-23 10:05:18 -0300] [62506] [INFO] Starting gunicorn 23.0.0
+[2025-07-23 10:05:18 -0300] [62506] [DEBUG] Arbiter booted
+[2025-07-23 10:05:18 -0300] [62506] [INFO] Listening at: http://0.0.0.0:5000 (62506)
+[2025-07-23 10:05:18 -0300] [62506] [INFO] Using worker: sync
+[2025-07-23 10:05:18 -0300] [62509] [INFO] Booting worker with pid: 62509
+[2025-07-23 10:05:18 -0300] [62510] [INFO] Booting worker with pid: 62510
+[2025-07-23 10:05:18 -0300] [62506] [DEBUG] 2 workers
+[2025-07-23 10:05:36 -0300] [62510] [DEBUG] GET /
+[2025-07-23 10:05:37 -0300] [62509] [DEBUG] GET /
+[2025-07-23 10:05:38 -0300] [62510] [DEBUG] GET /
+[2025-07-23 10:05:39 -0300] [62510] [DEBUG] GET /enderecos
+[2025-07-23 10:05:40 -0300] [62509] [DEBUG] GET /
+[2025-07-23 10:05:41 -0300] [62509] [DEBUG] GET /enderecos
+[2025-07-23 10:05:45 -0300] [62509] [DEBUG] GET /enderecos/RV001008101
+[2025-07-23 10:05:47 -0300] [62509] [DEBUG] GET /
+[2025-07-23 10:05:49 -0300] [62509] [DEBUG] GET /
+[2025-07-23 10:05:49 -0300] [62509] [DEBUG] GET /
+[2025-07-23 10:05:50 -0300] [62509] [DEBUG] GET /
+[2025-07-23 10:05:50 -0300] [62509] [DEBUG] GET /
+[2025-07-23 10:05:50 -0300] [62509] [DEBUG] GET /
