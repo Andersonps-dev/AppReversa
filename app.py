@@ -8,7 +8,7 @@ from sqlalchemy import func
 from models import Estoque, BarraEndereco, InventariosRealizados, UserCredential
 
 from sqlalchemy import cast, Integer
-from config import LINK_WMS, LOGINS_WMS, SENHAS_WMS, ID_TOKEN_WMS, TOKENS_SENHAS
+from config import LINK_WMS, LOGINS_WMS, SENHAS_WMS, ID_TOKEN_WMS, TOKENS_SENHAS, QTDE_CABE_PICKING
 from ApiWMS.extrair_dados_estoque import extrair_dados_estoques_wms
 from ApiWMS.executar_inventario import InventoryExecutor
 from datetime import datetime
@@ -54,7 +54,7 @@ def consultar_rua():
         )
         .filter(Estoque.Barra == codigo_barra)
         .group_by(Estoque.Barra, Estoque.Local, Estoque.Rua)
-        .having(func.sum(Estoque.Estoque) < 300)
+        .having(func.sum(Estoque.Estoque) < QTDE_CABE_PICKING)
         .order_by(cast(Estoque.Rua, Integer).asc())
         .limit(1)
         .first()
