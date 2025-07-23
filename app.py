@@ -66,15 +66,21 @@ def consultar_rua():
     
 @app.route('/atualizar_estoque', methods=['GET'])
 def atualizar_estoque():
-    success = extrair_dados_estoques_wms(
-        link_wms=LINK_WMS,
-        user_wms=LOGINS_WMS[0],
-        senha_wms=SENHAS_WMS[0],
-        save_path=app.instance_path
-    )
-    
-    os.remove(os.path.join(app.instance_path, "Estoque Local Por Produto.csv"))
-    
+    try:
+        success = extrair_dados_estoques_wms(
+            link_wms=LINK_WMS,
+            user_wms=LOGINS_WMS[0],
+            senha_wms=SENHAS_WMS[0],
+            save_path=app.instance_path
+        )
+        if success:
+            os.remove(os.path.join(app.instance_path, "Estoque Local Por Produto.csv"))
+            flash('Estoque atualizado com sucesso!', 'success')
+        else:
+            flash('Falha ao atualizar estoque.', 'error')
+    except Exception as e:
+        logger.error(f"Erro ao atualizar estoque: {e}")
+        flash(f'Erro ao atualizar estoque: {e}', 'error')
     return redirect(url_for('index'))
 
 @app.route('/salvar_endereco', methods=['POST'])
