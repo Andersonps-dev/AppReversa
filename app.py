@@ -34,7 +34,6 @@ def index():
     msgs = get_flashed_messages(category_filter=['success'])
     if msgs:
         sucesso = msgs[0]
-    # Buscar a última data de atualização do estoque
     data_atualizacao_estoque = db.session.query(func.max(Estoque.data_atualizacao)).scalar()
     return render_template('index.html', codigo_barra='', sucesso=sucesso, data_atualizacao_estoque=data_atualizacao_estoque)
 
@@ -59,11 +58,11 @@ def consultar_rua():
         .limit(1)
         .first()
     )
-
+    data_atualizacao_estoque = db.session.query(func.max(Estoque.data_atualizacao)).scalar()
     if estoque:
-        return render_template('index.html', rua=estoque.Rua, local=estoque.Local, codigo_barra=codigo_barra)
+        return render_template('index.html', rua=estoque.Rua, local=estoque.Local, codigo_barra=codigo_barra, data_atualizacao_estoque=data_atualizacao_estoque)
     else:
-        return render_template('index.html', erro='Produto não existe no picking.', codigo_barra=codigo_barra)
+        return render_template('index.html', erro='Sem Picking disponível.', codigo_barra=codigo_barra, data_atualizacao_estoque=data_atualizacao_estoque)
     
 @app.route('/atualizar_estoque', methods=['GET'])
 def atualizar_estoque():
