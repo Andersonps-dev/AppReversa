@@ -252,7 +252,7 @@
                         </a>
                         {% if data_atualizacao_estoque %}
                         <div class="text-center small text-muted" style="margin-top: -8px;">
-                            <span>Última atualização: {{ data_atualizacao_estoque }}</span>
+                            <span>Última atualização: {{ data_atualizacao_estoque.strftime('%d/%m/%Y %H:%M') }}</span>
                         </div>
                         {% endif %}
                     </li>
