@@ -12,15 +12,7 @@ from config import LINK_WMS, LOGINS_WMS, SENHAS_WMS, ID_TOKEN_WMS, TOKENS_SENHAS
 from ApiWMS.extrair_dados_estoque import extrair_dados_estoques_wms
 from ApiWMS.executar_inventario import InventoryExecutor
 from datetime import datetime
-
 import pytz
-def get_sao_paulo_time(dt):
-    sao_paulo_tz = pytz.timezone('America/Sao_Paulo')
-    if dt.tzinfo is None:
-        # Se o datetime não tem fuso horário, assume que é UTC
-        dt = pytz.utc.localize(dt)
-    # Converte para o fuso horário de São Paulo
-    return dt.astimezone(sao_paulo_tz)
 
 app = Flask(__name__)
 
@@ -106,7 +98,7 @@ def salvar_endereco():
 @app.route('/enderecos')
 def enderecos():
     results = db.session.query(BarraEndereco.endereco, func.count(BarraEndereco.barra)).group_by(BarraEndereco.endereco).all()
-    data_atualizacao_estoque = get_sao_paulo_time(db.session.query(func.max(Estoque.data_atualizacao)).scalar())
+    data_atualizacao_estoque = db.session.query(func.max(Estoque.data_atualizacao)).scalar()
     return render_template('enderecos.html', enderecos=results, data_atualizacao_estoque=data_atualizacao_estoque)
 
 @app.route('/enderecos/<endereco>', methods=['GET', 'POST'])
