@@ -98,6 +98,7 @@ def salvar_endereco():
 def enderecos():
     results = db.session.query(BarraEndereco.endereco, func.count(BarraEndereco.barra)).group_by(BarraEndereco.endereco).all()
     data_atualizacao_estoque = db.session.query(func.max(Estoque.data_atualizacao)).scalar()
+    data_atualizacao_estoque = str(data_atualizacao_estoque)
     return render_template('enderecos.html', enderecos=results, data_atualizacao_estoque=data_atualizacao_estoque)
 
 @app.route('/enderecos/<endereco>', methods=['GET', 'POST'])
