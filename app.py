@@ -54,7 +54,7 @@ def consultar_rua():
         )
         .filter(Estoque.Barra == codigo_barra)
         .group_by(Estoque.Barra, Estoque.Local, Estoque.Rua)
-        .having(func.sum(Estoque.Estoque) < 50)
+        .having(func.sum(Estoque.Estoque) < 300)
         .order_by(cast(Estoque.Rua, Integer).asc())
         .limit(1)
         .first()
