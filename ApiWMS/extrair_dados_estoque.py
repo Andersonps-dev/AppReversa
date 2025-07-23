@@ -168,6 +168,7 @@ def extrair_dados_estoques_wms(link_wms, user_wms, senha_wms, id_depositante=236
 
         df = pd.read_csv(full_path, dtype={'Barra':str, 'Código do Produto':str, 'Código Produto Depositante':str})
         df = df[(df['Tipo do Local'] == 'PICKING') & (df['Setor'] == 'INSIDER - BOM')]
+        df = df[df['Local'].str[6:8].astype(int) < 23]
         
         for _, row in df.iterrows():
             local = row.get('Local', '')
