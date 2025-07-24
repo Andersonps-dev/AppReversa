@@ -99,9 +99,16 @@ def salvar_endereco():
     codigo_barra = request.form.get('codigo_barra')
     rua = request.form.get('rua')
     endereco = request.form.get('endereco')
+    
     if not (codigo_barra and rua and endereco):
+        flash('Preencha todos os campos.', 'error')
         return render_template('index.html', erro='Preencha todos os campos.', codigo_barra=codigo_barra, rua=rua)
 
+    endereco_existente = BarraEndereco.query.filter_by(endereco=endereco).first()
+    if endereco_existente and endereco_existente.bloqueado:
+        flash('Endereço bloqueado.', 'error')
+        return render_template('index.html', erro='Endereço bloqueado.', codigo_barra=codigo_barra, rua=rua)
+    
     try:
         novo = BarraEndereco(barra=codigo_barra, rua=rua, endereco=endereco, data_armazenamento=datetime.now())
         db.session.add(novo)
@@ -109,7 +116,8 @@ def salvar_endereco():
         flash('Endereço salvo com sucesso!', 'success')
         return redirect(url_for('index'))
     except Exception as e:
-        return render_template('index.html', erro=f'Erro ao salvar: {e}', codigo_barra=codigo_barra, rua=rua)
+        flash(f'Erro ao salvar: {str(e)}', 'error')
+        return render_template('index.html', erro=f'Erro ao salvar: {str(e)}', codigo_barra=codigo_barra, rua=rua)
 
 @app.route('/enderecos')
 def enderecos():
@@ -123,18 +131,44 @@ def detalhes_endereco(endereco):
         BarraEndereco.barra,
         func.count(BarraEndereco.endereco).label('qtde'),
         BarraEndereco.rua,
-        func.max(BarraEndereco.data_armazenamento).label('data_atualizado')
-    ).filter_by(endereco=endereco).group_by(BarraEndereco.barra, BarraEndereco.rua).all()
+        func.max(BarraEndereco.data_armazenamento).label('data_atualizado'),
+        BarraEndereco.bloqueado  # Adicionar campo bloqueado
+    ).filter_by(endereco=endereco).group_by(BarraEndereco.barra, BarraEndereco.rua, BarraEndereco.bloqueado).all()
     
     itens = []
+    bloqueado = False
     for detalhe in detalhes:
         itens.append({
             'Codigo': detalhe.barra,
             'qtde': detalhe.qtde,
             'Local': endereco,
+            'Rua': detalhe.rua,
+            'DataAtualizado': detalhe.data_atualizado,
+            'Bloqueado': detalhe.bloqueado
         })
-    
+        bloqueado = detalhe.bloqueado  # Assume que todos os registros do mesmo endereço têm o mesmo status de bloqueio
+
     if request.method == 'POST':
+        if 'bloquear' in request.form:
+            try:
+                BarraEndereco.query.filter_by(endereco=endereco).update({'bloqueado': True})
+                db.session.commit()
+                flash('Endereço bloqueado com sucesso!', 'success')
+            except Exception as e:
+                db.session.rollback()
+                flash(f'Erro ao bloquear endereço: {e}', 'error')
+            return redirect(url_for('detalhes_endereco', endereco=endereco))
+        
+        if 'desbloquear' in request.form:
+            try:
+                BarraEndereco.query.filter_by(endereco=endereco).update({'bloqueado': False})
+                db.session.commit()
+                flash('Endereço desbloqueado com sucesso!', 'success')
+            except Exception as e:
+                db.session.rollback()
+                flash(f'Erro ao desbloquear endereço: {e}', 'error')
+            return redirect(url_for('detalhes_endereco', endereco=endereco))
+
         user1 = request.form.get('user1')
         pass1 = request.form.get('pass1')
         user2 = request.form.get('user2')
@@ -166,6 +200,10 @@ def detalhes_endereco(endereco):
                 db.session.delete(registro)
             db.session.commit()
 
+            # Após executar o inventário, desbloquear o endereço
+            BarraEndereco.query.filter_by(endereco=endereco).update({'bloqueado': False})
+            db.session.commit()
+
             flash('Inventário executado com sucesso!', 'success')
         except Exception as e:
             db.session.rollback()
@@ -174,7 +212,8 @@ def detalhes_endereco(endereco):
         
     cred = db.session.query(UserCredential).first()
     data_atualizacao_estoque = db.session.query(func.max(Estoque.data_atualizacao)).scalar()
-    return render_template('detalhes_endereco.html', endereco=endereco, detalhes=detalhes, cred=cred, data_atualizacao_estoque=data_atualizacao_estoque)
+    return render_template('detalhes_endereco.html', endereco=endereco, detalhes=detalhes, cred=cred, 
+                         data_atualizacao_estoque=data_atualizacao_estoque, bloqueado=bloqueado)
 
 @app.route('/enderecos/<endereco>/excluir', methods=['POST'])
 def excluir_endereco(endereco):
@@ -225,5 +264,5 @@ def credenciais():
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(host='0.0.0.0', port=5000, debug=False)
-    # app.run(debug=True)
+    # app.run(host='0.0.0.0', port=5000, debug=False)
+    app.run(debug=True)

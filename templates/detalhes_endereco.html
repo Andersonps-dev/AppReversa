@@ -279,9 +279,22 @@
                         <a href="{{ url_for('enderecos') }}" class="btn btn-link">
                             <i class="bi bi-arrow-left me-2"></i>Voltar para Endereços
                         </a>
-                        <button class="btn btn-success" onclick="openModal('modal1')">
-                            <i class="bi bi-clipboard-check me-2"></i>Executar Inventário
-                        </button>
+                        <div>
+                            <form method="POST" action="{{ url_for('detalhes_endereco', endereco=endereco) }}" class="d-inline">
+                                {% if bloqueado %}
+                                <button type="submit" name="desbloquear" class="btn btn-warning me-2">
+                                    <i class="bi bi-unlock me-2"></i>Desbloquear Endereço
+                                </button>
+                                {% else %}
+                                <button type="submit" name="bloquear" class="btn btn-danger me-2">
+                                    <i class="bi bi-lock me-2"></i>Bloquear Endereço
+                                </button>
+                                {% endif %}
+                            </form>
+                            <button class="btn btn-success" onclick="openModal('modal1')">
+                                <i class="bi bi-clipboard-check me-2"></i>Executar Inventário
+                            </button>
+                        </div>
                     </div>
 
                     <!-- Modal 1 -->
@@ -517,7 +530,7 @@
         btn.addEventListener('click', function(e) {
             e.preventDefault();
             const barra = this.getAttribute('data-barra');
-            itemBarra.textContent = barra
+            itemBarra.textContent = barra;
             currentItemForm = document.getElementById('delete-item-form-' + barra.replace('/', '-'));
             deleteModal.show();
         });

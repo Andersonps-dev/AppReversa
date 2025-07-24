@@ -141,6 +141,24 @@
             font-size: 1rem;
         }
         
+        .modal-content {
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .modal-header {
+            background: linear-gradient(to right, #004362, #078ef6);
+            color: white;
+            border-radius: 12px 12px 0 0;
+        }
+        
+        .modal-error-icon {
+            font-size: 3rem;
+            color: #dc3545;
+            margin-bottom: 1rem;
+        }
+        
         /* Otimizações para telas pequenas */
         @media (max-height: 700px) {
             .card-header {
@@ -191,36 +209,53 @@
       </div>
     </div>
 
+    <!-- Modal de Confirmação após bipar endereço -->
+    <div class="modal fade" id="modalConfirmarEndereco" tabindex="-1" aria-labelledby="modalConfirmarEnderecoLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modalConfirmarEnderecoLabel">Confirmar endereço</h5>
+          </div>
+          <div class="modal-body">
+            Deseja realmente salvar este endereço?
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Não</button>
+            <button id="btn-confirmar-endereco" type="button" class="btn btn-primary">Sim, salvar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Modal de erro para endereço bloqueado -->
+    <div class="modal fade" id="modalErroBloqueado" tabindex="-1" aria-labelledby="modalErroBloqueadoLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modalErroBloqueadoLabel">Erro</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body text-center">
+            <i class="bi bi-x-circle modal-error-icon"></i>
+            <p>{{ erro if erro == 'Endereço bloqueado.' else 'Este endereço está bloqueado e não pode receber novas barras.' }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Modal de loading -->
+    <div class="modal fade" id="modalLoading" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="text-align:center; padding:1.5rem;">
+          <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+            <span class="visually-hidden">Carregando...</span>
+          </div>
+          <div style="margin-top:1rem; font-size:1rem;">Atualizando estoque, aguarde...</div>
+        </div>
+      </div>
+    </div>
+    
     <div class="main-container">
-        <!-- Modal de Confirmação após bipar endereço -->
-        <div class="modal fade" id="modalConfirmarEndereco" tabindex="-1" aria-labelledby="modalConfirmarEnderecoLabel" aria-hidden="true">
-          <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="modalConfirmarEnderecoLabel">Confirmar endereço</h5>
-              </div>
-              <div class="modal-body">
-                Deseja realmente salvar este endereço?
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Não</button>
-                <button id="btn-confirmar-endereco" type="button" class="btn btn-primary">Sim, salvar</button>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <div class="modal fade" id="modalLoading" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-          <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content" style="text-align:center; padding:1.5rem;">
-              <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
-                <span class="visually-hidden">Carregando...</span>
-              </div>
-              <div style="margin-top:1rem; font-size:1rem;">Atualizando estoque, aguarde...</div>
-            </div>
-          </div>
-        </div>
-        
         <div class="container-fluid">
             <div class="row justify-content-center">
                 <div class="col-12 col-md-8 col-lg-6">
@@ -271,10 +306,6 @@
                                 </button>
                             </form>
                             <script>document.getElementById('endereco').focus();</script>
-                            {% elif erro %}
-                            <div class="alert alert-danger text-center">
-                                <i class="bi bi-exclamation-triangle me-1"></i>{{ erro }}
-                            </div>
                             {% endif %}
 
                             {% if sucesso %}
@@ -285,6 +316,12 @@
                                 document.getElementById('codigo_barra').value = '';
                                 document.getElementById('codigo_barra').focus();
                             </script>
+                            {% endif %}
+
+                            {% if erro and erro != 'Endereço bloqueado.' %}
+                            <div class="alert alert-danger text-center">
+                                <i class="bi bi-exclamation-triangle me-1"></i>{{ erro }}
+                            </div>
                             {% endif %}
                         </div>
                     </div>
@@ -361,6 +398,24 @@
                 });
             }
         });
+
+        // Mostrar modal de erro para endereço bloqueado e fechar após 3 segundos
+        {% if erro == 'Endereço bloqueado.' %}
+        document.addEventListener('DOMContentLoaded', function() {
+            var modalErro = new bootstrap.Modal(document.getElementById('modalErroBloqueado'));
+            modalErro.show();
+            // Fechar o modal após 3 segundos
+            setTimeout(function() {
+                modalErro.hide();
+                // Focar no campo de endereço após fechar o modal
+                const enderecoInput = document.getElementById('endereco');
+                if (enderecoInput) {
+                    enderecoInput.focus();
+                    enderecoInput.select();
+                }
+            }, 3000);
+        });
+        {% endif %}
 
         // Limpar formulário e exibir apenas o campo de código de barras
         document.getElementById('btn-limpar')?.addEventListener('click', function() {
