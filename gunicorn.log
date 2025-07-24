@@ -5910,3 +5910,66 @@ SystemExit: 1
 [2025-07-24 11:49:45 -0300] [66184] [DEBUG] Closing connection. 
 [2025-07-24 11:49:45 -0300] [64661] [DEBUG] Closing connection. 
 [2025-07-24 11:49:45 -0300] [66184] [DEBUG] POST /enderecos/RV001001201
+[2025-07-24 11:51:45 -0300] [16046] [CRITICAL] WORKER TIMEOUT (pid:64661)
+[2025-07-24 11:51:45 -0300] [64661] [ERROR] Error handling request (no URI read)
+Traceback (most recent call last):
+  File "/home/luftsrv/AppReversa/venv/lib/python3.13/site-packages/gunicorn/workers/sync.py", line 133, in handle
+    req = next(parser)
+  File "/home/luftsrv/AppReversa/venv/lib/python3.13/site-packages/gunicorn/http/parser.py", line 41, in __next__
+    self.mesg = self.mesg_class(self.cfg, self.unreader, self.source_addr, self.req_count)
+                ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/luftsrv/AppReversa/venv/lib/python3.13/site-packages/gunicorn/http/message.py", line 259, in __init__
+    super().__init__(cfg, unreader, peer_addr)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/luftsrv/AppReversa/venv/lib/python3.13/site-packages/gunicorn/http/message.py", line 60, in __init__
+    unused = self.parse(self.unreader)
+  File "/home/luftsrv/AppReversa/venv/lib/python3.13/site-packages/gunicorn/http/message.py", line 271, in parse
+    self.get_data(unreader, buf, stop=True)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/luftsrv/AppReversa/venv/lib/python3.13/site-packages/gunicorn/http/message.py", line 262, in get_data
+    data = unreader.read()
+  File "/home/luftsrv/AppReversa/venv/lib/python3.13/site-packages/gunicorn/http/unreader.py", line 36, in read
+    d = self.chunk()
+  File "/home/luftsrv/AppReversa/venv/lib/python3.13/site-packages/gunicorn/http/unreader.py", line 63, in chunk
+    return self.sock.recv(self.mxchunk)
+           ~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "/home/luftsrv/AppReversa/venv/lib/python3.13/site-packages/gunicorn/workers/base.py", line 204, in handle_abort
+    sys.exit(1)
+    ~~~~~~~~^^^
+SystemExit: 1
+[2025-07-24 11:51:45 -0300] [64661] [INFO] Worker exiting (pid: 64661)
+[2025-07-24 11:51:45 -0300] [68231] [INFO] Booting worker with pid: 68231
+[2025-07-24 11:51:46 -0300] [68231] [DEBUG] GET /enderecos/RV001001201
+[2025-07-24 11:51:48 -0300] [68231] [DEBUG] GET /enderecos/RV001001201
+[2025-07-24 11:51:57 -0300] [68231] [DEBUG] GET /enderecos
+[2025-07-24 11:51:58 -0300] [68231] [DEBUG] GET /enderecos/RV001001301
+[2025-07-24 11:52:01 -0300] [68231] [DEBUG] POST /enderecos/RV001001301
+[2025-07-24 11:52:09 -0300] [16046] [CRITICAL] WORKER TIMEOUT (pid:66184)
+[2025-07-24 11:52:09 -0300] [66184] [ERROR] Error handling request (no URI read)
+Traceback (most recent call last):
+  File "/home/luftsrv/AppReversa/venv/lib/python3.13/site-packages/gunicorn/workers/sync.py", line 133, in handle
+    req = next(parser)
+  File "/home/luftsrv/AppReversa/venv/lib/python3.13/site-packages/gunicorn/http/parser.py", line 41, in __next__
+    self.mesg = self.mesg_class(self.cfg, self.unreader, self.source_addr, self.req_count)
+                ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/luftsrv/AppReversa/venv/lib/python3.13/site-packages/gunicorn/http/message.py", line 259, in __init__
+    super().__init__(cfg, unreader, peer_addr)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/luftsrv/AppReversa/venv/lib/python3.13/site-packages/gunicorn/http/message.py", line 60, in __init__
+    unused = self.parse(self.unreader)
+  File "/home/luftsrv/AppReversa/venv/lib/python3.13/site-packages/gunicorn/http/message.py", line 271, in parse
+    self.get_data(unreader, buf, stop=True)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/luftsrv/AppReversa/venv/lib/python3.13/site-packages/gunicorn/http/message.py", line 262, in get_data
+    data = unreader.read()
+  File "/home/luftsrv/AppReversa/venv/lib/python3.13/site-packages/gunicorn/http/unreader.py", line 36, in read
+    d = self.chunk()
+  File "/home/luftsrv/AppReversa/venv/lib/python3.13/site-packages/gunicorn/http/unreader.py", line 63, in chunk
+    return self.sock.recv(self.mxchunk)
+           ~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "/home/luftsrv/AppReversa/venv/lib/python3.13/site-packages/gunicorn/workers/base.py", line 204, in handle_abort
+    sys.exit(1)
+    ~~~~~~~~^^^
+SystemExit: 1
+[2025-07-24 11:52:09 -0300] [66184] [INFO] Worker exiting (pid: 66184)
+[2025-07-24 11:52:10 -0300] [68375] [INFO] Booting worker with pid: 68375
