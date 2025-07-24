@@ -2603,3 +2603,501 @@ Traceback (most recent call last):
 SystemExit: 1
 [2025-07-24 08:16:47 -0300] [69845] [INFO] Worker exiting (pid: 69845)
 [2025-07-24 08:16:47 -0300] [74883] [INFO] Booting worker with pid: 74883
+[2025-07-24 08:35:29 -0300] [1341] [DEBUG] Current configuration:
+  config: ./gunicorn.conf.py
+  wsgi_app: None
+  bind: ['0.0.0.0:5000']
+  backlog: 2048
+  workers: 2
+  worker_class: sync
+  threads: 1
+  worker_connections: 1000
+  max_requests: 0
+  max_requests_jitter: 0
+  timeout: 120
+  graceful_timeout: 30
+  keepalive: 2
+  limit_request_line: 4094
+  limit_request_fields: 100
+  limit_request_field_size: 8190
+  reload: False
+  reload_engine: auto
+  reload_extra_files: []
+  spew: False
+  check_config: False
+  print_config: False
+  preload_app: False
+  sendfile: None
+  reuse_port: False
+  chdir: /home/luftsrv/AppReversa
+  daemon: False
+  raw_env: []
+  pidfile: None
+  worker_tmp_dir: None
+  user: 1000
+  group: 33
+  umask: 0
+  initgroups: False
+  tmp_upload_dir: None
+  secure_scheme_headers: {'X-FORWARDED-PROTOCOL': 'ssl', 'X-FORWARDED-PROTO': 'https', 'X-FORWARDED-SSL': 'on'}
+  forwarded_allow_ips: ['127.0.0.1', '::1']
+  accesslog: None
+  disable_redirect_access_to_syslog: False
+  access_log_format: %(h)s %(l)s %(u)s %(t)s "%(r)s" %(s)s %(b)s "%(f)s" "%(a)s"
+  errorlog: /home/luftsrv/AppReversa/gunicorn.log
+  loglevel: debug
+  capture_output: False
+  logger_class: gunicorn.glogging.Logger
+  logconfig: None
+  logconfig_dict: {}
+  logconfig_json: None
+  syslog_addr: udp://localhost:514
+  syslog: False
+  syslog_prefix: None
+  syslog_facility: user
+  enable_stdio_inheritance: False
+  statsd_host: None
+  dogstatsd_tags: 
+  statsd_prefix: 
+  proc_name: None
+  default_proc_name: app:app
+  pythonpath: None
+  paste: None
+  on_starting: <function OnStarting.on_starting at 0x7fab87128f40>
+  on_reload: <function OnReload.on_reload at 0x7fab87129080>
+  when_ready: <function WhenReady.when_ready at 0x7fab871291c0>
+  pre_fork: <function Prefork.pre_fork at 0x7fab871293a0>
+  post_fork: <function Postfork.post_fork at 0x7fab871294e0>
+  post_worker_init: <function PostWorkerInit.post_worker_init at 0x7fab87129620>
+  worker_int: <function WorkerInt.worker_int at 0x7fab87129760>
+  worker_abort: <function WorkerAbort.worker_abort at 0x7fab871298a0>
+  pre_exec: <function PreExec.pre_exec at 0x7fab871299e0>
+  pre_request: <function PreRequest.pre_request at 0x7fab87129b20>
+  post_request: <function PostRequest.post_request at 0x7fab87129bc0>
+  child_exit: <function ChildExit.child_exit at 0x7fab87129d00>
+  worker_exit: <function WorkerExit.worker_exit at 0x7fab87129e40>
+  nworkers_changed: <function NumWorkersChanged.nworkers_changed at 0x7fab87129f80>
+  on_exit: <function OnExit.on_exit at 0x7fab8712a0c0>
+  ssl_context: <function NewSSLContext.ssl_context at 0x7fab8712a2a0>
+  proxy_protocol: False
+  proxy_allow_ips: ['127.0.0.1', '::1']
+  keyfile: None
+  certfile: None
+  ssl_version: 2
+  cert_reqs: 0
+  ca_certs: None
+  suppress_ragged_eofs: True
+  do_handshake_on_connect: False
+  ciphers: None
+  raw_paste_global_conf: []
+  permit_obsolete_folding: False
+  strip_header_spaces: False
+  permit_unconventional_http_method: False
+  permit_unconventional_http_version: False
+  casefold_http_method: False
+  forwarder_headers: ['SCRIPT_NAME', 'PATH_INFO']
+  header_map: drop
+[2025-07-24 08:35:29 -0300] [1341] [INFO] Starting gunicorn 23.0.0
+[2025-07-24 08:35:29 -0300] [1341] [DEBUG] Arbiter booted
+[2025-07-24 08:35:29 -0300] [1341] [INFO] Listening at: http://0.0.0.0:5000 (1341)
+[2025-07-24 08:35:29 -0300] [1341] [INFO] Using worker: sync
+[2025-07-24 08:35:29 -0300] [1432] [INFO] Booting worker with pid: 1432
+[2025-07-24 08:35:29 -0300] [1434] [INFO] Booting worker with pid: 1434
+[2025-07-24 08:35:29 -0300] [1341] [DEBUG] 2 workers
+[2025-07-24 08:35:40 -0300] [1432] [DEBUG] POST /salvar_endereco
+[2025-07-24 08:35:40 -0300] [1432] [DEBUG] GET /
+[2025-07-24 08:35:47 -0300] [1432] [DEBUG] POST /consultar_rua
+[2025-07-24 08:35:53 -0300] [1434] [DEBUG] POST /salvar_endereco
+[2025-07-24 08:35:53 -0300] [1432] [DEBUG] GET /
+[2025-07-24 08:35:57 -0300] [1434] [DEBUG] POST /consultar_rua
+[2025-07-24 08:36:02 -0300] [1432] [DEBUG] POST /salvar_endereco
+[2025-07-24 08:36:02 -0300] [1434] [DEBUG] GET /
+[2025-07-24 08:36:05 -0300] [1432] [DEBUG] POST /consultar_rua
+[2025-07-24 08:36:12 -0300] [1434] [DEBUG] POST /salvar_endereco
+[2025-07-24 08:36:12 -0300] [1432] [DEBUG] GET /
+[2025-07-24 08:36:16 -0300] [1434] [DEBUG] POST /consultar_rua
+[2025-07-24 08:36:20 -0300] [1432] [DEBUG] POST /salvar_endereco
+[2025-07-24 08:36:20 -0300] [1434] [DEBUG] GET /
+[2025-07-24 08:36:22 -0300] [1434] [DEBUG] POST /consultar_rua
+[2025-07-24 08:36:26 -0300] [1432] [DEBUG] POST /salvar_endereco
+[2025-07-24 08:36:26 -0300] [1434] [DEBUG] GET /
+[2025-07-24 08:36:40 -0300] [1434] [DEBUG] POST /consultar_rua
+[2025-07-24 08:36:44 -0300] [1432] [DEBUG] POST /salvar_endereco
+[2025-07-24 08:36:44 -0300] [1434] [DEBUG] GET /
+[2025-07-24 08:36:46 -0300] [1432] [DEBUG] POST /consultar_rua
+[2025-07-24 08:36:51 -0300] [1434] [DEBUG] POST /salvar_endereco
+[2025-07-24 08:36:52 -0300] [1432] [DEBUG] GET /
+[2025-07-24 08:36:56 -0300] [1432] [DEBUG] POST /consultar_rua
+[2025-07-24 08:37:02 -0300] [1434] [DEBUG] POST /salvar_endereco
+[2025-07-24 08:37:02 -0300] [1432] [DEBUG] GET /
+[2025-07-24 08:37:04 -0300] [1432] [DEBUG] POST /consultar_rua
+[2025-07-24 08:37:07 -0300] [1434] [DEBUG] POST /salvar_endereco
+[2025-07-24 08:37:07 -0300] [1432] [DEBUG] GET /
+[2025-07-24 08:37:10 -0300] [1434] [DEBUG] POST /consultar_rua
+[2025-07-24 08:37:14 -0300] [1432] [DEBUG] POST /salvar_endereco
+[2025-07-24 08:37:14 -0300] [1434] [DEBUG] GET /
+[2025-07-24 08:39:14 -0300] [1432] [DEBUG] Closing connection. 
+[2025-07-24 08:39:14 -0300] [1434] [DEBUG] Closing connection. 
+[2025-07-24 08:39:14 -0300] [1432] [DEBUG] GET /atualizar_estoque
+[2025-07-24 08:39:14 -0300] [1434] [DEBUG] GET /
+[2025-07-24 08:39:14 -0300] [1434] [DEBUG] GET /enderecos
+[2025-07-24 08:40:14 -0300] [1432] [DEBUG] Closing connection. 
+[2025-07-24 08:40:14 -0300] [1432] [DEBUG] Closing connection. 
+[2025-07-24 08:40:14 -0300] [1432] [DEBUG] GET /
+[2025-07-24 08:41:14 -0300] [1341] [CRITICAL] WORKER TIMEOUT (pid:1434)
+[2025-07-24 08:41:14 -0300] [1434] [ERROR] Error handling request (no URI read)
+Traceback (most recent call last):
+  File "/home/luftsrv/AppReversa/venv/lib/python3.13/site-packages/gunicorn/workers/sync.py", line 133, in handle
+    req = next(parser)
+  File "/home/luftsrv/AppReversa/venv/lib/python3.13/site-packages/gunicorn/http/parser.py", line 41, in __next__
+    self.mesg = self.mesg_class(self.cfg, self.unreader, self.source_addr, self.req_count)
+                ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/luftsrv/AppReversa/venv/lib/python3.13/site-packages/gunicorn/http/message.py", line 259, in __init__
+    super().__init__(cfg, unreader, peer_addr)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/luftsrv/AppReversa/venv/lib/python3.13/site-packages/gunicorn/http/message.py", line 60, in __init__
+    unused = self.parse(self.unreader)
+  File "/home/luftsrv/AppReversa/venv/lib/python3.13/site-packages/gunicorn/http/message.py", line 271, in parse
+    self.get_data(unreader, buf, stop=True)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/luftsrv/AppReversa/venv/lib/python3.13/site-packages/gunicorn/http/message.py", line 262, in get_data
+    data = unreader.read()
+  File "/home/luftsrv/AppReversa/venv/lib/python3.13/site-packages/gunicorn/http/unreader.py", line 36, in read
+    d = self.chunk()
+  File "/home/luftsrv/AppReversa/venv/lib/python3.13/site-packages/gunicorn/http/unreader.py", line 63, in chunk
+    return self.sock.recv(self.mxchunk)
+           ~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "/home/luftsrv/AppReversa/venv/lib/python3.13/site-packages/gunicorn/workers/base.py", line 204, in handle_abort
+    sys.exit(1)
+    ~~~~~~~~^^^
+SystemExit: 1
+[2025-07-24 08:41:14 -0300] [1434] [INFO] Worker exiting (pid: 1434)
+[2025-07-24 08:41:14 -0300] [3399] [INFO] Booting worker with pid: 3399
+[2025-07-24 08:42:14 -0300] [1341] [CRITICAL] WORKER TIMEOUT (pid:1432)
+[2025-07-24 08:42:14 -0300] [1432] [ERROR] Error handling request (no URI read)
+Traceback (most recent call last):
+  File "/home/luftsrv/AppReversa/venv/lib/python3.13/site-packages/gunicorn/workers/sync.py", line 133, in handle
+    req = next(parser)
+  File "/home/luftsrv/AppReversa/venv/lib/python3.13/site-packages/gunicorn/http/parser.py", line 41, in __next__
+    self.mesg = self.mesg_class(self.cfg, self.unreader, self.source_addr, self.req_count)
+                ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/luftsrv/AppReversa/venv/lib/python3.13/site-packages/gunicorn/http/message.py", line 259, in __init__
+    super().__init__(cfg, unreader, peer_addr)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/luftsrv/AppReversa/venv/lib/python3.13/site-packages/gunicorn/http/message.py", line 60, in __init__
+    unused = self.parse(self.unreader)
+  File "/home/luftsrv/AppReversa/venv/lib/python3.13/site-packages/gunicorn/http/message.py", line 271, in parse
+    self.get_data(unreader, buf, stop=True)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/luftsrv/AppReversa/venv/lib/python3.13/site-packages/gunicorn/http/message.py", line 262, in get_data
+    data = unreader.read()
+  File "/home/luftsrv/AppReversa/venv/lib/python3.13/site-packages/gunicorn/http/unreader.py", line 36, in read
+    d = self.chunk()
+  File "/home/luftsrv/AppReversa/venv/lib/python3.13/site-packages/gunicorn/http/unreader.py", line 63, in chunk
+    return self.sock.recv(self.mxchunk)
+           ~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "/home/luftsrv/AppReversa/venv/lib/python3.13/site-packages/gunicorn/workers/base.py", line 204, in handle_abort
+    sys.exit(1)
+    ~~~~~~~~^^^
+SystemExit: 1
+[2025-07-24 08:42:14 -0300] [1432] [INFO] Worker exiting (pid: 1432)
+[2025-07-24 08:42:15 -0300] [3416] [INFO] Booting worker with pid: 3416
+[2025-07-24 08:42:15 -0300] [3416] [DEBUG] GET /enderecos
+[2025-07-24 08:42:30 -0300] [3416] [DEBUG] GET /enderecos/RV001001101
+[2025-07-24 08:42:33 -0300] [3416] [DEBUG] POST /enderecos/RV001001101
+[2025-07-24 08:42:51 -0300] [3399] [DEBUG] Closing connection. 
+[2025-07-24 08:42:52 -0300] [3399] [DEBUG] POST /consultar_rua
+[2025-07-24 08:42:55 -0300] [3399] [DEBUG] POST /salvar_endereco
+[2025-07-24 08:42:55 -0300] [3399] [DEBUG] GET /
+[2025-07-24 08:42:56 -0300] [3399] [DEBUG] POST /consultar_rua
+[2025-07-24 08:43:01 -0300] [3399] [DEBUG] POST /salvar_endereco
+[2025-07-24 08:43:01 -0300] [3399] [DEBUG] GET /enderecos/RV001001101
+[2025-07-24 08:43:01 -0300] [3416] [DEBUG] GET /
+[2025-07-24 08:43:11 -0300] [3399] [DEBUG] POST /consultar_rua
+[2025-07-24 08:43:11 -0300] [3399] [DEBUG] GET /enderecos/RV001001101
+[2025-07-24 08:43:16 -0300] [3416] [DEBUG] POST /salvar_endereco
+[2025-07-24 08:43:16 -0300] [3416] [DEBUG] GET /enderecos
+[2025-07-24 08:43:16 -0300] [3399] [DEBUG] GET /
+[2025-07-24 08:43:22 -0300] [3399] [DEBUG] POST /consultar_rua
+[2025-07-24 08:43:28 -0300] [3416] [DEBUG] POST /salvar_endereco
+[2025-07-24 08:43:28 -0300] [3399] [DEBUG] GET /
+[2025-07-24 08:43:31 -0300] [3399] [DEBUG] POST /consultar_rua
+[2025-07-24 08:43:39 -0300] [3416] [DEBUG] POST /salvar_endereco
+[2025-07-24 08:43:39 -0300] [3399] [DEBUG] GET /
+[2025-07-24 08:43:47 -0300] [3416] [DEBUG] POST /consultar_rua
+[2025-07-24 08:43:52 -0300] [3399] [DEBUG] POST /salvar_endereco
+[2025-07-24 08:43:52 -0300] [3416] [DEBUG] GET /
+[2025-07-24 08:43:54 -0300] [3416] [DEBUG] POST /consultar_rua
+[2025-07-24 08:43:58 -0300] [3399] [DEBUG] POST /salvar_endereco
+[2025-07-24 08:43:58 -0300] [3416] [DEBUG] GET /
+[2025-07-24 08:44:00 -0300] [3416] [DEBUG] POST /consultar_rua
+[2025-07-24 08:44:06 -0300] [3399] [DEBUG] POST /salvar_endereco
+[2025-07-24 08:44:06 -0300] [3416] [DEBUG] GET /
+[2025-07-24 08:44:06 -0300] [3399] [DEBUG] POST /consultar_rua
+[2025-07-24 08:44:12 -0300] [3416] [DEBUG] POST /consultar_rua
+[2025-07-24 08:44:14 -0300] [3399] [DEBUG] POST /salvar_endereco
+[2025-07-24 08:44:15 -0300] [3416] [DEBUG] GET /
+[2025-07-24 08:44:18 -0300] [3416] [DEBUG] POST /consultar_rua
+[2025-07-24 08:44:21 -0300] [3399] [DEBUG] POST /consultar_rua
+[2025-07-24 08:44:25 -0300] [3416] [DEBUG] POST /salvar_endereco
+[2025-07-24 08:44:25 -0300] [3399] [DEBUG] GET /
+[2025-07-24 08:44:26 -0300] [3416] [DEBUG] POST /consultar_rua
+[2025-07-24 08:44:32 -0300] [3399] [DEBUG] POST /salvar_endereco
+[2025-07-24 08:44:32 -0300] [3416] [DEBUG] GET /
+[2025-07-24 08:44:36 -0300] [3416] [DEBUG] POST /consultar_rua
+[2025-07-24 08:44:42 -0300] [3399] [DEBUG] POST /salvar_endereco
+[2025-07-24 08:44:42 -0300] [3416] [DEBUG] GET /
+[2025-07-24 08:44:43 -0300] [3416] [DEBUG] POST /consultar_rua
+[2025-07-24 08:44:48 -0300] [3399] [DEBUG] POST /salvar_endereco
+[2025-07-24 08:44:48 -0300] [3416] [DEBUG] GET /
+[2025-07-24 08:44:51 -0300] [3399] [DEBUG] POST /consultar_rua
+[2025-07-24 08:44:54 -0300] [3416] [DEBUG] POST /consultar_rua
+[2025-07-24 08:44:59 -0300] [3399] [DEBUG] POST /salvar_endereco
+[2025-07-24 08:44:59 -0300] [3416] [DEBUG] GET /
+[2025-07-24 08:45:02 -0300] [3399] [DEBUG] POST /consultar_rua
+[2025-07-24 08:45:06 -0300] [3416] [DEBUG] POST /salvar_endereco
+[2025-07-24 08:45:06 -0300] [3399] [DEBUG] GET /
+[2025-07-24 08:45:07 -0300] [3416] [DEBUG] POST /consultar_rua
+[2025-07-24 08:45:10 -0300] [3399] [DEBUG] POST /salvar_endereco
+[2025-07-24 08:45:10 -0300] [3416] [DEBUG] GET /
+[2025-07-24 08:45:13 -0300] [3399] [DEBUG] POST /consultar_rua
+[2025-07-24 08:45:16 -0300] [3416] [DEBUG] POST /salvar_endereco
+[2025-07-24 08:45:16 -0300] [3399] [DEBUG] GET /
+[2025-07-24 08:45:17 -0300] [3416] [DEBUG] POST /consultar_rua
+[2025-07-24 08:45:20 -0300] [3399] [DEBUG] POST /salvar_endereco
+[2025-07-24 08:45:20 -0300] [3416] [DEBUG] GET /
+[2025-07-24 08:45:22 -0300] [3416] [DEBUG] POST /consultar_rua
+[2025-07-24 08:45:27 -0300] [3399] [DEBUG] POST /salvar_endereco
+[2025-07-24 08:45:27 -0300] [3416] [DEBUG] GET /
+[2025-07-24 08:45:28 -0300] [3399] [DEBUG] POST /consultar_rua
+[2025-07-24 08:45:32 -0300] [3416] [DEBUG] POST /salvar_endereco
+[2025-07-24 08:45:32 -0300] [3399] [DEBUG] GET /
+[2025-07-24 08:45:37 -0300] [3416] [DEBUG] POST /consultar_rua
+[2025-07-24 08:45:42 -0300] [3399] [DEBUG] POST /salvar_endereco
+[2025-07-24 08:45:42 -0300] [3416] [DEBUG] GET /
+[2025-07-24 08:45:43 -0300] [3416] [DEBUG] POST /consultar_rua
+[2025-07-24 08:45:49 -0300] [3399] [DEBUG] POST /salvar_endereco
+[2025-07-24 08:45:50 -0300] [3416] [DEBUG] GET /
+[2025-07-24 08:45:58 -0300] [3399] [DEBUG] POST /consultar_rua
+[2025-07-24 08:46:02 -0300] [3416] [DEBUG] POST /salvar_endereco
+[2025-07-24 08:46:02 -0300] [3399] [DEBUG] GET /
+[2025-07-24 08:46:03 -0300] [3399] [DEBUG] POST /consultar_rua
+[2025-07-24 08:46:05 -0300] [3416] [DEBUG] POST /salvar_endereco
+[2025-07-24 08:46:05 -0300] [3399] [DEBUG] GET /
+[2025-07-24 08:46:07 -0300] [3399] [DEBUG] POST /consultar_rua
+[2025-07-24 08:46:12 -0300] [3416] [DEBUG] POST /salvar_endereco
+[2025-07-24 08:46:12 -0300] [3399] [DEBUG] GET /
+[2025-07-24 08:46:13 -0300] [1341] [INFO] Handling signal: term
+[2025-07-24 08:46:14 -0300] [3399] [DEBUG] POST /consultar_rua
+[2025-07-24 08:46:14 -0300] [3399] [INFO] Worker exiting (pid: 3399)
+[2025-07-24 08:46:19 -0300] [3416] [DEBUG] POST /salvar_endereco
+[2025-07-24 08:46:19 -0300] [3416] [INFO] Worker exiting (pid: 3416)
+[2025-07-24 08:46:19 -0300] [1341] [INFO] Shutting down: Master
+[2025-07-24 08:46:19 -0300] [3716] [DEBUG] Current configuration:
+  config: ./gunicorn.conf.py
+  wsgi_app: None
+  bind: ['0.0.0.0:5000']
+  backlog: 2048
+  workers: 2
+  worker_class: sync
+  threads: 1
+  worker_connections: 1000
+  max_requests: 0
+  max_requests_jitter: 0
+  timeout: 120
+  graceful_timeout: 30
+  keepalive: 2
+  limit_request_line: 4094
+  limit_request_fields: 100
+  limit_request_field_size: 8190
+  reload: False
+  reload_engine: auto
+  reload_extra_files: []
+  spew: False
+  check_config: False
+  print_config: False
+  preload_app: False
+  sendfile: None
+  reuse_port: False
+  chdir: /home/luftsrv/AppReversa
+  daemon: False
+  raw_env: []
+  pidfile: None
+  worker_tmp_dir: None
+  user: 1000
+  group: 33
+  umask: 0
+  initgroups: False
+  tmp_upload_dir: None
+  secure_scheme_headers: {'X-FORWARDED-PROTOCOL': 'ssl', 'X-FORWARDED-PROTO': 'https', 'X-FORWARDED-SSL': 'on'}
+  forwarded_allow_ips: ['127.0.0.1', '::1']
+  accesslog: None
+  disable_redirect_access_to_syslog: False
+  access_log_format: %(h)s %(l)s %(u)s %(t)s "%(r)s" %(s)s %(b)s "%(f)s" "%(a)s"
+  errorlog: /home/luftsrv/AppReversa/gunicorn.log
+  loglevel: debug
+  capture_output: False
+  logger_class: gunicorn.glogging.Logger
+  logconfig: None
+  logconfig_dict: {}
+  logconfig_json: None
+  syslog_addr: udp://localhost:514
+  syslog: False
+  syslog_prefix: None
+  syslog_facility: user
+  enable_stdio_inheritance: False
+  statsd_host: None
+  dogstatsd_tags: 
+  statsd_prefix: 
+  proc_name: None
+  default_proc_name: app:app
+  pythonpath: None
+  paste: None
+  on_starting: <function OnStarting.on_starting at 0x75827d434f40>
+  on_reload: <function OnReload.on_reload at 0x75827d435080>
+  when_ready: <function WhenReady.when_ready at 0x75827d4351c0>
+  pre_fork: <function Prefork.pre_fork at 0x75827d4353a0>
+  post_fork: <function Postfork.post_fork at 0x75827d4354e0>
+  post_worker_init: <function PostWorkerInit.post_worker_init at 0x75827d435620>
+  worker_int: <function WorkerInt.worker_int at 0x75827d435760>
+  worker_abort: <function WorkerAbort.worker_abort at 0x75827d4358a0>
+  pre_exec: <function PreExec.pre_exec at 0x75827d4359e0>
+  pre_request: <function PreRequest.pre_request at 0x75827d435b20>
+  post_request: <function PostRequest.post_request at 0x75827d435bc0>
+  child_exit: <function ChildExit.child_exit at 0x75827d435d00>
+  worker_exit: <function WorkerExit.worker_exit at 0x75827d435e40>
+  nworkers_changed: <function NumWorkersChanged.nworkers_changed at 0x75827d435f80>
+  on_exit: <function OnExit.on_exit at 0x75827d4360c0>
+  ssl_context: <function NewSSLContext.ssl_context at 0x75827d4362a0>
+  proxy_protocol: False
+  proxy_allow_ips: ['127.0.0.1', '::1']
+  keyfile: None
+  certfile: None
+  ssl_version: 2
+  cert_reqs: 0
+  ca_certs: None
+  suppress_ragged_eofs: True
+  do_handshake_on_connect: False
+  ciphers: None
+  raw_paste_global_conf: []
+  permit_obsolete_folding: False
+  strip_header_spaces: False
+  permit_unconventional_http_method: False
+  permit_unconventional_http_version: False
+  casefold_http_method: False
+  forwarder_headers: ['SCRIPT_NAME', 'PATH_INFO']
+  header_map: drop
+[2025-07-24 08:46:19 -0300] [3716] [INFO] Starting gunicorn 23.0.0
+[2025-07-24 08:46:19 -0300] [3716] [DEBUG] Arbiter booted
+[2025-07-24 08:46:19 -0300] [3716] [INFO] Listening at: http://0.0.0.0:5000 (3716)
+[2025-07-24 08:46:19 -0300] [3716] [INFO] Using worker: sync
+[2025-07-24 08:46:19 -0300] [3718] [INFO] Booting worker with pid: 3718
+[2025-07-24 08:46:19 -0300] [3719] [INFO] Booting worker with pid: 3719
+[2025-07-24 08:46:19 -0300] [3716] [DEBUG] 2 workers
+[2025-07-24 08:46:20 -0300] [3719] [DEBUG] GET /
+[2025-07-24 08:46:23 -0300] [3718] [DEBUG] POST /consultar_rua
+[2025-07-24 08:46:27 -0300] [3719] [DEBUG] POST /salvar_endereco
+[2025-07-24 08:46:27 -0300] [3718] [DEBUG] GET /
+[2025-07-24 08:46:27 -0300] [3718] [DEBUG] GET /
+[2025-07-24 08:46:28 -0300] [3718] [DEBUG] POST /consultar_rua
+[2025-07-24 08:46:29 -0300] [3719] [DEBUG] GET /enderecos
+[2025-07-24 08:46:30 -0300] [3718] [DEBUG] POST /salvar_endereco
+[2025-07-24 08:46:30 -0300] [3719] [DEBUG] GET /
+[2025-07-24 08:46:30 -0300] [3718] [DEBUG] GET /credenciais
+[2025-07-24 08:46:32 -0300] [3719] [DEBUG] GET /
+[2025-07-24 08:46:33 -0300] [3718] [DEBUG] POST /consultar_rua
+[2025-07-24 08:46:39 -0300] [3719] [DEBUG] POST /consultar_rua
+[2025-07-24 08:46:48 -0300] [3719] [DEBUG] POST /salvar_endereco
+[2025-07-24 08:46:48 -0300] [3719] [DEBUG] GET /
+[2025-07-24 08:46:56 -0300] [3719] [DEBUG] POST /consultar_rua
+[2025-07-24 08:46:56 -0300] [3719] [DEBUG] POST /consultar_rua
+[2025-07-24 08:47:08 -0300] [3719] [DEBUG] POST /salvar_endereco
+[2025-07-24 08:47:08 -0300] [3719] [DEBUG] GET /
+[2025-07-24 08:47:09 -0300] [3719] [DEBUG] POST /consultar_rua
+[2025-07-24 08:47:14 -0300] [3719] [DEBUG] POST /salvar_endereco
+[2025-07-24 08:47:14 -0300] [3719] [DEBUG] GET /
+[2025-07-24 08:47:17 -0300] [3719] [DEBUG] POST /consultar_rua
+[2025-07-24 08:47:21 -0300] [3719] [DEBUG] POST /salvar_endereco
+[2025-07-24 08:47:21 -0300] [3719] [DEBUG] GET /
+[2025-07-24 08:47:23 -0300] [3719] [DEBUG] POST /consultar_rua
+[2025-07-24 08:47:26 -0300] [3718] [DEBUG] GET /
+[2025-07-24 08:47:27 -0300] [3719] [DEBUG] POST /salvar_endereco
+[2025-07-24 08:47:27 -0300] [3719] [DEBUG] GET /enderecos
+[2025-07-24 08:47:27 -0300] [3718] [DEBUG] GET /
+[2025-07-24 08:47:27 -0300] [3719] [DEBUG] GET /credenciais
+[2025-07-24 08:47:31 -0300] [3719] [DEBUG] POST /consultar_rua
+[2025-07-24 08:47:31 -0300] [3719] [DEBUG] GET /
+[2025-07-24 08:47:31 -0300] [3719] [DEBUG] GET /enderecos
+[2025-07-24 08:47:36 -0300] [3718] [DEBUG] POST /salvar_endereco
+[2025-07-24 08:47:36 -0300] [3718] [DEBUG] GET /
+[2025-07-24 08:47:36 -0300] [3719] [DEBUG] Closing connection. 
+[2025-07-24 08:47:37 -0300] [3719] [DEBUG] POST /consultar_rua
+[2025-07-24 08:47:41 -0300] [3718] [DEBUG] POST /salvar_endereco
+[2025-07-24 08:47:41 -0300] [3719] [DEBUG] GET /
+[2025-07-24 08:47:43 -0300] [3719] [DEBUG] POST /consultar_rua
+[2025-07-24 08:47:48 -0300] [3718] [DEBUG] POST /consultar_rua
+[2025-07-24 08:47:53 -0300] [3719] [DEBUG] POST /salvar_endereco
+[2025-07-24 08:47:53 -0300] [3718] [DEBUG] GET /
+[2025-07-24 08:47:58 -0300] [3718] [DEBUG] POST /consultar_rua
+[2025-07-24 08:47:58 -0300] [3718] [DEBUG] GET /enderecos/RV001001201
+[2025-07-24 08:48:01 -0300] [3718] [DEBUG] GET /enderecos
+[2025-07-24 08:48:03 -0300] [3719] [DEBUG] POST /salvar_endereco
+[2025-07-24 08:48:03 -0300] [3718] [DEBUG] GET /
+[2025-07-24 08:48:05 -0300] [3718] [DEBUG] POST /consultar_rua
+[2025-07-24 08:48:09 -0300] [3718] [DEBUG] POST /salvar_endereco
+[2025-07-24 08:48:09 -0300] [3718] [DEBUG] GET /
+[2025-07-24 08:48:15 -0300] [3718] [DEBUG] POST /consultar_rua
+[2025-07-24 08:48:15 -0300] [3718] [DEBUG] POST /consultar_rua
+[2025-07-24 08:48:20 -0300] [3718] [DEBUG] POST /salvar_endereco
+[2025-07-24 08:48:20 -0300] [3718] [DEBUG] GET /
+[2025-07-24 08:48:24 -0300] [3718] [DEBUG] POST /consultar_rua
+[2025-07-24 08:48:24 -0300] [3718] [DEBUG] POST /consultar_rua
+[2025-07-24 08:48:27 -0300] [3718] [DEBUG] POST /salvar_endereco
+[2025-07-24 08:48:27 -0300] [3718] [DEBUG] GET /
+[2025-07-24 08:48:33 -0300] [3718] [DEBUG] POST /consultar_rua
+[2025-07-24 08:48:33 -0300] [3718] [DEBUG] POST /consultar_rua
+[2025-07-24 08:48:39 -0300] [3718] [DEBUG] POST /salvar_endereco
+[2025-07-24 08:48:39 -0300] [3718] [DEBUG] GET /
+[2025-07-24 08:48:46 -0300] [3718] [DEBUG] POST /consultar_rua
+[2025-07-24 08:48:46 -0300] [3718] [DEBUG] POST /consultar_rua
+[2025-07-24 08:48:50 -0300] [3718] [DEBUG] POST /salvar_endereco
+[2025-07-24 08:48:50 -0300] [3718] [DEBUG] GET /
+[2025-07-24 08:48:54 -0300] [3718] [DEBUG] POST /consultar_rua
+[2025-07-24 08:48:54 -0300] [3718] [DEBUG] POST /consultar_rua
+[2025-07-24 08:48:57 -0300] [3718] [DEBUG] POST /salvar_endereco
+[2025-07-24 08:48:57 -0300] [3718] [DEBUG] GET /
+[2025-07-24 08:49:04 -0300] [3718] [DEBUG] POST /consultar_rua
+[2025-07-24 08:49:04 -0300] [3718] [DEBUG] POST /consultar_rua
+[2025-07-24 08:49:07 -0300] [3718] [DEBUG] POST /salvar_endereco
+[2025-07-24 08:49:07 -0300] [3718] [DEBUG] GET /
+[2025-07-24 08:49:10 -0300] [3718] [DEBUG] POST /consultar_rua
+[2025-07-24 08:49:10 -0300] [3718] [DEBUG] POST /consultar_rua
+[2025-07-24 08:49:13 -0300] [3718] [DEBUG] POST /salvar_endereco
+[2025-07-24 08:49:13 -0300] [3718] [DEBUG] GET /
+[2025-07-24 08:49:18 -0300] [3718] [DEBUG] POST /consultar_rua
+[2025-07-24 08:49:18 -0300] [3718] [DEBUG] POST /consultar_rua
+[2025-07-24 08:49:21 -0300] [3718] [DEBUG] POST /salvar_endereco
+[2025-07-24 08:49:21 -0300] [3718] [DEBUG] GET /
+[2025-07-24 08:49:23 -0300] [3718] [DEBUG] POST /consultar_rua
+[2025-07-24 08:49:26 -0300] [3718] [DEBUG] POST /salvar_endereco
+[2025-07-24 08:49:26 -0300] [3718] [DEBUG] GET /
+[2025-07-24 08:49:29 -0300] [3718] [DEBUG] POST /consultar_rua
+[2025-07-24 08:49:33 -0300] [3718] [DEBUG] POST /salvar_endereco
+[2025-07-24 08:49:33 -0300] [3718] [DEBUG] GET /
+[2025-07-24 08:49:34 -0300] [3718] [DEBUG] POST /consultar_rua
+[2025-07-24 08:49:40 -0300] [3718] [DEBUG] POST /salvar_endereco
+[2025-07-24 08:49:40 -0300] [3718] [DEBUG] GET /
+[2025-07-24 08:49:45 -0300] [3718] [DEBUG] POST /consultar_rua
+[2025-07-24 08:49:45 -0300] [3718] [DEBUG] POST /consultar_rua
+[2025-07-24 08:49:48 -0300] [3718] [DEBUG] POST /salvar_endereco
+[2025-07-24 08:49:48 -0300] [3718] [DEBUG] GET /
+[2025-07-24 08:49:48 -0300] [3719] [DEBUG] Closing connection. 
+[2025-07-24 08:49:49 -0300] [3718] [DEBUG] POST /consultar_rua
+[2025-07-24 08:49:53 -0300] [3719] [DEBUG] POST /salvar_endereco
+[2025-07-24 08:49:53 -0300] [3718] [DEBUG] GET /
+[2025-07-24 08:49:55 -0300] [3719] [DEBUG] POST /consultar_rua
+[2025-07-24 08:50:01 -0300] [3718] [DEBUG] POST /salvar_endereco
+[2025-07-24 08:50:01 -0300] [3719] [DEBUG] GET /
+[2025-07-24 08:50:03 -0300] [3718] [DEBUG] POST /consultar_rua
+[2025-07-24 08:50:10 -0300] [3719] [DEBUG] POST /salvar_endereco
+[2025-07-24 08:50:10 -0300] [3718] [DEBUG] GET /
