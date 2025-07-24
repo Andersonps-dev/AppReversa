@@ -6031,3 +6031,62 @@ SystemExit: 1
 [2025-07-24 11:59:27 -0300] [68375] [DEBUG] GET /enderecos
 [2025-07-24 11:59:29 -0300] [68375] [DEBUG] GET /enderecos/RV001003301
 [2025-07-24 11:59:33 -0300] [68375] [DEBUG] POST /enderecos/RV001003301
+[2025-07-24 11:59:55 -0300] [68375] [DEBUG] GET /enderecos/RV001003301
+[2025-07-24 11:59:57 -0300] [68375] [DEBUG] GET /enderecos/RV001003301
+[2025-07-24 11:59:59 -0300] [16046] [CRITICAL] WORKER TIMEOUT (pid:68231)
+[2025-07-24 11:59:59 -0300] [68231] [ERROR] Error handling request (no URI read)
+Traceback (most recent call last):
+  File "/home/luftsrv/AppReversa/venv/lib/python3.13/site-packages/gunicorn/workers/sync.py", line 133, in handle
+    req = next(parser)
+  File "/home/luftsrv/AppReversa/venv/lib/python3.13/site-packages/gunicorn/http/parser.py", line 41, in __next__
+    self.mesg = self.mesg_class(self.cfg, self.unreader, self.source_addr, self.req_count)
+                ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/luftsrv/AppReversa/venv/lib/python3.13/site-packages/gunicorn/http/message.py", line 259, in __init__
+    super().__init__(cfg, unreader, peer_addr)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/luftsrv/AppReversa/venv/lib/python3.13/site-packages/gunicorn/http/message.py", line 60, in __init__
+    unused = self.parse(self.unreader)
+  File "/home/luftsrv/AppReversa/venv/lib/python3.13/site-packages/gunicorn/http/message.py", line 271, in parse
+    self.get_data(unreader, buf, stop=True)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/luftsrv/AppReversa/venv/lib/python3.13/site-packages/gunicorn/http/message.py", line 262, in get_data
+    data = unreader.read()
+  File "/home/luftsrv/AppReversa/venv/lib/python3.13/site-packages/gunicorn/http/unreader.py", line 36, in read
+    d = self.chunk()
+  File "/home/luftsrv/AppReversa/venv/lib/python3.13/site-packages/gunicorn/http/unreader.py", line 63, in chunk
+    return self.sock.recv(self.mxchunk)
+           ~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "/home/luftsrv/AppReversa/venv/lib/python3.13/site-packages/gunicorn/workers/base.py", line 204, in handle_abort
+    sys.exit(1)
+    ~~~~~~~~^^^
+SystemExit: 1
+[2025-07-24 11:59:59 -0300] [68231] [INFO] Worker exiting (pid: 68231)
+[2025-07-24 11:59:59 -0300] [71284] [INFO] Booting worker with pid: 71284
+[2025-07-24 12:00:00 -0300] [68375] [DEBUG] GET /enderecos
+[2025-07-24 12:00:01 -0300] [68375] [DEBUG] GET /enderecos/RV001003401
+[2025-07-24 12:00:08 -0300] [71284] [DEBUG] POST /enderecos/RV001003401
+[2025-07-24 12:00:28 -0300] [71284] [DEBUG] GET /enderecos/RV001003401
+[2025-07-24 12:00:30 -0300] [71284] [DEBUG] GET /enderecos/RV001003401
+[2025-07-24 12:00:33 -0300] [68375] [DEBUG] GET /enderecos
+[2025-07-24 12:00:34 -0300] [68375] [DEBUG] GET /enderecos/RV001003501
+[2025-07-24 12:00:38 -0300] [68375] [DEBUG] POST /enderecos/RV001003501
+[2025-07-24 12:01:00 -0300] [68375] [DEBUG] GET /enderecos/RV001003501
+[2025-07-24 12:01:02 -0300] [68375] [DEBUG] GET /enderecos/RV001003501
+[2025-07-24 12:01:03 -0300] [71284] [DEBUG] GET /enderecos
+[2025-07-24 12:01:08 -0300] [68375] [DEBUG] GET /enderecos/RV001004101
+[2025-07-24 12:01:23 -0300] [68375] [DEBUG] POST /enderecos/RV001004101
+[2025-07-24 12:01:45 -0300] [68375] [DEBUG] GET /enderecos/RV001004101
+[2025-07-24 12:01:47 -0300] [71284] [DEBUG] GET /enderecos/RV001004101
+[2025-07-24 12:02:24 -0300] [71284] [DEBUG] GET /enderecos
+[2025-07-24 12:02:25 -0300] [71284] [DEBUG] GET /enderecos/RV001004201
+[2025-07-24 12:02:30 -0300] [71284] [DEBUG] POST /enderecos/RV001004201
+[2025-07-24 12:02:55 -0300] [71284] [DEBUG] GET /enderecos/RV001004201
+[2025-07-24 12:02:57 -0300] [71284] [DEBUG] GET /enderecos/RV001004201
+[2025-07-24 12:02:59 -0300] [71284] [DEBUG] GET /enderecos
+[2025-07-24 12:03:01 -0300] [71284] [DEBUG] GET /enderecos/RV001004301
+[2025-07-24 12:03:09 -0300] [71284] [DEBUG] POST /enderecos/RV001004301
+[2025-07-24 12:03:32 -0300] [71284] [DEBUG] GET /enderecos/RV001004301
+[2025-07-24 12:03:34 -0300] [68375] [DEBUG] GET /enderecos/RV001004301
+[2025-07-24 12:03:35 -0300] [68375] [DEBUG] GET /enderecos
+[2025-07-24 12:03:36 -0300] [68375] [DEBUG] GET /enderecos/RV001004401
+[2025-07-24 12:03:40 -0300] [68375] [DEBUG] POST /enderecos/RV001004401
