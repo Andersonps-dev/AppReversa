@@ -2574,3 +2574,32 @@ SystemExit: 1
 [2025-07-24 08:12:13 -0300] [74113] [DEBUG] Closing connection. 
 [2025-07-24 08:14:46 -0300] [69845] [DEBUG] GET /
 [2025-07-24 08:14:47 -0300] [69845] [DEBUG] GET /enderecos
+[2025-07-24 08:16:47 -0300] [69842] [CRITICAL] WORKER TIMEOUT (pid:69845)
+[2025-07-24 08:16:47 -0300] [69845] [ERROR] Error handling request (no URI read)
+Traceback (most recent call last):
+  File "/home/luftsrv/AppReversa/venv/lib/python3.13/site-packages/gunicorn/workers/sync.py", line 133, in handle
+    req = next(parser)
+  File "/home/luftsrv/AppReversa/venv/lib/python3.13/site-packages/gunicorn/http/parser.py", line 41, in __next__
+    self.mesg = self.mesg_class(self.cfg, self.unreader, self.source_addr, self.req_count)
+                ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/luftsrv/AppReversa/venv/lib/python3.13/site-packages/gunicorn/http/message.py", line 259, in __init__
+    super().__init__(cfg, unreader, peer_addr)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/luftsrv/AppReversa/venv/lib/python3.13/site-packages/gunicorn/http/message.py", line 60, in __init__
+    unused = self.parse(self.unreader)
+  File "/home/luftsrv/AppReversa/venv/lib/python3.13/site-packages/gunicorn/http/message.py", line 271, in parse
+    self.get_data(unreader, buf, stop=True)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/luftsrv/AppReversa/venv/lib/python3.13/site-packages/gunicorn/http/message.py", line 262, in get_data
+    data = unreader.read()
+  File "/home/luftsrv/AppReversa/venv/lib/python3.13/site-packages/gunicorn/http/unreader.py", line 36, in read
+    d = self.chunk()
+  File "/home/luftsrv/AppReversa/venv/lib/python3.13/site-packages/gunicorn/http/unreader.py", line 63, in chunk
+    return self.sock.recv(self.mxchunk)
+           ~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "/home/luftsrv/AppReversa/venv/lib/python3.13/site-packages/gunicorn/workers/base.py", line 204, in handle_abort
+    sys.exit(1)
+    ~~~~~~~~^^^
+SystemExit: 1
+[2025-07-24 08:16:47 -0300] [69845] [INFO] Worker exiting (pid: 69845)
+[2025-07-24 08:16:47 -0300] [74883] [INFO] Booting worker with pid: 74883
