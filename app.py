@@ -16,6 +16,17 @@ import pytz
 
 app = Flask(__name__)
 
+load_dotenv()
+
+# POSTGRES_USER = os.getenv('POSTGRES_USER')
+# POSTGRES_PASSWORD = os.getenv('POSTGRES_PASSWORD')
+# POSTGRES_DB = os.getenv('POSTGRES_DB')
+# POSTGRES_HOST = os.getenv('POSTGRES_HOST')
+# POSTGRES_PORT = os.getenv('POSTGRES_PORT')
+
+# app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}'
+
+
 app.config['SECRET_KEY'] = 'admin_anderson_luft'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
