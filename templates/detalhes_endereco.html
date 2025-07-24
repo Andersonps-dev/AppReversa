@@ -210,46 +210,7 @@
     </style>
 </head>
 <body>
-
-    <nav class="navbar navbar-expand-lg navbar-light bg-white">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="/">
-                <i class="bi bi-box-seam me-1"></i>RTP
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/">
-                            <i class="bi bi-house-door me-1"></i> Início
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/enderecos">
-                            <i class="bi bi-map me-1"></i> Endereços
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/credenciais">
-                            <i class="bi bi-person-lock me-1"></i> Credenciais
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#modalAtualizarEstoque">
-                            <i class="bi bi-arrow-repeat me-1"></i> Atualizar Estoque
-                        </a>
-                        {% if data_atualizacao_estoque %}
-                        <div class="text-center small text-muted" style="margin-top: -8px;">
-                            <span>Última atualização: {{ data_atualizacao_estoque.strftime('%d/%m/%Y %H:%M') }}</span>
-                        </div>
-                        {% endif %}
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+    {% include 'navbar.html' %}
 
     <!-- Modal de confirmação para atualizar estoque -->
     <div class="modal fade" id="modalAtualizarEstoque" tabindex="-1" aria-labelledby="modalAtualizarEstoqueLabel" aria-hidden="true">
