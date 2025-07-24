@@ -3741,3 +3741,9 @@ SystemExit: 1
 [2025-07-24 09:27:43 -0300] [8662] [DEBUG] POST /salvar_endereco
 [2025-07-24 09:27:44 -0300] [10940] [DEBUG] GET /
 [2025-07-24 09:27:45 -0300] [10940] [DEBUG] POST /consultar_rua
+[2025-07-24 09:27:53 -0300] [8662] [DEBUG] POST /salvar_endereco
+[2025-07-24 09:27:53 -0300] [10940] [DEBUG] GET /
+[2025-07-24 09:27:54 -0300] [8662] [DEBUG] POST /consultar_rua
+[2025-07-24 09:28:00 -0300] [10940] [DEBUG] POST /consultar_rua
+[2025-07-24 09:28:27 -0300] [8662] [DEBUG] Closing connection. 
+[2025-07-24 09:28:27 -0300] [10940] [DEBUG] Closing connection. 
