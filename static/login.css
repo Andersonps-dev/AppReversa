@@ -149,18 +149,32 @@ body {
 
 .toggle-password {
     position: absolute;
-    right: 15px;
+    right: 30px;
+    top: 50%;
+    transform: translateY(-50%);
     background: none;
     border: none;
     color: var(--gray-color);
     cursor: pointer;
-    padding: 5px;
+    padding: 0;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     transition: var(--transition);
+    z-index: 2;
 }
 
 .toggle-password:hover {
     color: var(--primary-color);
 }
+
+#senha {
+    padding-right: 40px; /* Espaço para o ícone */
+}
+
+
 
 .form-options {
     display: flex;
