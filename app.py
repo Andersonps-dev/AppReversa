@@ -126,7 +126,6 @@ def enderecos():
 
 @app.route('/enderecos/<endereco>', methods=['GET', 'POST'])
 def detalhes_endereco(endereco):
-    # Query to fetch details
     detalhes = db.session.query(
         BarraEndereco.barra,
         func.count(BarraEndereco.endereco).label('qtde'),
@@ -146,7 +145,7 @@ def detalhes_endereco(endereco):
             'DataAtualizado': detalhe.data_atualizado,
             'Bloqueado': detalhe.bloqueado
         })
-        bloqueado = detalhe.bloqueado  # Update bloqueado based on query result
+        bloqueado = detalhe.bloqueado
 
     if request.method == 'POST':
         if 'bloquear' in request.form:
@@ -181,10 +180,8 @@ def detalhes_endereco(endereco):
             return redirect(url_for('detalhes_endereco', endereco=endereco))
 
         try:
-            # Commit any existing changes to ensure a clean session
             db.session.commit()
 
-            # Initialize and run inventory executor
             executor = InventoryExecutor(
                 user1=user1,
                 pass1=pass1,
@@ -198,19 +195,15 @@ def detalhes_endereco(endereco):
             logger.info(f"Updating critica for endereco: {endereco}")
             executor.atualizar_critica()
 
-            # Commit any changes made by InventoryExecutor
             db.session.commit()
 
-            # Start a new transaction for database operations
             with db.session.begin():
-                # Fetch records to transfer
                 registros = db.session.query(BarraEndereco).filter_by(endereco=endereco).all()
                 if not registros:
                     logger.warning(f"No records found for endereco: {endereco}")
                     flash('Nenhum registro encontrado para o endereço.', 'warning')
                     return redirect(url_for('detalhes_endereco', endereco=endereco))
 
-                # Transfer records to InventariosRealizados and delete from BarraEndereco
                 for registro in registros:
                     inventario = InventariosRealizados(
                         barra=registro.barra,
@@ -219,11 +212,9 @@ def detalhes_endereco(endereco):
                         data_armazenamento=registro.data_armazenamento,
                         data_inventario=datetime.now(pytz.UTC)
                     )
-                    # db.session.add(inventario)
                     db.session.delete(registro)
                     logger.debug(f"Transferred and deleted record: barra={registro.barra}, endereco={endereco}")
 
-                # Explicitly delete any remaining records for the endereco
                 deleted_count = db.session.query(BarraEndereco).filter_by(endereco=endereco).delete()
                 logger.debug(f"Deleted {deleted_count} remaining records for endereco: {endereco}")
 
@@ -288,5 +279,5 @@ def credenciais():
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    # app.run(host='0.0.0.0', port=5000, debug=False)
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=False)
+    # app.run(debug=True)
