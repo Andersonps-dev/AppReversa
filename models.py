@@ -30,7 +30,6 @@ class Estoque(db.Model):
     data_atualizacao = db.Column(db.DateTime)
 
 class BarraEndereco(db.Model):
-    __tablename__ = 'barra_endereco'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     barra = db.Column(db.String(255), nullable=False)
     rua = db.Column(db.String(255), nullable=False)
@@ -40,7 +39,6 @@ class BarraEndereco(db.Model):
 
 # Novo modelo para registrar inventários realizados
 class InventariosRealizados(db.Model):
-    __tablename__ = 'inventarios_realizados'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     barra = db.Column(db.String(255), nullable=False)
     rua = db.Column(db.String(255), nullable=False)
@@ -49,7 +47,6 @@ class InventariosRealizados(db.Model):
     data_inventario = db.Column(db.DateTime, nullable=False)
     
 class UserCredential(db.Model):
-    __tablename__ = 'user_credential'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user1 = db.Column(db.String(128))
     pass1 = db.Column(db.String(128))

@@ -36,6 +36,10 @@ load_dotenv()
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    return render_template('login.html')
+
 @app.route('/')
 def index():
     sucesso = None
@@ -122,13 +126,14 @@ def enderecos():
 
 @app.route('/enderecos/<endereco>', methods=['GET', 'POST'])
 def detalhes_endereco(endereco):
+    # Query to fetch details
     detalhes = db.session.query(
         BarraEndereco.barra,
         func.count(BarraEndereco.endereco).label('qtde'),
         BarraEndereco.rua,
         func.max(BarraEndereco.data_armazenamento).label('data_atualizado'),
-        BarraEndereco.bloqueado  # Adicionar campo bloqueado
-    ).filter_by(endereco=endereco).group_by(BarraEndereco.barra, BarraEndereco.rua, BarraEndereco.bloqueado).all()
+        BarraEndereco.bloqueado
+    ).filter(BarraEndereco.endereco == endereco).group_by(BarraEndereco.barra, BarraEndereco.rua, BarraEndereco.bloqueado).all()
     
     itens = []
     bloqueado = False
@@ -141,7 +146,7 @@ def detalhes_endereco(endereco):
             'DataAtualizado': detalhe.data_atualizado,
             'Bloqueado': detalhe.bloqueado
         })
-        bloqueado = detalhe.bloqueado  # Assume que todos os registros do mesmo endereço têm o mesmo status de bloqueio
+        bloqueado = detalhe.bloqueado  # Update bloqueado based on query result
 
     if request.method == 'POST':
         if 'bloquear' in request.form:
@@ -151,6 +156,7 @@ def detalhes_endereco(endereco):
                 flash('Endereço bloqueado com sucesso!', 'success')
             except Exception as e:
                 db.session.rollback()
+                logger.error(f'Erro ao bloquear endereço: {e}', exc_info=True)
                 flash(f'Erro ao bloquear endereço: {e}', 'error')
             return redirect(url_for('detalhes_endereco', endereco=endereco))
         
@@ -161,6 +167,7 @@ def detalhes_endereco(endereco):
                 flash('Endereço desbloqueado com sucesso!', 'success')
             except Exception as e:
                 db.session.rollback()
+                logger.error(f'Erro ao desbloquear endereço: {e}', exc_info=True)
                 flash(f'Erro ao desbloquear endereço: {e}', 'error')
             return redirect(url_for('detalhes_endereco', endereco=endereco))
 
@@ -169,7 +176,15 @@ def detalhes_endereco(endereco):
         user2 = request.form.get('user2')
         pass2 = request.form.get('pass2')
 
+        if not all([user1, pass1, user2, pass2]):
+            flash('Todos os campos de autenticação são obrigatórios.', 'error')
+            return redirect(url_for('detalhes_endereco', endereco=endereco))
+
         try:
+            # Commit any existing changes to ensure a clean session
+            db.session.commit()
+
+            # Initialize and run inventory executor
             executor = InventoryExecutor(
                 user1=user1,
                 pass1=pass1,
@@ -178,33 +193,47 @@ def detalhes_endereco(endereco):
                 locais_banco=[endereco],
                 items_by_location=itens,
             )
+            logger.info(f"Executing inventory for endereco: {endereco}")
             executor.execute_inventory()
+            logger.info(f"Updating critica for endereco: {endereco}")
             executor.atualizar_critica()
 
-            # Buscar todos os registros da BarraEndereco para o endereço
-            registros = db.session.query(BarraEndereco).filter_by(endereco=endereco).all()
-            for registro in registros:
-                inventario = InventariosRealizados(
-                    barra=registro.barra,
-                    rua=registro.rua,
-                    endereco=registro.endereco,
-                    data_armazenamento=registro.data_armazenamento,
-                    data_inventario=datetime.now()
-                )
-                db.session.add(inventario)
-                db.session.delete(registro)
+            # Commit any changes made by InventoryExecutor
             db.session.commit()
 
-            # Após executar o inventário, desbloquear o endereço
-            BarraEndereco.query.filter_by(endereco=endereco).update({'bloqueado': False})
-            db.session.commit()
+            # Start a new transaction for database operations
+            with db.session.begin():
+                # Fetch records to transfer
+                registros = db.session.query(BarraEndereco).filter_by(endereco=endereco).all()
+                if not registros:
+                    logger.warning(f"No records found for endereco: {endereco}")
+                    flash('Nenhum registro encontrado para o endereço.', 'warning')
+                    return redirect(url_for('detalhes_endereco', endereco=endereco))
 
-            flash('Inventário executado com sucesso!', 'success')
+                # Transfer records to InventariosRealizados and delete from BarraEndereco
+                for registro in registros:
+                    inventario = InventariosRealizados(
+                        barra=registro.barra,
+                        rua=registro.rua,
+                        endereco=registro.endereco,
+                        data_armazenamento=registro.data_armazenamento,
+                        data_inventario=datetime.now(pytz.UTC)
+                    )
+                    # db.session.add(inventario)
+                    db.session.delete(registro)
+                    logger.debug(f"Transferred and deleted record: barra={registro.barra}, endereco={endereco}")
+
+                # Explicitly delete any remaining records for the endereco
+                deleted_count = db.session.query(BarraEndereco).filter_by(endereco=endereco).delete()
+                logger.debug(f"Deleted {deleted_count} remaining records for endereco: {endereco}")
+
+            flash('Inventário executado com sucesso e todos os registros foram excluídos!', 'success')
         except Exception as e:
             db.session.rollback()
-            flash(f'Erro ao executar inventário: {e}', 'error')
+            logger.error(f'Erro ao executar inventário: {e}', exc_info=True)
+            flash(f'Erro ao executar inventário: {str(e)}', 'error')
         return redirect(url_for('detalhes_endereco', endereco=endereco))
-        
+    
     cred = db.session.query(UserCredential).first()
     data_atualizacao_estoque = db.session.query(func.max(Estoque.data_atualizacao)).scalar()
     return render_template('detalhes_endereco.html', endereco=endereco, detalhes=detalhes, cred=cred, 
@@ -259,5 +288,5 @@ def credenciais():
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(host='0.0.0.0', port=5000, debug=False)
-    # app.run(debug=True)
+    # app.run(host='0.0.0.0', port=5000, debug=False)
+    app.run(debug=True)

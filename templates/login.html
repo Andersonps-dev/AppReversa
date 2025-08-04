@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Login | Sistema</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="background-animation"></div>
+    <div class="login-container">
+        <div class="login-header">
+            <div class="logo">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <h1 class="login-title">Bem-vind</h1>
+        </div>
+        
+        <form method="post" autocomplete="off" class="login-form">
+            <div class="form-group">
+                <div class="input-with-icon">
+                    <i class="fas fa-user"></i>
+                    <input type="text" id="usuario" name="usuario" class="form-input" placeholder=" " required autofocus>
+                    <label for="usuario" class="form-label">Usuário</label>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <div class="input-with-icon">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="senha" name="senha" class="form-input" placeholder=" " required>
+                    <label for="senha" class="form-label">Senha</label>
+                    <button type="button" class="toggle-password" aria-label="Mostrar senha">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <div class="input-with-icon">
+                    <i class="fas fa-building"></i>
+                    <input type="text" id="empresa" name="empresa" class="form-input" placeholder=" " required>
+                    <label for="empresa" class="form-label">Empresa</label>
+                </div>
+            </div>
+            
+            <button type="submit" class="login-btn">
+                <span class="btn-text">Entrar</span>
+                <i class="fas fa-arrow-right btn-icon"></i>
+            </button>
+        </form>
+    </div>
+    <script>
+        // login.js - Funcionalidades básicas de UI
+        document.addEventListener('DOMContentLoaded', function() {
+            // 1. Toggle de visibilidade da senha
+            const togglePassword = document.querySelector('.toggle-password');
+            const passwordInput = document.getElementById('senha');
+            
+            if (togglePassword && passwordInput) {
+                togglePassword.addEventListener('click', function() {
+                    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                    passwordInput.setAttribute('type', type);
+                    this.querySelector('i').classList.toggle('fa-eye');
+                    this.querySelector('i').classList.toggle('fa-eye-slash');
+                });
+            }
+
+            // 2. Animações dos labels flutuantes
+            const inputs = document.querySelectorAll('.form-input');
+            inputs.forEach(input => {
+                // Ativa o label se já houver valor (útil para recarregamentos de página)
+                if (input.value) {
+                    input.nextElementSibling.classList.add('active');
+                }
+                
+                input.addEventListener('focus', function() {
+                    this.nextElementSibling.classList.add('active');
+                });
+                
+                input.addEventListener('blur', function() {
+                    if (!this.value) {
+                        this.nextElementSibling.classList.remove('active');
+                    }
+                });
+            });
+
+            // 3. Efeito de loading no botão de login
+            const loginForm = document.querySelector('.login-form');
+            if (loginForm) {
+                loginForm.addEventListener('submit', function() {
+                    const submitBtn = this.querySelector('.login-btn');
+                    if (submitBtn) {
+                        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Entrando...';
+                        submitBtn.disabled = true;
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
