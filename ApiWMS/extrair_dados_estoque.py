@@ -1,14 +1,21 @@
 import requests
-import os
 import pandas as pd
 from datetime import datetime
-import sqlite3
 import logging
 from flask import flash
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+import sys
+import os
+import tempfile
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from database import db
+from models import Estoque
 
 logger = logging.getLogger(__name__)
 
-def extrair_dados_estoques_wms(link_wms, user_wms, senha_wms, id_depositante=2361178, armazem="insider%", save_path=""):
+def extrair_dados_estoques_wms(link_wms, user_wms, senha_wms, id_depositante=2361178, armazem="insider%"):
     try:
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36',
@@ -114,109 +121,69 @@ def extrair_dados_estoques_wms(link_wms, user_wms, senha_wms, id_depositante=236
             flash(f"Falha ao baixar o arquivo CSV! Status: {download_response.status_code}", 'error')
             return False
         
-        novo_nome = "Estoque Local Por Produto"
-        full_path = os.path.join(save_path, novo_nome + ".csv")
-        
-        save_dir = os.path.dirname(full_path)
-        if not os.path.exists(save_dir):
-            os.makedirs(save_dir)
-            
-        with open(full_path, 'wb') as file:
-            file.write(download_response.content)
-        logger.info(f"Arquivo salvo em: {full_path}")
+        # Use temporary file instead of instance folder
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.csv') as temp_file:
+            temp_file.write(download_response.content)
+            temp_file_path = temp_file.name
 
-        db_path = os.path.join(save_path, "database.db")
-        conn = sqlite3.connect(db_path)
-        cursor = conn.cursor()
-        
-        try:
-            cursor.execute('DROP TABLE IF EXISTS estoque')
-        except:
-            pass
-            
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS estoque (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                Local TEXT,
-                Rua TEXT,
-                F_IDLOCAL TEXT,
-                Tipo_do_Local TEXT,
-                Estado TEXT,
-                Buffer BOOLEAN,
-                Local_Ativo BOOLEAN,
-                Setor TEXT,
-                Regiao TEXT,
-                Estoque INTEGER,
-                Pendencia INTEGER,
-                Adicionar INTEGER,
-                Disponivel INTEGER,
-                Barra TEXT,
-                Descricao_Reduzida TEXT,
-                idProduto TEXT,
-                Codigo_do_Produto TEXT,
-                Codigo_Produto_Depositante TEXT,
-                Produto TEXT,
-                Depositante TEXT,
-                Tipo TEXT,
-                H_IDARMAZEM TEXT,
-                H_IDDEPOSITANTE TEXT,
-                H_ORDEM TEXT,
-                H_RN TEXT,
-                data_atualizacao DATETIME
-            )
-        ''')
+        logger.info(f"Arquivo salvo temporariamente em: {temp_file_path}")
 
-        df = pd.read_csv(full_path, dtype={'Barra':str, 'Código do Produto':str, 'Código Produto Depositante':str})
+        # Clear existing data in Estoque table
+        db.session.query(Estoque).delete()
+        db.session.commit()
+
+        df = pd.read_csv(temp_file_path, dtype={'Barra': str, 'Código do Produto': str, 'Código Produto Depositante': str})
         df = df[(df['Tipo do Local'] == 'PICKING') & (df['Setor'] == 'INSIDER - BOM')]
         df = df[df['Local'].str[6:8].astype(int) < 23]
         
+        # Function to convert 'S'/'N' to boolean
+        def to_boolean(value):
+            if isinstance(value, str):
+                return value.upper() == 'S'
+            return bool(value)
+
         for _, row in df.iterrows():
             local = row.get('Local', '')
-            
-            cursor.execute('''
-                INSERT INTO estoque (
-                    Local, Rua, F_IDLOCAL, Tipo_do_Local, Estado, Buffer, Local_Ativo, Setor, Regiao,
-                    Estoque, Pendencia, Adicionar, Disponivel, Barra, Descricao_Reduzida,
-                    idProduto, Codigo_do_Produto, Codigo_Produto_Depositante, Produto,
-                    Depositante, Tipo, H_IDARMAZEM, H_IDDEPOSITANTE, H_ORDEM, H_RN, data_atualizacao
-                )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            ''', (
-                row.get('Local', ''),
-                local[2:5],
-                row.get('F$IDLOCAL', ''),
-                row.get('Tipo do Local', ''),
-                row.get('Estado', ''),
-                row.get('Buffer', False),
-                row.get('Local Ativo', False),
-                row.get('Setor', ''),
-                row.get('Região', ''),
-                row.get('Estoque', 0),
-                row.get('Pendência', 0),
-                row.get('Adicionar', 0),
-                row.get('Disponível', 0),
-                row.get('Barra', ''),
-                row.get('Descrição Reduzida', ''),
-                row.get('idProduto', ''),
-                row.get('Código do Produto', ''),
-                row.get('Código Produto Depositante', ''),
-                row.get('Produto', ''),
-                row.get('Depositante', ''),
-                row.get('Tipo', ''),
-                row.get('H$IDARMAZEM', ''),
-                row.get('H$IDDEPOSITANTE', ''),
-                row.get('H$ORDEM', ''),
-                row.get('H$RN', ''),
-                datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            ))
-
-        conn.commit()
-        conn.close()
-        logger.info(f"Dados salvos com sucesso no banco de dados: {db_path}, tabela: estoque")
+            estoque = Estoque(
+                Local=row.get('Local', ''),
+                Rua=local[2:5],
+                F_IDLOCAL=row.get('F$IDLOCAL', ''),
+                Tipo_do_Local=row.get('Tipo do Local', ''),
+                Estado=row.get('Estado', ''),
+                Buffer=to_boolean(row.get('Buffer', False)),
+                Local_Ativo=to_boolean(row.get('Local Ativo', False)),
+                Setor=row.get('Setor', ''),
+                Regiao=row.get('Região', ''),
+                Estoque=row.get('Estoque', 0),
+                Pendencia=row.get('Pendência', 0),
+                Adicionar=row.get('Adicionar', 0),
+                Disponivel=row.get('Disponível', 0),
+                Barra=row.get('Barra', ''),
+                Descricao_Reduzida=row.get('Descrição Reduzida', ''),
+                idProduto=row.get('idProduto', ''),
+                Codigo_do_Produto=row.get('Código do Produto', ''),
+                Codigo_Produto_Depositante=row.get('Código Produto Depositante', ''),
+                Produto=row.get('Produto', ''),
+                Depositante=row.get('Depositante', ''),
+                Tipo=row.get('Tipo', ''),
+                H_IDARMAZEM=row.get('H$IDARMAZEM', ''),
+                H_IDDEPOSITANTE=row.get('H$IDDEPOSITANTE', ''),
+                H_ORDEM=row.get('H$ORDEM', ''),
+                H_RN=row.get('H$RN', ''),
+                data_atualizacao=datetime.now()
+            )
+            db.session.add(estoque)
+        
+        db.session.commit()
+        logger.info("Dados salvos com sucesso no banco de dados PostgreSQL, tabela: estoque")
         flash("Dados de estoque atualizados com sucesso!", "success")
+        
+        # Clean up temporary file
+        os.unlink(temp_file_path)
         return True
 
     except Exception as e:
         logger.error(f"❌ Erro crítico: {e}")
         flash(f"Erro ao atualizar dados de estoque: {e}", "error")
+        db.session.rollback()
         return False

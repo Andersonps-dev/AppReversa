@@ -24,7 +24,6 @@ POSTGRES_HOST = os.getenv('POSTGRES_HOST')
 POSTGRES_PORT = os.getenv('POSTGRES_PORT')
 
 app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}'
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 
 app.config['SECRET_KEY'] = 'admin_anderson_luft'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -79,11 +78,9 @@ def atualizar_estoque():
         success = extrair_dados_estoques_wms(
             link_wms=LINK_WMS,
             user_wms=LOGINS_WMS[0],
-            senha_wms=SENHAS_WMS[0],
-            save_path=app.instance_path
+            senha_wms=SENHAS_WMS[0]
         )
         if success:
-            os.remove(os.path.join(app.instance_path, "Estoque Local Por Produto.csv"))
             flash('Estoque atualizado com sucesso!', 'success')
         else:
             flash('Falha ao atualizar estoque.', 'error')
@@ -262,5 +259,5 @@ def credenciais():
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(host='0.0.0.0', port=5000, debug=False)
-    # app.run(debug=True)
+    # app.run(host='0.0.0.0', port=5000, debug=False)
+    app.run(debug=True)
