@@ -1,4 +1,5 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, get_flashed_messages
+from flask import Flask, render_template, request, redirect, url_for, flash, get_flashed_messages, g
+from werkzeug.security import generate_password_hash, check_password_hash
 from database import db
 from flask_migrate import Migrate
 import os
@@ -12,6 +13,7 @@ from ApiWMS.extrair_dados_estoque import extrair_dados_estoques_wms
 from ApiWMS.executar_inventario import InventoryExecutor
 from datetime import datetime
 import pytz
+from functools import wraps
 
 app = Flask(__name__)
 
@@ -25,13 +27,13 @@ POSTGRES_PORT = os.getenv('POSTGRES_PORT')
 
 app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}'
 
-app.config['SECRET_KEY'] = 'admin_anderson_luft'
+load_dotenv()
+
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
 migrate = Migrate(app, db)
-
-load_dotenv()
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -39,6 +41,10 @@ logger = logging.getLogger(__name__)
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     return render_template('login.html')
+
+@app.route('/cadastro_empresa', methods=['GET', 'POST'])
+def cadastro_empresa():
+    return render_template('empresa_cadastro.html')
 
 @app.route('/')
 def index():
@@ -279,5 +285,5 @@ def credenciais():
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(host='0.0.0.0', port=5000, debug=False)
-    # app.run(debug=True)
+    # app.run(host='0.0.0.0', port=5000, debug=False)
+    app.run(debug=True)

@@ -1,0 +1,63 @@
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #f5f7ff 0%, #e8edff 100%);
+    color: #333;
+    min-height: 100vh;
+}
+
+.main-container {
+    min-height: calc(100vh - 56px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+}
+
+.empresa-card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 5px 24px rgba(67, 97, 238, 0.12);
+    padding: 2.5rem 2rem 2rem 2rem;
+    width: 100%;
+    max-width: 420px;
+}
+
+.empresa-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #4361ee;
+    margin-bottom: 0.5rem;
+    text-align: center;
+}
+
+.form-label {
+    font-weight: 500;
+    color: #1a1a2e;
+}
+
+.form-control {
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+.btn-primary {
+    background: linear-gradient(90deg, #4361ee, #3f37c9);
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    width: 100%;
+    margin-top: 1rem;
+    transition: background 0.2s;
+}
+.btn-primary:hover {
+    background: linear-gradient(90deg, #3f37c9, #4361ee);
+}
+
+@media (max-width: 600px) {
+    .empresa-card {
+        padding: 1.2rem 0.5rem 1rem 0.5rem;
+        max-width: 98vw;
+    }
+}
