@@ -11,22 +11,21 @@
 </head>
 <body>
     {% include 'navbar.html' %}
-    
+
     <div class="main-container d-flex align-items-center justify-content-center" style="min-height: calc(100vh - 56px); background: linear-gradient(135deg, #f5f7ff 0%, #e8edff 100%);">
         <div class="empresa-card card shadow-lg p-4" style="max-width: 420px; width: 100%; border-radius: 16px;">
             <div class="text-center mb-4">
                 <i class="bi bi-building" style="font-size: 2.5rem; color: #4361ee;"></i>
                 <h2 class="empresa-title mt-2 mb-0" style="font-weight: 700; color: #4361ee;">Cadastro de Empresa</h2>
-                <p class="text-muted" style="font-size: 1rem;">Adicione uma nova empresa ao sistema</p>
             </div>
             <form method="post" autocomplete="off">
                 <div class="mb-3">
-                    <label for="nome_empresa" class="form-label">Nome da Empresa</label>
-                    <input type="text" class="form-control" id="nome_empresa" name="nome_empresa" required>
+                    <label for="id_empresa" class="form-label">ID da Empresa (WMS Senior)</label>
+                    <input type="text" class="form-control" id="id_empresa" name="id_empresa" required>
                 </div>
                 <div class="mb-3">
-                    <label for="id_empresa" class="form-label">ID da Empresa</label>
-                    <input type="text" class="form-control" id="id_empresa" name="id_empresa" required>
+                    <label for="nome_empresa" class="form-label">Nome da Empresa (WMS Senior)</label>
+                    <input type="text" class="form-control" id="nome_empresa" name="nome_empresa" required>
                 </div>
                 <button type="submit" class="btn btn-primary w-100">Cadastrar</button>
             </form>

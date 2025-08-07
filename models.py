@@ -52,3 +52,20 @@ class UserCredential(db.Model):
     pass1 = db.Column(db.String(128))
     user2 = db.Column(db.String(128))
     pass2 = db.Column(db.String(128))
+    
+class Empresa(db.Model):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    id_empresa = db.Column(db.String(255), nullable=False)
+    nome_empresa = db.Column(db.String(255), nullable=False)
+
+# Modelo de usuário para cadastro
+class Usuario(db.Model):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    nome = db.Column(db.String(128), nullable=False)
+    sobrenome = db.Column(db.String(128), nullable=False)
+    username = db.Column(db.String(128), unique=True, nullable=False)
+    password = db.Column(db.String(255), nullable=False)
+    empresa_id = db.Column(db.Integer, db.ForeignKey('empresa.id'), nullable=False)
+    role = db.Column(db.String(32), nullable=False)
+
+    empresa = db.relationship('Empresa', backref=db.backref('usuarios', lazy=True))

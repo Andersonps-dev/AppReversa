@@ -1,0 +1,64 @@
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #f5f7ff 0%, #e8edff 100%);
+    color: #333;
+    min-height: 100vh;
+}
+
+.main-container {
+    min-height: calc(100vh - 56px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+}
+
+.usuario-card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 5px 24px rgba(67, 97, 238, 0.12);
+    padding: 2.5rem 2rem 2rem 2rem;
+    width: 100%;
+    max-width: 420px;
+}
+
+.usuario-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #4361ee;
+    margin-bottom: 0.5rem;
+    text-align: center;
+}
+
+.form-label {
+    font-weight: 500;
+    color: #1a1a2e;
+}
+
+.form-control, .form-select {
+    border-radius: 8px;
+    margin-bottom: 12px;
+    font-size: 1rem;
+}
+
+.btn-primary {
+    background: #4361ee;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    padding: 10px 0;
+    transition: background 0.2s;
+}
+.btn-primary:hover {
+    background: #4895ef;
+}
+
+.alert {
+    border-radius: 8px;
+    font-size: 0.98rem;
+    padding: 10px;
+    margin-bottom: 16px;
+    text-align: center;
+}

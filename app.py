@@ -6,9 +6,9 @@ import os
 from dotenv import load_dotenv
 import logging
 from sqlalchemy import func
-from models import Estoque, BarraEndereco, InventariosRealizados, UserCredential
+from models import Estoque, BarraEndereco, InventariosRealizados, UserCredential, Empresa, Usuario
 from sqlalchemy import cast, Integer
-from config import LINK_WMS, LOGINS_WMS, SENHAS_WMS, ID_TOKEN_WMS, TOKENS_SENHAS, QTDE_CABE_PICKING
+from config import LINK_WMS, QTDE_CABE_PICKING
 from ApiWMS.extrair_dados_estoque import extrair_dados_estoques_wms
 from ApiWMS.executar_inventario import InventoryExecutor
 from datetime import datetime
@@ -40,10 +40,59 @@ logger = logging.getLogger(__name__)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    return render_template('login.html')
+    empresas = Empresa.query.all()
+    return render_template('login.html', empresas=empresas)
+
+@app.route('/cadastro_usuario', methods=['GET', 'POST'])
+def cadastro_usuario():
+    empresas = Empresa.query.all()
+    import secrets, string
+    alphabet = string.ascii_letters + string.digits + string.punctuation
+    if request.method == 'POST':
+        nome = request.form['nome'].strip()
+        sobrenome = request.form['sobrenome'].strip()
+        empresa_id = request.form['empresa']
+        role = request.form['role']
+        password = request.form['password']
+
+        # Gera username concatenando nome e sobrenome, tudo minúsculo e sem espaços
+        username = f"{nome.split()[0].lower()}.{sobrenome.split()[0].lower()}"
+
+        if Usuario.query.filter_by(username=username).first():
+            flash(f'Usuário já existe: {username}', 'danger')
+            return redirect(url_for('cadastro_usuario'))
+
+        usuario = Usuario(
+            nome=nome,
+            sobrenome=sobrenome,
+            username=username,
+            password=generate_password_hash(password),
+            empresa_id=empresa_id,
+            role=role
+        )
+        db.session.add(usuario)
+        db.session.commit()
+        empresas = Empresa.query.all()
+        return render_template('cadastro_usuario.html', empresas=empresas, usuario_criado=username, senha_criada=password, senha_sugerida=password)
+    else:
+        senha_sugerida = ''.join(secrets.choice(alphabet) for _ in range(12))
+        data_atualizacao_estoque = db.session.query(func.max(Estoque.data_atualizacao)).scalar()
+        return render_template('cadastro_usuario.html', empresas=empresas, data_atualizacao_estoque=data_atualizacao_estoque, senha_sugerida=senha_sugerida)
 
 @app.route('/empresa_cadastro', methods=['GET', 'POST'])
 def cadastro_empresa():
+    if request.method == 'POST':
+        nome_empresa = request.form['nome_empresa']
+        id_empresa = request.form['id_empresa']
+        if not nome_empresa or not id_empresa:
+            flash('Preencha todos os campos.', 'error')
+            return render_template('empresa_cadastro.html')
+        else:
+            empresa = Empresa(nome_empresa=nome_empresa, id_empresa=id_empresa)
+            db.session.add(empresa)
+            db.session.commit()
+            flash('Empresa cadastrada com sucesso!', 'success')
+            
     data_atualizacao_estoque = db.session.query(func.max(Estoque.data_atualizacao)).scalar()
     return render_template('empresa_cadastro.html', data_atualizacao_estoque=data_atualizacao_estoque)
 
@@ -85,11 +134,12 @@ def consultar_rua():
     
 @app.route('/atualizar_estoque', methods=['GET'])
 def atualizar_estoque():
+    cred = UserCredential.query.first()
     try:
         success = extrair_dados_estoques_wms(
             link_wms=LINK_WMS,
-            user_wms=LOGINS_WMS[0],
-            senha_wms=SENHAS_WMS[0]
+            user_wms=cred.user1,
+            senha_wms=cred.pass1
         )
         if success:
             flash('Estoque atualizado com sucesso!', 'success')
