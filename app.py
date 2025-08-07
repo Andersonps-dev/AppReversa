@@ -38,13 +38,13 @@ migrate = Migrate(app, db)
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    return render_template('login.html')
+# @app.route('/login', methods=['GET', 'POST'])
+# def login():
+#     return render_template('login.html')
 
-@app.route('/cadastro_empresa', methods=['GET', 'POST'])
-def cadastro_empresa():
-    return render_template('empresa_cadastro.html')
+# @app.route('/cadastro_empresa', methods=['GET', 'POST'])
+# def cadastro_empresa():
+#     return render_template('empresa_cadastro.html')
 
 @app.route('/')
 def index():
@@ -126,7 +126,12 @@ def salvar_endereco():
 
 @app.route('/enderecos')
 def enderecos():
-    results = db.session.query(BarraEndereco.endereco, func.count(BarraEndereco.barra)).group_by(BarraEndereco.endereco).all()
+    results = (
+        db.session.query(BarraEndereco.endereco, func.count(BarraEndereco.barra))
+        .group_by(BarraEndereco.endereco)
+        .order_by(BarraEndereco.endereco)
+        .all()
+    )
     data_atualizacao_estoque = db.session.query(func.max(Estoque.data_atualizacao)).scalar()
     return render_template('enderecos.html', enderecos=results, data_atualizacao_estoque=data_atualizacao_estoque)
 
@@ -285,5 +290,5 @@ def credenciais():
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    # app.run(host='0.0.0.0', port=5000, debug=False)
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=False)
+    # app.run(debug=True)
