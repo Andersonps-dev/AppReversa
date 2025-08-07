@@ -14,25 +14,6 @@ body {
     color: #333;
 }
 
-.navbar-brand {
-    font-weight: 700;
-    color: var(--primary-color) !important;
-    font-size: 1.2rem;
-    padding: 0.5rem 0;
-}
-
-.nav-link {
-    font-weight: 500;
-    color: var(--dark-color) !important;
-    font-size: 0.9rem;
-    padding: 0.5rem 0.75rem;
-}
-
-.nav-link:hover {
-    color: var(--primary-color) !important;
-    transform: translateY(-2px);
-}
-
 .main-container {
     background: linear-gradient(135deg, #f5f7ff 0%, #e8edff 100%);
     min-height: calc(100vh - 56px);
