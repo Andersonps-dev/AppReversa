@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, get_flashed_messages, g
+from flask import Flask, render_template, request, redirect, url_for, flash, get_flashed_messages, g, session
 from werkzeug.security import generate_password_hash, check_password_hash
 from database import db
 from flask_migrate import Migrate
@@ -30,6 +30,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{POSTGRES_USER}:{POSTGRES
 load_dotenv()
 
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+app.config['SESSION_PERMANENT'] = False
+app.config['SESSION_TYPE'] = 'filesystem'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
@@ -41,7 +43,30 @@ logger = logging.getLogger(__name__)
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     empresas = Empresa.query.all()
-    return render_template('login.html', empresas=empresas)
+    erro = None
+    if request.method == 'POST':
+        username = request.form.get('usuario')
+        password = request.form.get('senha')
+        empresa_id = request.form.get('empresa')
+
+        usuario = Usuario.query.filter_by(username=username, empresa_id=empresa_id).first()
+        if usuario and check_password_hash(usuario.password, password):
+            session['usuario_id'] = usuario.id
+            session['usuario_nome'] = usuario.nome
+            session['usuario_username'] = usuario.username
+            session['usuario_role'] = usuario.role
+            session['empresa_id'] = usuario.empresa_id
+            flash('Login realizado com sucesso!', 'success')
+            return redirect(url_for('index'))
+        else:
+            erro = 'Usuário, senha ou empresa inválidos.'
+    return render_template('login.html', empresas=empresas, erro=erro)
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    flash('Você foi desconectado.')
+    return redirect(url_for('login'))
 
 @app.route('/cadastro_usuario', methods=['GET', 'POST'])
 def cadastro_usuario():
