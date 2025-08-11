@@ -12,25 +12,6 @@
 <body>
     {% include 'navbar.html' %}
 
-    <!-- Modal de confirmação para atualizar estoque -->
-    <div class="modal fade" id="modalAtualizarEstoque" tabindex="-1" aria-labelledby="modalAtualizarEstoqueLabel" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="modalAtualizarEstoqueLabel">Confirmar atualização</h5>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            Tem certeza que deseja atualizar o estoque? Esta ação pode levar alguns minutos.
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-            <button id="btn-atualizar-estoque" class="btn btn-primary">Sim, atualizar</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <!-- Modal de Confirmação após bipar endereço -->
     <div class="modal fade" id="modalConfirmarEndereco" tabindex="-1" aria-labelledby="modalConfirmarEnderecoLabel" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">

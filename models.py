@@ -17,7 +17,7 @@ class Estoque(db.Model):
     Disponivel = db.Column(db.Integer)
     Barra = db.Column(db.String(255))
     Descricao_Reduzida = db.Column(db.String(255))
-    idProduto = db.Column(db.String(255))
+    idProduto = db.Column(db.String(255), nullable=True)
     Codigo_do_Produto = db.Column(db.String(255))
     Codigo_Produto_Depositante = db.Column(db.String(255))
     Produto = db.Column(db.String(255))

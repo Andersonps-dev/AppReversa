@@ -3,7 +3,7 @@ import pandas as pd
 from datetime import datetime
 import logging
 from flask import flash
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, delete
 from sqlalchemy.orm import sessionmaker
 import sys
 import os
@@ -15,7 +15,7 @@ from models import Estoque
 
 logger = logging.getLogger(__name__)
 
-def extrair_dados_estoques_wms(link_wms, user_wms, senha_wms, id_depositante=2361178, armazem="insider%"):
+def extrair_dados_estoques_wms(link_wms, user_wms, senha_wms, id_depositante, armazem="insider%"):
     try:
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36',
@@ -129,12 +129,13 @@ def extrair_dados_estoques_wms(link_wms, user_wms, senha_wms, id_depositante=236
         logger.info(f"Arquivo salvo temporariamente em: {temp_file_path}")
 
         # Clear existing data in Estoque table
-        db.session.query(Estoque).delete()
+        db.session.query(Estoque).filter(Estoque.H_IDDEPOSITANTE == id_depositante).delete(synchronize_session=False)
         db.session.commit()
 
+
         df = pd.read_csv(temp_file_path, dtype={'Barra': str, 'Código do Produto': str, 'Código Produto Depositante': str})
-        df = df[(df['Tipo do Local'] == 'PICKING') & (df['Setor'] == 'INSIDER - BOM')]
-        df = df[df['Local'].str[6:8].astype(int) < 23]
+        df = df[(df['Estado'] == 'NORMAL') & (df['Setor'].str.contains('BOM')) & (df['Tipo do Local'].str.contains('PICKING'))]
+        # df = df[df['Local'].str[6:8].astype(int) < 23]
         
         # Function to convert 'S'/'N' to boolean
         def to_boolean(value):
@@ -176,7 +177,6 @@ def extrair_dados_estoques_wms(link_wms, user_wms, senha_wms, id_depositante=236
         
         db.session.commit()
         logger.info("Dados salvos com sucesso no banco de dados PostgreSQL, tabela: estoque")
-        flash("Dados de estoque atualizados com sucesso!", "success")
         
         # Clean up temporary file
         os.unlink(temp_file_path)

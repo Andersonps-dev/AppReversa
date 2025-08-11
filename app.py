@@ -14,6 +14,7 @@ from ApiWMS.executar_inventario import InventoryExecutor
 from datetime import datetime
 import pytz
 from functools import wraps
+import secrets, string
 
 app = Flask(__name__)
 
@@ -27,8 +28,6 @@ POSTGRES_PORT = os.getenv('POSTGRES_PORT')
 
 app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}'
 
-load_dotenv()
-
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 app.config['SESSION_PERMANENT'] = False
 app.config['SESSION_TYPE'] = 'filesystem'
@@ -39,6 +38,19 @@ migrate = Migrate(app, db)
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not session.get('usuario_id'):
+            flash('Faça login para acessar esta página.', 'warning')
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+@app.before_request
+def inject_data_atualizacao_estoque():
+    g.data_atualizacao_estoque = db.session.query(func.max(Estoque.data_atualizacao)).scalar()
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -69,9 +81,9 @@ def logout():
     return redirect(url_for('login'))
 
 @app.route('/cadastro_usuario', methods=['GET', 'POST'])
+@login_required
 def cadastro_usuario():
     empresas = Empresa.query.all()
-    import secrets, string
     alphabet = string.ascii_letters + string.digits + string.punctuation
     if request.method == 'POST':
         nome = request.form['nome'].strip()
@@ -102,9 +114,10 @@ def cadastro_usuario():
     else:
         senha_sugerida = ''.join(secrets.choice(alphabet) for _ in range(12))
         data_atualizacao_estoque = db.session.query(func.max(Estoque.data_atualizacao)).scalar()
-        return render_template('cadastro_usuario.html', empresas=empresas, data_atualizacao_estoque=data_atualizacao_estoque, senha_sugerida=senha_sugerida)
+    return render_template('cadastro_usuario.html', empresas=empresas, senha_sugerida=senha_sugerida)
 
 @app.route('/empresa_cadastro', methods=['GET', 'POST'])
+@login_required
 def cadastro_empresa():
     if request.method == 'POST':
         nome_empresa = request.form['nome_empresa']
@@ -118,19 +131,19 @@ def cadastro_empresa():
             db.session.commit()
             flash('Empresa cadastrada com sucesso!', 'success')
             
-    data_atualizacao_estoque = db.session.query(func.max(Estoque.data_atualizacao)).scalar()
-    return render_template('empresa_cadastro.html', data_atualizacao_estoque=data_atualizacao_estoque)
+    return render_template('empresa_cadastro.html')
 
 @app.route('/')
+@login_required
 def index():
     sucesso = None
     msgs = get_flashed_messages(category_filter=['success'])
     if msgs:
         sucesso = msgs[0]
-    data_atualizacao_estoque = db.session.query(func.max(Estoque.data_atualizacao)).scalar()
-    return render_template('index.html', codigo_barra='', sucesso=sucesso, data_atualizacao_estoque=data_atualizacao_estoque)
+    return render_template('index.html', codigo_barra='', sucesso=sucesso)
 
 @app.route('/consultar_rua', methods=['POST'])
+@login_required
 def consultar_rua():
     codigo_barra = request.form.get('codigo_barra')
     
@@ -151,31 +164,35 @@ def consultar_rua():
         .limit(1)
         .first()
     )
-    data_atualizacao_estoque = db.session.query(func.max(Estoque.data_atualizacao)).scalar()
     if estoque:
-        return render_template('index.html', rua=estoque.Rua, local=estoque.Local, codigo_barra=codigo_barra, data_atualizacao_estoque=data_atualizacao_estoque)
+        return render_template('index.html', rua=estoque.Rua, local=estoque.Local, codigo_barra=codigo_barra)
     else:
-        return render_template('index.html', erro='Sem Picking disponível.', codigo_barra=codigo_barra, data_atualizacao_estoque=data_atualizacao_estoque)
-    
-@app.route('/atualizar_estoque', methods=['GET'])
+        return render_template('index.html', erro='Sem Picking disponível.', codigo_barra=codigo_barra)
+
+@app.route('/atualizar_estoque', methods=['GET', 'POST'])
+@login_required
 def atualizar_estoque():
     cred = UserCredential.query.first()
-    try:
-        success = extrair_dados_estoques_wms(
-            link_wms=LINK_WMS,
-            user_wms=cred.user1,
-            senha_wms=cred.pass1
-        )
-        if success:
-            flash('Estoque atualizado com sucesso!', 'success')
-        else:
-            flash('Falha ao atualizar estoque.', 'error')
-    except Exception as e:
-        logger.error(f"Erro ao atualizar estoque: {e}")
-        flash(f'Erro ao atualizar estoque: {e}', 'error')
-    return redirect(url_for('index'))
+    user = Usuario.query.filter_by(id=session.get('usuario_id')).first()
+    if request.method == 'POST':
+        try:
+            success = extrair_dados_estoques_wms(
+                link_wms=LINK_WMS,
+                user_wms=cred.user1,
+                senha_wms=cred.pass1,
+                id_depositante=user.empresa.id_empresa
+            )
+            if success:
+                flash('Estoque atualizado com sucesso!', 'success')
+            else:
+                flash('Falha ao atualizar estoque.', 'error')
+        except Exception as e:
+            logger.error(f"Erro ao atualizar estoque: {e}")
+            flash(f'Erro ao atualizar estoque: {e}', 'error')
+    return render_template('atualizar_estoque.html')
 
 @app.route('/salvar_endereco', methods=['POST'])
+@login_required
 def salvar_endereco():
     codigo_barra = request.form.get('codigo_barra')
     rua = request.form.get('rua')
@@ -201,6 +218,7 @@ def salvar_endereco():
         return render_template('index.html', erro=f'Erro ao salvar: {str(e)}', codigo_barra=codigo_barra, rua=rua)
 
 @app.route('/enderecos')
+@login_required
 def enderecos():
     results = (
         db.session.query(BarraEndereco.endereco, func.count(BarraEndereco.barra))
@@ -208,10 +226,10 @@ def enderecos():
         .order_by(BarraEndereco.endereco)
         .all()
     )
-    data_atualizacao_estoque = db.session.query(func.max(Estoque.data_atualizacao)).scalar()
-    return render_template('enderecos.html', enderecos=results, data_atualizacao_estoque=data_atualizacao_estoque)
+    return render_template('enderecos.html', enderecos=results)
 
 @app.route('/enderecos/<endereco>', methods=['GET', 'POST'])
+@login_required
 def detalhes_endereco(endereco):
     detalhes = db.session.query(
         BarraEndereco.barra,
@@ -313,11 +331,10 @@ def detalhes_endereco(endereco):
         return redirect(url_for('detalhes_endereco', endereco=endereco))
     
     cred = db.session.query(UserCredential).first()
-    data_atualizacao_estoque = db.session.query(func.max(Estoque.data_atualizacao)).scalar()
-    return render_template('detalhes_endereco.html', endereco=endereco, detalhes=detalhes, cred=cred, 
-                         data_atualizacao_estoque=data_atualizacao_estoque, bloqueado=bloqueado)
+    return render_template('detalhes_endereco.html', endereco=endereco, detalhes=detalhes, cred=cred, bloqueado=bloqueado)
 
 @app.route('/enderecos/<endereco>/excluir', methods=['POST'])
+@login_required
 def excluir_endereco(endereco):
     try:
         db.session.query(BarraEndereco).filter_by(endereco=endereco).delete()
@@ -329,6 +346,7 @@ def excluir_endereco(endereco):
     return redirect(url_for('enderecos'))
 
 @app.route('/enderecos/<endereco>/excluir_item', methods=['POST'])
+@login_required
 def excluir_item(endereco):
     barra = request.form.get('barra')
     rua = request.form.get('rua')
@@ -346,6 +364,7 @@ def excluir_item(endereco):
     return redirect(url_for('detalhes_endereco', endereco=endereco))
 
 @app.route('/credenciais', methods=['GET', 'POST'])
+@login_required
 def credenciais():
     cred = UserCredential.query.first()
     if not cred:
@@ -360,8 +379,7 @@ def credenciais():
         db.session.commit()
         flash('Credenciais atualizadas com sucesso!', 'success')
         return redirect(url_for('credenciais'))
-    data_atualizacao_estoque = db.session.query(func.max(Estoque.data_atualizacao)).scalar()
-    return render_template('credenciais.html', cred=cred, data_atualizacao_estoque=data_atualizacao_estoque)
+    return render_template('credenciais.html', cred=cred)
 
 if __name__ == '__main__':
     with app.app_context():

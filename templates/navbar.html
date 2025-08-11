@@ -36,17 +36,18 @@
                         <i class="bi bi-person-plus me-1"></i> Cadastro Usuário
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#modalAtualizarEstoque">
-                        <i class="bi bi-arrow-repeat me-1"></i> Atualizar Estoque
-                    </a>
-                    {% if data_atualizacao_estoque %}
-                    <div class="text-center small text-muted" style="margin-top: -8px;">
-                        <span>Última atualização: {{ data_atualizacao_estoque.strftime('%d/%m/%Y %H:%M') }}</span>
+                <li class="nav-item" style="position: relative;">
+                    <div style="display: flex; flex-direction: column; align-items: flex-start;">
+                        <a class="nav-link" href="/atualizar_estoque">
+                            <i class="bi bi-arrow-repeat me-1"></i> Atualizar Estoque
+                        </a>
+                        {% if g.data_atualizacao_estoque %}
+                        <span style="font-size: 0.55rem; color: #888; margin-top: -6px;">Última atualização: {{ g.data_atualizacao_estoque.strftime('%d/%m/%Y %H:%M') }}</span>
+                        {% endif %}
                     </div>
-                    {% endif %}
                 </li>
             </ul>
+            <!-- Removido: última atualização global, agora aparece abaixo do botão -->
         </div>
     </div>
 </nav>
