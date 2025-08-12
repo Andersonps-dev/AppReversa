@@ -1,12 +1,13 @@
 <head>
-<link rel="stylesheet" href="{{ url_for('static', filename='navbar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='navbar.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 </head>
 <nav class="navbar navbar-expand-lg navbar-light bg-white">
     <div class="container-fluid">
         <a class="navbar-brand" href="/">
             <i class="bi bi-box-seam me-1"></i>RTP
         </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
@@ -26,16 +27,6 @@
                         <i class="bi bi-person-lock me-1"></i> Credenciais
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/empresa_cadastro">
-                        <i class="bi bi-building me-1"></i> Empresa
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/cadastro_usuario">
-                        <i class="bi bi-person-plus me-1"></i> Cadastro Usuário
-                    </a>
-                </li>
                 <li class="nav-item" style="position: relative;">
                     <div style="display: flex; flex-direction: column; align-items: flex-start;">
                         <a class="nav-link" href="/atualizar_estoque">
@@ -46,8 +37,33 @@
                         {% endif %}
                     </div>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/empresa_cadastro">
+                        <i class="bi bi-building me-1"></i> Empresa
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/cadastro_usuario">
+                        <i class="bi bi-person-plus me-1"></i> Cadastro Usuário
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/permissoes">
+                        <i class="bi bi-shield-lock me-1"></i> Permissões
+                    </a>
+                </li>
             </ul>
-            <!-- Removido: última atualização global, agora aparece abaixo do botão -->
+            <div class="d-flex align-items-center ms-3">
+                {% if usuario_nome and empresa_nome %}
+                    <span class="me-3 fw-bold" style="color: #007bff; font-size: 1rem;">
+                        <i class="bi bi-person me-1"></i>{{ usuario_nome }} ({{ usuario_username }})<br>
+                        <i class="bi bi-building me-1"></i>{{ empresa_nome }}
+                    </span>
+                    <a class="btn btn-outline-danger btn-sm" href="{{ url_for('logout') }}" title="Logout">
+                        <i class="bi bi-box-arrow-right"></i> Sair
+                    </a>
+                {% endif %}
+            </div>
         </div>
     </div>
 </nav>

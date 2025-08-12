@@ -128,7 +128,6 @@ def extrair_dados_estoques_wms(link_wms, user_wms, senha_wms, id_depositante, ar
 
         logger.info(f"Arquivo salvo temporariamente em: {temp_file_path}")
 
-        # Clear existing data in Estoque table
         db.session.query(Estoque).filter(Estoque.H_IDDEPOSITANTE == id_depositante).delete(synchronize_session=False)
         db.session.commit()
 
@@ -137,7 +136,6 @@ def extrair_dados_estoques_wms(link_wms, user_wms, senha_wms, id_depositante, ar
         df = df[(df['Estado'] == 'NORMAL') & (df['Setor'].str.contains('BOM')) & (df['Tipo do Local'].str.contains('PICKING'))]
         # df = df[df['Local'].str[6:8].astype(int) < 23]
         
-        # Function to convert 'S'/'N' to boolean
         def to_boolean(value):
             if isinstance(value, str):
                 return value.upper() == 'S'

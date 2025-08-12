@@ -36,6 +36,8 @@ class BarraEndereco(db.Model):
     endereco = db.Column(db.String(255), nullable=False)
     data_armazenamento = db.Column(db.DateTime, nullable=False)
     bloqueado = db.Column(db.Boolean, default=False, nullable=False)
+    id_empresa = db.Column(db.Integer, db.ForeignKey('empresa.id'), nullable=False)
+    
 
 # Novo modelo para registrar inventários realizados
 class InventariosRealizados(db.Model):
@@ -52,11 +54,20 @@ class UserCredential(db.Model):
     pass1 = db.Column(db.String(128))
     user2 = db.Column(db.String(128))
     pass2 = db.Column(db.String(128))
+    id_empresa = db.Column(db.Integer, db.ForeignKey('empresa.id'), nullable=False)
     
+
 class Empresa(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     id_empresa = db.Column(db.String(255), nullable=False)
     nome_empresa = db.Column(db.String(255), nullable=False)
+
+# Tabela para armazenar ruas selecionadas por usuário e empresa
+class RuasSelecionadas(db.Model):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    rua = db.Column(db.String(255), nullable=False)
+    empresa_id = db.Column(db.Integer, db.ForeignKey('empresa.id'), nullable=False)
+    data_selecao = db.Column(db.DateTime, nullable=False)
 
 # Modelo de usuário para cadastro
 class Usuario(db.Model):
@@ -67,5 +78,12 @@ class Usuario(db.Model):
     password = db.Column(db.String(255), nullable=False)
     empresa_id = db.Column(db.Integer, db.ForeignKey('empresa.id'), nullable=False)
     role = db.Column(db.String(32), nullable=False)
+    ativo = db.Column(db.Boolean, default=True, nullable=False)
 
     empresa = db.relationship('Empresa', backref=db.backref('usuarios', lazy=True))
+    
+class Permissao(db.Model):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    cargo = db.Column(db.String(32), nullable=False)
+    rota = db.Column(db.String(128), nullable=False)
+    pode_acessar = db.Column(db.Boolean, default=False, nullable=False)

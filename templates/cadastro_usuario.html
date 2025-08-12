@@ -56,6 +56,118 @@
                 </div>
                 <button type="submit" class="btn btn-primary w-100">Cadastrar</button>
             </form>
+
+            <hr>
+            <h4 class="mt-4">Usuários cadastrados</h4>
+            <form method="get" class="mb-2">
+                <input type="text" name="filtro" class="form-control" placeholder="Filtrar por nome, sobrenome ou usuário" value="{{ filtro }}" style="max-width: 300px; display: inline-block;">
+                <button type="submit" class="btn btn-secondary btn-sm">Filtrar</button>
+            </form>
+            <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Nome</th>
+                        <th>Sobrenome</th>
+                        <th>Usuário</th>
+                        <th>Empresa</th>
+                        <th>Role</th>
+                        <th>Ativo</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for u in usuarios %}
+                    <tr {% if not u.ativo %}class="table-danger"{% endif %}>
+                        <td>{{ u.nome }}</td>
+                        <td>{{ u.sobrenome }}</td>
+                        <td>{{ u.username }}</td>
+                        <td>{{ empresas|selectattr('id', 'equalto', u.empresa_id)|map(attribute='nome_empresa')|first }}</td>
+                        <td>{{ u.role }}</td>
+                        <td>
+                            {% if u.ativo %}
+                                <span class="badge bg-success">Sim</span>
+                            {% else %}
+                                <span class="badge bg-danger">Não</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#modalEditar{{ u.id }}">Editar</button>
+                            {% if u.ativo %}
+                                <form method="post" style="display:inline;" onsubmit="return confirm('Desativar este usuário?');">
+                                    <input type="hidden" name="inativar_id" value="{{ u.id }}">
+                                    <button type="submit" class="btn btn-danger btn-sm">Desativar</button>
+                                </form>
+                            {% else %}
+                                <form method="post" style="display:inline;" onsubmit="return confirm('Ativar este usuário?');">
+                                    <input type="hidden" name="ativar_id" value="{{ u.id }}">
+                                    <button type="submit" class="btn btn-success btn-sm">Ativar</button>
+                                </form>
+                            {% endif %}
+                            <form method="post" style="display:inline;" onsubmit="return confirm('Excluir este usuário?');">
+                                <input type="hidden" name="excluir_id" value="{{ u.id }}">
+                                <button type="submit" class="btn btn-dark btn-sm">Excluir</button>
+                            </form>
+                            <form method="post" style="display:inline;" onsubmit="return confirm('Resetar a senha deste usuário?');">
+                                <input type="hidden" name="resetar_id" value="{{ u.id }}">
+                                <button type="submit" class="btn btn-info btn-sm">Resetar Senha</button>
+                            </form>
+                        </td>
+                    </tr>
+                    <!-- Modal de edição -->
+                    <div class="modal fade" id="modalEditar{{ u.id }}" tabindex="-1" aria-labelledby="modalEditarLabel{{ u.id }}" aria-hidden="true">
+                      <div class="modal-dialog">
+                        <div class="modal-content">
+                          <form method="post">
+                            <div class="modal-header">
+                              <h5 class="modal-title" id="modalEditarLabel{{ u.id }}">Editar Usuário</h5>
+                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                              <input type="hidden" name="editar_id" value="{{ u.id }}">
+                              <div class="mb-2">
+                                <label>Nome</label>
+                                <input type="text" name="editar_nome" class="form-control" value="{{ u.nome }}" required>
+                              </div>
+                              <div class="mb-2">
+                                <label>Sobrenome</label>
+                                <input type="text" name="editar_sobrenome" class="form-control" value="{{ u.sobrenome }}" required>
+                              </div>
+                              <div class="mb-2">
+                                <label>Role</label>
+                                <input type="text" name="editar_role" class="form-control" value="{{ u.role }}" required>
+                              </div>
+                              <div class="mb-2">
+                                <label>Empresa</label>
+                                <select name="editar_empresa" class="form-control" required>
+                                  {% for emp in empresas %}
+                                    <option value="{{ emp.id }}" {% if emp.id == u.empresa_id %}selected{% endif %}>{{ emp.nome_empresa }}</option>
+                                  {% endfor %}
+                                </select>
+                              </div>
+                              <div class="mb-2">
+                                <label>Nova Senha</label>
+                                <input type="text" name="editar_password" class="form-control" placeholder="Deixe em branco para não alterar">
+                              </div>
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                              <button type="submit" class="btn btn-primary">Salvar</button>
+                            </div>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                {% endfor %}
+                </tbody>
+            </table>
+            </div>
+            <script>
+            function toggleSenha(id) {
+                var el = document.getElementById('senha-' + id);
+                el.style.display = el.style.display === 'none' ? 'inline' : 'none';
+            }
+            </script>
         </div>
         {% if usuario_criado and senha_criada %}
         <!-- Modal -->

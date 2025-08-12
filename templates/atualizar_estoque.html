@@ -25,6 +25,20 @@
         <form id="estoque-form" method="post" action="{{ url_for('atualizar_estoque') }}">
             <button type="submit" class="btn btn-atualizar">Atualizar Estoque</button>
         </form>
+
+        <hr>
+        <h5>Selecione as ruas para filtrar:</h5>
+        <form method="post" action="{{ url_for('salvar_ruas_selecionadas') }}">
+            <div class="mb-3">
+                {% for rua in ruas %}
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="ruas" value="{{ rua }}" id="rua_{{ loop.index }}" {% if rua in ruas_selecionadas %}checked{% endif %}>
+                        <label class="form-check-label" for="rua_{{ loop.index }}">{{ rua }}</label>
+                    </div>
+                {% endfor %}
+            </div>
+            <button type="submit" class="btn btn-primary">Salvar Ruas Selecionadas</button>
+        </form>
         {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             <div class="status-msg">
