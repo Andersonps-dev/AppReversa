@@ -197,6 +197,25 @@ body {
     letter-spacing: 0.5px;
 }
 
+.ruas-actions {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.ruas-actions .btn-sm {
+    padding: 0.35rem 0.75rem;
+    font-size: 0.85rem;
+    border-radius: var(--border-radius);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.ruas-actions .btn-sm i {
+    font-size: 0.9rem;
+}
+
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }

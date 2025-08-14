@@ -624,4 +624,4 @@ if __name__ == '__main__':
         db.create_all()
         criar_usuario_master()
     # app.run(host='0.0.0.0', port=5000, debug=False)
-    app.run(debug=True)
+    app.run(debug=True) 
