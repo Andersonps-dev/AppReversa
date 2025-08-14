@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Alterar Senha - Primeiro Acesso</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link rel="icon" type="image/png" href="https://i.postimg.cc/ZKPM50BD/distribuido-1.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='alterar_senha_primeiro_acesso.css') }}">
+</head>
+<body>
+    <div class="password-container">
+        <div class="password-header">
+            <div class="logo">
+                <i class="fas fa-key"></i>
+            </div>
+            <h2>Alterar Senha</h2>
+            <p>Primeiro acesso - Defina uma nova senha</p>
+        </div>
+        
+        <div class="password-body">
+            {% if erro %}
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <div>{{ erro }}</div>
+                </div>
+            {% endif %}
+            
+            <form method="POST">
+                <div class="form-group">
+                    <div class="input-container">
+                        <i class="fas fa-lock input-icon"></i>
+                        <input type="password" name="nova_senha" id="nova_senha" required class="form-control" autofocus>
+                        <button type="button" class="toggle-password" aria-label="Mostrar senha" data-target="nova_senha">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <div class="password-strength">
+                        <div class="strength-meter" id="strength-meter"></div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <div class="input-container">
+                        <i class="fas fa-lock input-icon"></i>
+                        <input type="password" name="confirmar_senha" id="confirmar_senha" required class="form-control">
+                        <button type="button" class="toggle-password" aria-label="Mostrar senha" data-target="confirmar_senha">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i>
+                    <span>Alterar Senha</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Toggle de visibilidade da senha
+            document.querySelectorAll('.toggle-password').forEach(button => {
+                button.addEventListener('click', function() {
+                    const targetId = this.getAttribute('data-target');
+                    const input = document.getElementById(targetId);
+                    const icon = this.querySelector('i');
+                    
+                    if (input.getAttribute('type') === 'password') {
+                        input.setAttribute('type', 'text');
+                        icon.classList.replace('fa-eye', 'fa-eye-slash');
+                    } else {
+                        input.setAttribute('type', 'password');
+                        icon.classList.replace('fa-eye-slash', 'fa-eye');
+                    }
+                });
+            });
+
+            // Validação de força da senha
+            const passwordInput = document.getElementById('nova_senha');
+            const strengthMeter = document.getElementById('strength-meter');
+            const requirements = {
+                length: document.getElementById('length-requirement'),
+                uppercase: document.getElementById('uppercase-requirement'),
+                number: document.getElementById('number-requirement'),
+                special: document.getElementById('special-requirement')
+            };
+
+            if (passwordInput && strengthMeter) {
+                passwordInput.addEventListener('input', function() {
+                    const password = this.value;
+                    let strength = 0;
+                    
+                    // Reset requirements
+                    Object.values(requirements).forEach(el => {
+                        el.style.color = '';
+                        el.style.fontWeight = '';
+                    });
+                    
+                    // Check length
+                    if (password.length >= 8) {
+                        strength += 25;
+                        requirements.length.style.color = '#4bb543';
+                        requirements.length.style.fontWeight = '600';
+                    }
+                    
+                    // Check uppercase
+                    if (/[A-Z]/.test(password)) {
+                        strength += 25;
+                        requirements.uppercase.style.color = '#4bb543';
+                        requirements.uppercase.style.fontWeight = '600';
+                    }
+                    
+                    // Check number
+                    if (/\d/.test(password)) {
+                        strength += 25;
+                        requirements.number.style.color = '#4bb543';
+                        requirements.number.style.fontWeight = '600';
+                    }
+                    
+                    // Check special char
+                    if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+                        strength += 25;
+                        requirements.special.style.color = '#4bb543';
+                        requirements.special.style.fontWeight = '600';
+                    }
+                    
+                    // Update strength meter
+                    strengthMeter.style.width = strength + '%';
+                    
+                    // Update color based on strength
+                    if (strength < 50) {
+                        strengthMeter.style.backgroundColor = '#ff3b30';
+                    } else if (strength < 75) {
+                        strengthMeter.style.backgroundColor = '#ff9500';
+                    } else {
+                        strengthMeter.style.backgroundColor = '#4bb543';
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

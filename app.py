@@ -96,6 +96,7 @@ def inject_usuario_empresa():
         Usuario=Usuario,
         Permissao=Permissao
     )
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     empresas = Empresa.query.all()
@@ -113,11 +114,35 @@ def login():
             session['usuario_role'] = usuario.role
             session['empresa_id'] = usuario.empresa_id
             flash('Login realizado com sucesso!', 'success')
+            if usuario.primeiro_acesso:
+                return redirect(url_for('alterar_senha_primeiro_acesso'))
             return redirect(url_for('index'))
         else:
             erro = 'Usuário, senha ou empresa inválidos.'
     return render_template('login.html', empresas=empresas, erro=erro)
 
+@app.route('/alterar_senha_primeiro_acesso', methods=['GET', 'POST'])
+def alterar_senha_primeiro_acesso():
+    erro = None
+    if not session.get('usuario_id'):
+        flash('Faça login para acessar esta página.', 'warning')
+        return redirect(url_for('login'))
+    usuario = Usuario.query.get(session['usuario_id'])
+    if request.method == 'POST':
+        nova_senha = request.form.get('nova_senha')
+        confirmar_senha = request.form.get('confirmar_senha')
+        if not nova_senha or nova_senha != confirmar_senha:
+            erro = 'As senhas não conferem.'
+        else:
+            usuario.password = generate_password_hash(nova_senha)
+            usuario.primeiro_acesso = False
+            db.session.commit()
+            flash('Senha alterada com sucesso! Faça login novamente.', 'success')
+            session.clear()
+            return redirect(url_for('login'))
+    return render_template('alterar_senha_primeiro_acesso.html', erro=erro)
+
+        
 @app.route('/permissoes', methods=['GET', 'POST'])
 @login_required
 def permissoes():
@@ -601,7 +626,7 @@ def criar_usuario_master():
     if not usuario_master:
         empresa = Empresa.query.first()
         if not empresa:
-            empresa = Empresa(nome_empresa='MasterCorp', id_empresa='000')
+            empresa = Empresa(nome_empresa='INSIDER COMERCIO E CONFECCAO DE PECAS DO VESTUARIO LTDA', id_empresa='2361178')
             db.session.add(empresa)
             db.session.commit()
         master = Usuario(
@@ -624,4 +649,4 @@ if __name__ == '__main__':
         db.create_all()
         criar_usuario_master()
     # app.run(host='0.0.0.0', port=5000, debug=False)
-    app.run(debug=True) 
+    app.run(debug=True)

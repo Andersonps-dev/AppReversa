@@ -74,6 +74,7 @@ class Usuario(db.Model):
     empresa_id = db.Column(db.Integer, db.ForeignKey('empresa.id'), nullable=False)
     role = db.Column(db.String(32), nullable=False)
     ativo = db.Column(db.Boolean, default=True, nullable=False)
+    primeiro_acesso = db.Column(db.Boolean, default=True, nullable=False)
     empresa = db.relationship('Empresa', backref=db.backref('usuarios', lazy=True))
     
 class Permissao(db.Model):
