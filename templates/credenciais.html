@@ -2,65 +2,63 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Credenciais</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Credenciais | Sistema</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="icon" type="image/png" href="https://i.postimg.cc/ZKPM50BD/distribuido-1.png">
     <link rel="stylesheet" href="{{ url_for('static', filename='credenciais.css') }}">
-
 </head>
 <body>
     {% include 'navbar.html' %}
 
-
     <div class="main-container">
-        <div class="container-fluid">
-            <div class="row justify-content-center">
-                <div class="col-12 col-md-8 col-lg-6">
-                    <div class="card">
-                        <div class="card-header text-center">
-                            <h2 class="card-title mb-0">
-                                <i class="bi bi-person-lock me-1"></i>Editar Credenciais
-                            </h2>
+        <div class="credenciais-card">
+            <div class="card-header text-center">
+                <h2 class="card-title">
+                    <i class="bi bi-person-lock"></i>Editar Credenciais
+                </h2>
+            </div>
+            <div class="status-indicator"></div>
+            <div class="card-body">
+                {% with messages = get_flashed_messages(category_filter=['success']) %}
+                    {% if messages %}
+                        <div class="alert alert-success">
+                            <i class="bi bi-check-circle"></i>{{ messages[0] }}
                         </div>
-                        <div class="status-indicator"></div>
-                        <div class="card-body">
-                            {% with messages = get_flashed_messages(category_filter=['success']) %}
-                              {% if messages %}
-                                <div class="alert alert-success text-center">
-                                    <i class="bi bi-check-circle me-1"></i>{{ messages[0] }}
-                                </div>
-                              {% endif %}
-                            {% endwith %}
-                            <form method="POST" id="credenciais-form">
-                                <div class="floating-label input-icon">
-                                    <input type="text" class="form-control" id="user1" name="user1" value="{{ cred.user1 }}" placeholder=" " required>
-                                    <label for="user1">Usuário 1</label>
-                                    <i class="bi bi-person"></i>
-                                </div>
-                                <div class="floating-label input-icon">
-                                    <input type="password" class="form-control" id="pass1" name="pass1" value="{{ cred.pass1 }}" placeholder=" " required>
-                                    <label for="pass1">Senha 1</label>
-                                    <i class="bi bi-eye toggle-password" data-target="pass1"></i>
-                                </div>
-                                <div class="floating-label input-icon">
-                                    <input type="text" class="form-control" id="user2" name="user2" value="{{ cred.user2 }}" placeholder=" " required>
-                                    <label for="user2">Usuário 2</label>
-                                    <i class="bi bi-person"></i>
-                                </div>
-                                <div class="floating-label input-icon">
-                                    <input type="password" class="form-control" id="pass2" name="pass2" value="{{ cred.pass2 }}" placeholder=" " required>
-                                    <label for="pass2">Senha 2</label>
-                                    <i class="bi bi-eye toggle-password" data-target="pass2"></i>
-                                </div>
-                                <button type="submit" class="btn btn-primary w-100 mt-2" id="submit-btn">
-                                    <i class="bi bi-save me-1"></i> Salvar
-                                </button>
-                            </form>
-                        </div>
+                    {% endif %}
+                {% endwith %}
+                
+                <form method="POST" id="credenciais-form" class="needs-validation" novalidate>
+                    <div class="floating-label input-icon">
+                        <input type="text" class="form-control" id="user1" name="user1" value="{{ cred.user1 }}" placeholder=" " required>
+                        <label for="user1">Usuário 1</label>
+                        <i class="bi bi-person"></i>
                     </div>
-                </div>
+                    
+                    <div class="floating-label input-icon">
+                        <input type="password" class="form-control" id="pass1" name="pass1" value="{{ cred.pass1 }}" placeholder=" " required>
+                        <label for="pass1">Senha 1</label>
+                        <i class="bi bi-eye toggle-password" data-target="pass1"></i>
+                    </div>
+                    
+                    <div class="floating-label input-icon">
+                        <input type="text" class="form-control" id="user2" name="user2" value="{{ cred.user2 }}" placeholder=" " required>
+                        <label for="user2">Usuário 2</label>
+                        <i class="bi bi-person"></i>
+                    </div>
+                    
+                    <div class="floating-label input-icon">
+                        <input type="password" class="form-control" id="pass2" name="pass2" value="{{ cred.pass2 }}" placeholder=" " required>
+                        <label for="pass2">Senha 2</label>
+                        <i class="bi bi-eye toggle-password" data-target="pass2"></i>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary w-100 mt-3" id="submit-btn">
+                        <i class="bi bi-save"></i>Salvar Credenciais
+                    </button>
+                </form>
             </div>
         </div>
     </div>
@@ -86,9 +84,11 @@
 
         // Form submission with loading state
         document.getElementById('credenciais-form')?.addEventListener('submit', function(e) {
-            const submitBtn = document.getElementById('submit-btn');
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Salvando...';
+            if (this.checkValidity()) {
+                const submitBtn = document.getElementById('submit-btn');
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Salvando...';
+            }
         });
 
         // Auto-focus on first input
@@ -98,6 +98,22 @@
                 firstInput.focus();
                 firstInput.select();
             }
+            
+            // Validação do formulário
+            (function () {
+                'use strict'
+                var forms = document.querySelectorAll('.needs-validation')
+                Array.prototype.slice.call(forms)
+                    .forEach(function (form) {
+                        form.addEventListener('submit', function (event) {
+                            if (!form.checkValidity()) {
+                                event.preventDefault()
+                                event.stopPropagation()
+                            }
+                            form.classList.add('was-validated')
+                        }, false)
+                    })
+            })()
         });
     </script>
 </body>

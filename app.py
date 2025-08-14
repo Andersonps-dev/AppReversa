@@ -42,16 +42,27 @@ logger = logging.getLogger(__name__)
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
+        rota = request.path
+        # Normalizar rotas dinâmicas para checagem de permissão
+        rota_normalizada = rota
+        if rota.startswith('/enderecos/'):
+            partes = rota.split('/')
+            if len(partes) == 3:
+                rota_normalizada = '/enderecos/<endereco>'
+            elif len(partes) == 4 and partes[-1] == 'excluir':
+                rota_normalizada = '/enderecos/<endereco>/excluir'
+            elif len(partes) == 4 and partes[-1] == 'excluir_item':
+                rota_normalizada = '/enderecos/<endereco>/excluir_item'
+        # Permitir acesso livre ao login e logout
+        if rota in ['/login', '/logout']:
+            return f(*args, **kwargs)
         if not session.get('usuario_id'):
             flash('Faça login para acessar esta página.', 'warning')
             return redirect(url_for('login'))
         usuario = Usuario.query.get(session['usuario_id'])
         if usuario and usuario.role == 'master':
             return f(*args, **kwargs)
-        rota = request.path
-        if rota == '/logout':
-            return f(*args, **kwargs)
-        perm = Permissao.query.filter_by(cargo=usuario.role, rota=rota).first()
+        perm = Permissao.query.filter_by(cargo=usuario.role, rota=rota_normalizada).first()
         if not perm or not perm.pode_acessar:
             return render_template('acesso_negado.html'), 403
         return f(*args, **kwargs)
@@ -114,34 +125,56 @@ def permissoes():
     if 'master' not in cargos:
         cargos.append('master')
     cargo_selecionado = request.form.get('cargo') or request.args.get('cargo')
-    rotas = [
-        ('/', 'Início'),
-        ('/enderecos', 'Endereços'),
-        ('/credenciais', 'Credenciais'),
-        ('/empresa_cadastro', 'Empresa'),
-        ('/cadastro_usuario', 'Cadastro Usuário'),
-        ('/atualizar_estoque', 'Atualizar Estoque'),
-        ('/permissoes', 'Permissões'),
+    grupos_rotas = [
+        ("Página Inicial", [('/', 'Início')]),
+        ("Endereços", [
+            ('/enderecos', 'Listar'),
+            ('/enderecos/<endereco>', 'Detalhes'),
+            ('/enderecos/<endereco>/excluir', 'Excluir'),
+            ('/enderecos/<endereco>/excluir_item', 'Excluir Item'),
+            ('/salvar_endereco', 'Salvar'),
+            ('/consultar_rua', 'Consultar Rua'),
+        ]),
+        ("Estoque", [
+            ('/atualizar_estoque', 'Atualizar'),
+            ('/salvar_ruas_selecionadas', 'Salvar Ruas Selecionadas'),
+        ]),
+        ("Usuários e Empresas", [
+            ('/cadastro_usuario', 'Usuários - Cadastro/Listagem'),
+            ('/empresa_cadastro', 'Empresas - Cadastro/Listagem'),
+        ]),
+        ("Credenciais", [
+            ('/credenciais', 'Credenciais'),
+        ]),
+        ("Permissões", [
+            ('/permissoes', 'Permissões'),
+        ]),
     ]
-    permissoes = []
+    permissoes_grupo = []
     if cargo_selecionado:
-        # Só atualiza permissões se o botão de salvar foi pressionado (POST e não é master e tem o botão)
-        if request.method == 'POST' and cargo_selecionado != 'master' and 'Salvar Permissões' in request.form.values():
-            for rota, _ in rotas:
-                acesso = request.form.get(f'acesso_{rota}') == '1'
-                perm = Permissao.query.filter_by(cargo=cargo_selecionado, rota=rota).first()
-                if perm:
-                    perm.pode_acessar = acesso
-                else:
-                    perm = Permissao(cargo=cargo_selecionado, rota=rota, pode_acessar=acesso)
-                    db.session.add(perm)
+        # Atualiza permissões se o botão de salvar foi pressionado (POST e não é master e tem o botão)
+        if request.method == 'POST' and cargo_selecionado != 'master' and (
+            request.form.get('action') == 'salvar_permissoes' or 'Salvar Permissões' in request.form.values()):
+            for grupo, rotas in grupos_rotas:
+                for rota, _ in rotas:
+                    checkbox_name = f'acesso_{rota}'
+                    checked = request.form.get(checkbox_name) == '1'
+                    perm = Permissao.query.filter_by(cargo=cargo_selecionado, rota=rota).first()
+                    if perm:
+                        perm.pode_acessar = checked
+                    else:
+                        perm = Permissao(cargo=cargo_selecionado, rota=rota, pode_acessar=checked)
+                        db.session.add(perm)
             db.session.commit()
             flash('Permissões atualizadas!', 'success')
-        # Carrega permissões atuais do banco
-        for rota, _ in rotas:
-            perm = Permissao.query.filter_by(cargo=cargo_selecionado, rota=rota).first()
-            permissoes.append((rota, perm.pode_acessar if perm else False))
-    return render_template('permissoes.html', cargos=cargos, cargo_selecionado=cargo_selecionado, permissoes=permissoes)
+        # Carrega permissões atuais do banco, mostrando todas as rotas agrupadas
+        for grupo, rotas in grupos_rotas:
+            permissoes = []
+            for rota, label in rotas:
+                perm = Permissao.query.filter_by(cargo=cargo_selecionado, rota=rota).first()
+                permissoes.append((rota, label, perm.pode_acessar if perm else False))
+            permissoes_grupo.append((grupo, permissoes))
+    return render_template('permissoes.html', cargos=cargos, cargo_selecionado=cargo_selecionado, permissoes_grupo=permissoes_grupo)
 
 @app.route('/logout')
 @login_required

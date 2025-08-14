@@ -1,64 +1,200 @@
+:root {
+    --primary-color: #4361ee;
+    --primary-hover: #3a56d4;
+    --secondary-color: #3f37c9;
+    --accent-color: #4895ef;
+    --light-bg: #f8f9fa;
+    --dark-text: #1a1a2e;
+    --light-text: #6c757d;
+    --success-color: #4bb543;
+    --danger-color: #dc3545;
+    --warning-color: #ffc107;
+    --border-radius: 8px;
+    --box-shadow: 0 4px 20px rgba(67, 97, 238, 0.12);
+    --transition: all 0.2s ease;
+}
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     background: linear-gradient(135deg, #f5f7ff 0%, #e8edff 100%);
-    color: #333;
+    color: var(--dark-text);
     min-height: 100vh;
+    line-height: 1.5;
+    margin: 0;
+    padding: 0;
 }
 
 .main-container {
+    padding: 1rem;
     min-height: calc(100vh - 56px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: none;
+    width: 100%;
+    max-width: 100%;
 }
 
 .usuario-card {
     background: #fff;
-    border-radius: 16px;
-    box-shadow: 0 5px 24px rgba(67, 97, 238, 0.12);
-    padding: 2.5rem 2rem 2rem 2rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    padding: 2rem;
     width: 100%;
-    max-width: 420px;
+    margin: 0 auto;
+    transition: var(--transition);
 }
 
 .usuario-title {
-    font-size: 1.5rem;
+    font-size: 1.75rem;
     font-weight: 700;
-    color: #4361ee;
-    margin-bottom: 0.5rem;
-    text-align: center;
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+    text-align: left;
 }
 
 .form-label {
     font-weight: 500;
-    color: #1a1a2e;
+    color: var(--dark-text);
+    margin-bottom: 0.5rem;
 }
 
 .form-control, .form-select {
-    border-radius: 8px;
-    margin-bottom: 12px;
-    font-size: 1rem;
+    border-radius: var(--border-radius);
+    padding: 0.75rem 1rem;
+    border: 1px solid #dee2e6;
+    transition: var(--transition);
+    margin-bottom: 1rem;
+    width: 100%;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.15);
+}
+
+.btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--border-radius);
+    font-weight: 600;
+    transition: var(--transition);
+    border: none;
 }
 
 .btn-primary {
-    background: #4361ee;
-    border: none;
-    border-radius: 8px;
-    font-weight: 600;
-    font-size: 1.1rem;
-    padding: 10px 0;
-    transition: background 0.2s;
+    background: var(--primary-color);
 }
+
 .btn-primary:hover {
-    background: #4895ef;
+    background: var(--primary-hover);
+    transform: translateY(-1px);
 }
 
 .alert {
-    border-radius: 8px;
-    font-size: 0.98rem;
-    padding: 10px;
-    margin-bottom: 16px;
-    text-align: center;
+    border-radius: var(--border-radius);
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-top: 1.5rem;
+}
+
+.table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-bottom: 1.5rem;
+}
+
+.table th {
+    background-color: var(--primary-color);
+    color: white;
+    font-weight: 600;
+    padding: 0.75rem 1rem;
+    text-align: left;
+}
+
+.table td {
+    padding: 0.75rem 1rem;
+    vertical-align: middle;
+    border-top: 1px solid #dee2e6;
+}
+
+.badge {
+    padding: 0.35em 0.65em;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 0.85em;
+}
+
+.filter-container {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    width: 100%;
+}
+
+.filter-container .form-control {
+    flex: 1;
+    min-width: 200px;
+    margin-bottom: 0;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.action-buttons .btn {
+    padding: 0.5rem;
+    min-width: 36px;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .usuario-card {
+        padding: 1.5rem;
+    }
+    
+    .filter-container {
+        flex-direction: column;
+    }
+    
+    .action-buttons {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 576px) {
+    .usuario-card {
+        padding: 1.25rem;
+    }
+    
+    .table th, .table td {
+        padding: 0.5rem;
+        font-size: 0.9rem;
+    }
+    
+    .btn {
+        padding: 0.5rem 1rem;
+    }
+}
+
+/* Toggle password */
+.password-toggle-container {
+    position: relative;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: var(--light-text);
+}
+
+.password-toggle:hover {
+    color: var(--primary-color);
 }

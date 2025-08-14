@@ -2,93 +2,159 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Cadastro de Empresa</title>
+    <title>Cadastro de Empresa | Sistema</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="icon" type="image/png" href="https://i.postimg.cc/ZKPM50BD/distribuido-1.png">
     <link rel="stylesheet" href="{{ url_for('static', filename='empresa_cadastro.css') }}">
 </head>
 <body>
     {% include 'navbar.html' %}
 
-    <div class="main-container d-flex align-items-center justify-content-center" style="min-height: calc(100vh - 56px); background: linear-gradient(135deg, #f5f7ff 0%, #e8edff 100%);">
-        <div class="empresa-card card shadow-lg p-4" style="max-width: 420px; width: 100%; border-radius: 16px;">
-            <div class="text-center mb-4">
-                <i class="bi bi-building" style="font-size: 2.5rem; color: #4361ee;"></i>
-                <h2 class="empresa-title mt-2 mb-0" style="font-weight: 700; color: #4361ee;">Cadastro de Empresa</h2>
+    <div class="main-container">
+        <div class="empresa-card">
+            <div class="text-left mb-4">
+                <i class="bi bi-building" style="font-size: 2rem; color: #4361ee;"></i>
+                <h2 class="empresa-title mt-2">Cadastro de Empresa</h2>
             </div>
-            <form method="post" autocomplete="off">
-                <div class="mb-3">
-                    <label for="id_empresa" class="form-label">ID da Empresa (WMS Senior)</label>
-                    <input type="text" class="form-control" id="id_empresa" name="id_empresa" required>
-                </div>
-                <div class="mb-3">
-                    <label for="nome_empresa" class="form-label">Nome da Empresa (WMS Senior)</label>
-                    <input type="text" class="form-control" id="nome_empresa" name="nome_empresa" required>
-                </div>
-                <button type="submit" class="btn btn-primary w-100">Cadastrar</button>
-            </form>
-            <hr>
-            <h4 class="mt-4">Empresas cadastradas</h4>
-            <form method="get" class="mb-2">
-                <input type="text" name="filtro" class="form-control" placeholder="Filtrar por nome ou ID" value="{{ filtro }}" style="max-width: 300px; display: inline-block;">
-                <button type="submit" class="btn btn-secondary btn-sm">Filtrar</button>
-            </form>
-            <div class="table-responsive">
-            <table class="table table-bordered table-hover align-middle">
-                <thead class="table-light">
-                    <tr>
-                        <th>ID</th>
-                        <th>Nome</th>
-                        <th>Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                {% for emp in empresas %}
-                    <tr>
-                        <td>{{ emp.id_empresa }}</td>
-                        <td>{{ emp.nome_empresa }}</td>
-                        <td>
-                            <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#modalEditarEmpresa{{ emp.id }}">Editar</button>
-                            <form method="post" style="display:inline;" onsubmit="return confirm('Excluir esta empresa?');">
-                                <input type="hidden" name="excluir_id" value="{{ emp.id }}">
-                                <button type="submit" class="btn btn-danger btn-sm">Excluir</button>
-                            </form>
-                        </td>
-                    </tr>
-                    <!-- Modal de edição -->
-                    <div class="modal fade" id="modalEditarEmpresa{{ emp.id }}" tabindex="-1" aria-labelledby="modalEditarEmpresaLabel{{ emp.id }}" aria-hidden="true">
-                      <div class="modal-dialog">
-                        <div class="modal-content">
-                          <form method="post">
-                            <div class="modal-header">
-                              <h5 class="modal-title" id="modalEditarEmpresaLabel{{ emp.id }}">Editar Empresa</h5>
-                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                              <input type="hidden" name="editar_id" value="{{ emp.id }}">
-                              <div class="mb-2">
-                                <label>ID Empresa</label>
-                                <input type="text" name="editar_id_empresa" class="form-control" value="{{ emp.id_empresa }}" required>
-                              </div>
-                              <div class="mb-2">
-                                <label>Nome Empresa</label>
-                                <input type="text" name="editar_nome_empresa" class="form-control" value="{{ emp.nome_empresa }}" required>
-                              </div>
-                            </div>
-                            <div class="modal-footer">
-                              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                              <button type="submit" class="btn btn-primary">Salvar</button>
-                            </div>
-                          </form>
+            
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ 'success' if category=='success' else 'danger' }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
-                      </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <form method="post" autocomplete="off" class="needs-validation" novalidate>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="id_empresa" class="form-label">ID da Empresa (WMS Senior)</label>
+                        <input type="text" class="form-control" id="id_empresa" name="id_empresa" required>
+                        <div class="invalid-feedback">
+                            Por favor, insira o ID da empresa.
+                        </div>
                     </div>
-                {% endfor %}
-                </tbody>
-            </table>
+                    <div class="col-md-6">
+                        <label for="nome_empresa" class="form-label">Nome da Empresa (WMS Senior)</label>
+                        <input type="text" class="form-control" id="nome_empresa" name="nome_empresa" required>
+                        <div class="invalid-feedback">
+                            Por favor, insira o nome da empresa.
+                        </div>
+                    </div>
+                    <div class="col-12 mt-2">
+                        <button type="submit" class="btn btn-primary w-100 py-2">
+                            <i class="bi bi-building-add me-2"></i>Cadastrar Empresa
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            <hr class="my-4">
+            
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="mb-0">Empresas Cadastradas</h4>
+                <span class="badge bg-primary rounded-pill">{{ empresas|length }} empresa(s)</span>
             </div>
+            
+            <form method="get" class="filter-container mb-3">
+                <input type="text" name="filtro" class="form-control" placeholder="Filtrar por nome ou ID" value="{{ filtro }}">
+                <button type="submit" class="btn btn-secondary">
+                    <i class="bi bi-funnel me-1"></i>Filtrar
+                </button>
+                <a href="{{ url_for('cadastro_empresa') }}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-counterclockwise me-1"></i>Limpar
+                </a>
+            </form>
+            
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nome</th>
+                            <th class="text-center">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for emp in empresas %}
+                        <tr>
+                            <td>{{ emp.id_empresa }}</td>
+                            <td>{{ emp.nome_empresa }}</td>
+                            <td class="text-center">
+                                <div class="action-buttons">
+                                    <button type="button" class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#modalEditarEmpresa{{ emp.id }}" title="Editar">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <form method="post" class="d-inline" onsubmit="return confirm('Excluir esta empresa?');">
+                                        <input type="hidden" name="excluir_id" value="{{ emp.id }}">
+                                        <button type="submit" class="btn btn-sm btn-danger" title="Excluir">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modais de edição -->
+    {% for emp in empresas %}
+    <div class="modal fade" id="modalEditarEmpresa{{ emp.id }}" tabindex="-1" aria-labelledby="modalEditarEmpresaLabel{{ emp.id }}" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalEditarEmpresaLabel{{ emp.id }}">Editar Empresa</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form method="post">
+                    <div class="modal-body">
+                        <input type="hidden" name="editar_id" value="{{ emp.id }}">
+                        <div class="mb-3">
+                            <label class="form-label">ID Empresa</label>
+                            <input type="text" name="editar_id_empresa" class="form-control" value="{{ emp.id_empresa }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Nome Empresa</label>
+                            <input type="text" name="editar_nome_empresa" class="form-control" value="{{ emp.nome_empresa }}" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Validação do formulário
+        (function () {
+            'use strict'
+            var forms = document.querySelectorAll('.needs-validation')
+            Array.prototype.slice.call(forms)
+                .forEach(function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (!form.checkValidity()) {
+                            event.preventDefault()
+                            event.stopPropagation()
+                        }
+                        form.classList.add('was-validated')
+                    }, false)
+                })
+        })()
+    </script>
 </body>
 </html>
